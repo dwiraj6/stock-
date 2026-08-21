@@ -7,6 +7,7 @@ import Computing from './screens/Computing.jsx';
 import Results from './screens/Results.jsx';
 import Methodology from './screens/Methodology.jsx';
 import ConversationPanel from './components/ConversationPanel.jsx';
+import PlumbCompanion from './components/PlumbCompanion.jsx';
 import { StaleCacheStrip, FailedState, EmptyState } from './components/States.jsx';
 import { useHashRoute } from './lib/hooks.js';
 import * as api from './lib/client.js';
@@ -21,6 +22,9 @@ export default function App() {
   const [staleDismissed, setStaleDismissed] = useState(false);
   const [askOpen, setAskOpen] = useState(false);
   const [market, setMarket] = useState(null);
+  // Bumped when an answer finishes, so the bob can nudge once.
+  const [answeredAt, setAnsweredAt] = useState(null);
+  const [answering, setAnswering] = useState(false);
 
   /* Kick off the three requests as soon as the user submits, then
      let the computing screen play its sequence over the top. The
@@ -210,7 +214,23 @@ export default function App() {
       {!failed && phase === 'results' && !run && <EmptyState onHome={home} />}
 
       {run && (
-        <ConversationPanel open={askOpen} onClose={() => setAskOpen(false)} run={run} />
+        <>
+          {/* The plumb bob docks here and becomes the way in. */}
+          <PlumbCompanion
+            open={askOpen}
+            onOpen={() => setAskOpen(true)}
+            symbol={run.quote.ticker}
+            answering={answering}
+            answeredAt={answeredAt}
+          />
+          <ConversationPanel
+            open={askOpen}
+            onClose={() => setAskOpen(false)}
+            run={run}
+            onAnswering={setAnswering}
+            onAnswered={() => setAnsweredAt(Date.now())}
+          />
+        </>
       )}
 
       <Footer market={market} />

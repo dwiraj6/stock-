@@ -350,6 +350,20 @@ button,
 .pl-button:hover:not(:disabled) { background: #000 !important; }
 .pl-button:active:not(:disabled) { transform: translateY(1px); }
 
+/* ── The docked plumb bob ──
+   Hover deepens the ground and the label; it does NOT lift, scale or
+   glow. The weight stays exactly where it hangs, because a plumb bob
+   that drifts on hover is the one thing this object must never do. */
+.pl-companion:hover {
+  background: var(--color-card);
+}
+.pl-companion:hover .font-data {
+  color: var(--color-ink);
+}
+.pl-companion:active {
+  transform: translateY(1px);
+}
+
 /* ── News rows ────────────────────────────────────────────
    A whole row is the link. Hover moves the chevron rather than
    lifting the row — no card hover-lift anywhere in this product. */

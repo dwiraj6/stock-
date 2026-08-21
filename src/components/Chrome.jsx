@@ -117,7 +117,13 @@ export function Masthead({ quote, onMethodology, onAsk, onHome }) {
               How this works
             </button>
           )}
-          {quote && (
+          {/* The docked plumb bob is the Ask affordance on the
+              results page. Keeping a second one here would be two
+              controls for one action — and the small mono button was
+              the weaker of the two. It stays only where the bob is
+              not: narrow screens, where the bob would sit on top of
+              the content. */}
+          {quote && small && (
             <button
               onClick={onAsk}
               className="font-data"

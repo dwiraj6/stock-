@@ -107,7 +107,7 @@ function parseAnswer(src) {
   return out;
 }
 
-export default function ConversationPanel({ open, onClose, run }) {
+export default function ConversationPanel({ open, onClose, run, onAnswering, onAnswered }) {
   const bp = useBreakpoint();
   const reduced = useReducedMotion();
   const small = bp === 'sm';
@@ -127,6 +127,7 @@ export default function ConversationPanel({ open, onClose, run }) {
       const priorTurns = turns;
       setTurns((t) => [...t, { role: 'user', text: question }]);
       setThinking(true);
+      onAnswering?.(true);
 
       // The last few turns, so follow-ups keep their thread.
       const history = priorTurns.slice(-6).map((t) => ({
@@ -159,6 +160,8 @@ export default function ConversationPanel({ open, onClose, run }) {
       );
 
       setThinking(false);
+      onAnswering?.(false);
+      onAnswered?.();
       if (!res.ok) {
         // A typed failure renders as an app turn saying what happened
         // and what to do next — never a silent dead end.
@@ -168,7 +171,7 @@ export default function ConversationPanel({ open, onClose, run }) {
         ]);
       }
     },
-    [run, thinking, turns]
+    [run, thinking, turns, onAnswering, onAnswered]
   );
 
   useEffect(() => {
