@@ -1,0 +1,11 @@
+{
+  "_comment": "Tickers that changed on NSE. A legacy ticker resolves to its successor WITH a note the UI shows, rather than dead-ending. Verified against data/nse-symbols.csv: the legacy symbol is absent and the target is present.",
+  "aliases": {
+    "TATAMOTORS": {
+      "to": "TMCV",
+      "note": "TATAMOTORS was split in the Tata Motors demerger. TMCV is the commercial-vehicle entity; TMPV is the passenger-vehicle entity."
+    },
+    "MOTHERSUMI": { "to": "MOTHERSON", "note": "Renamed after the Samvardhana Motherson reorganisation." },
+    "M&M": { "to": "M&M", "note": "" }
+  }
+}

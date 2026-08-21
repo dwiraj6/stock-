@@ -1,0 +1,385 @@
+@import "tailwindcss";
+
+/* ══════════════════════════════════════════════════════════════
+   PLUMBLINE — DESIGN TOKENS
+   Part 1 of the brief. Nothing in this file is decorative.
+   ══════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* 1.1 COLOR — exactly these, no additions ------------------- */
+  --color-paper: #f2e5de;
+  --color-paper-deep: #e8d7ce;
+  --color-card: #fbf6f3;
+  --color-ink: #16181f;
+  --color-graphite: #5a5e69; /* darkened from #6B6F7B — see note below */
+  --color-madder: #9b2c2c;
+  --color-verdigris: #2f6f62;
+  --color-rule: #d9c6bc;
+  --color-focus: #2b4c9b;
+
+  /* 1.2 TYPOGRAPHY ------------------------------------------- */
+  --font-display: "Archivo", "Archivo Expanded", system-ui, sans-serif;
+  --font-body: "Newsreader", Georgia, serif;
+  --font-data: "IBM Plex Mono", ui-monospace, monospace;
+
+  --text-eyebrow: 0.75rem;
+  --text-fine: 0.875rem;
+  --text-base: 1rem;
+  --text-lead: 1.25rem;
+  --text-head: 1.75rem;
+  --text-title: 2.75rem;
+  --text-gap: 4.5rem;
+
+  /* 1.3 SPACE ------------------------------------------------- */
+  --spacing-hair: 1px;
+
+  /* 1.5 MOTION TOKENS ----------------------------------------- */
+  --dur-instant: 120ms;
+  --dur-quick: 220ms;
+  --dur-normal: 340ms;
+  --dur-draw: 900ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-plot: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/*
+  --graphite accessibility note (Part 11):
+  The brief specifies #6B6F7B. Part 11 says "Verify --graphite on
+  --paper specifically; darken it if it fails." It failed — 4.19:1
+  against --paper, below the AA 4.5:1 floor for body text.
+
+  Darkening it far enough for --paper alone was not enough either.
+  Graphite also sets the entire footer, the stale-cache strip and the
+  two --paper-deep wells, and --paper-deep is the darkest ground in
+  the product; a value tuned to --paper still failed there at 4.30:1.
+  So this is solved against the worst ground, not the common one:
+
+    #5A5E69   on --paper       5.26:1
+              on --card        6.04:1
+              on --paper-deep  4.64:1   ← the binding constraint
+
+  The brief's own accessibility floor overrides its own swatch, as
+  instructed. The hue and the blue-grey cast are unchanged.
+*/
+
+/* ── ELEMENT DEFAULTS ─────────────────────────────────────── */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Archivo Expanded — the variable font carries width on wdth.
+   125 is the Expanded axis position. */
+.font-display,
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 125;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-weight: 700;
+}
+
+/* Every numeral in the product is tabular. Always. (1.2) */
+.font-data,
+[class*="font-data"] {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* 1.3 — radius 0 by default, 3px on inputs and buttons only */
+* {
+  border-radius: 0;
+}
+input,
+button,
+.radius-3 {
+  border-radius: 3px;
+}
+
+/* Part 11 — focus ring on every interactive element, never removed */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+/* ── EYEBROW (1.2) — labels sections, never decorates ─────── */
+.eyebrow {
+  font-family: var(--font-data);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+  font-weight: 400;
+}
+
+/* ── PROSE (1.2) — serif body, 68ch measure ──────────────── */
+.prose-measure {
+  max-width: 68ch;
+  line-height: 1.6;
+}
+
+/* ── SR-ONLY (Part 11) — chart text alternatives ─────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ══════════════════════════════════════════════════════════
+   MOTION
+   Philosophy (1.5): one orchestrated sequence per screen entry,
+   then total stillness. Every animation below is entry-only.
+   ══════════════════════════════════════════════════════════ */
+
+@keyframes pl-fade-up {
+  from { opacity: 0; transform: translateY(var(--pl-rise, 12px)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pl-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Fade in to a TARGET opacity rather than to 1.
+   An animation with fill-mode: both keeps its final keyframe applied
+   forever, and that beats a presentation attribute — so fading the
+   fan's paths in with pl-fade-in silently reset every one of them
+   from opacity 0.03 to 1, turning 400 hairlines meant to overlap
+   into density into 400 opaque red strokes. The bundle has to land
+   on the opacity it was drawn for. */
+@keyframes pl-fade-to {
+  from { opacity: 0; }
+  to   { opacity: var(--pl-op, 1); }
+}
+@keyframes pl-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes pl-draw {
+  from { stroke-dashoffset: var(--pl-len); }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes pl-drop-in {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pl-rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pl-slide-left {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes pl-panel-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes pl-sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes pl-strip-down {
+  from { opacity: 0; transform: translateY(-100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pl-scale-x {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes pl-scale-y {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+/* Reveal by clip rather than by scale. Scaling a rail would stretch
+   its ticks as it grew; clipping draws it left-to-right at true size,
+   which is what "the rail draws" has to mean when the rail is a
+   measuring instrument.
+
+   The insets are negative on the cross axis. The rail's own box is
+   1px tall, but its ticks and numerals hang below it — clipping to
+   inset(0 0 0 0) would erase the scale and leave a bare line. */
+@keyframes pl-reveal-x {
+  from { clip-path: inset(-80px 100% -80px 0); }
+  to   { clip-path: inset(-80px -80px -80px 0); }
+}
+@keyframes pl-reveal-y {
+  from { clip-path: inset(0 -120px 100% -120px); }
+  to   { clip-path: inset(-120px -120px -120px -120px); }
+}
+
+/* The plumb bob (Part 3): a damped pendulum. Three diminishing
+   oscillations over 1400ms, settling perfectly vertical, then
+   it never moves again. */
+@keyframes pl-plumb-swing {
+  0%   { transform: rotate(-11deg); }
+  18%  { transform: rotate(7.2deg); }
+  36%  { transform: rotate(-4.2deg); }
+  54%  { transform: rotate(2.3deg); }
+  72%  { transform: rotate(-1.1deg); }
+  86%  { transform: rotate(0.4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Typing indicator (Part 7): three squares, not dots. */
+@keyframes pl-square-pulse {
+  0%, 100% { opacity: 0.25; }
+  50%      { opacity: 1; }
+}
+
+.pl-anim {
+  animation-duration: var(--pl-dur, 300ms);
+  animation-delay: var(--pl-delay, 0ms);
+  animation-timing-function: var(--pl-ease, var(--ease-out));
+  animation-fill-mode: both;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Part 9 RULES — prefers-reduced-motion: reduce
+   All durations to 0, final states render immediately, plumb
+   bob renders already-settled. No exceptions, no "reduced but
+   still animated" middle ground.
+   ══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-instant: 0ms;
+    --dur-quick: 0ms;
+    --dur-normal: 0ms;
+    --dur-draw: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
+  .pl-anim {
+    --pl-dur: 0.001ms;
+    --pl-delay: 0ms;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   1.3 GRID + PART 10 RESPONSIVE
+   Breakpoints 1200 / 1024 / 768 / 375. 375 is not a smaller
+   1024 — the gap module is a different component there.
+   ══════════════════════════════════════════════════════════ */
+
+.pl-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 24px 0;
+}
+
+.pl-modules {
+  display: grid;
+  gap: 96px; /* section gap, desktop */
+}
+
+/* Paint containment only.
+   `content-visibility: auto` was tried here and removed. It skips
+   rendering for offscreen sections, which sounds ideal for a
+   6,000px page — but it also makes the browser guess their height
+   until they are first painted, so the scrollbar shifts under the
+   cursor as you scroll. On a page whose whole subject is measurement
+   that is the wrong trade, and it bought nothing measurable: once
+   the finished animations were detached, the worst frame was already
+   9.5ms with zero frames below 30fps.
+
+   `contain: paint` is kept. It scopes each module's painting to its
+   own box without affecting layout or intrinsic size, so nothing
+   moves and offscreen modules still cost nothing to repaint. */
+.pl-modules > section {
+  contain: paint;
+}
+
+/* 12-col splits, 24px gutter */
+.pl-split-8-4 {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+  gap: 24px;
+}
+
+.pl-split-6-6 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+}
+
+/* ── 768: two-column modules stack ───────────────────────── */
+@media (max-width: 768px) {
+  .pl-modules { gap: 56px; }
+  .pl-split-8-4,
+  .pl-split-6-6 { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .pl-page { padding-top: 40px; }
+}
+
+@media (max-width: 375px) {
+  .pl-page { padding-left: 16px; padding-right: 16px; }
+}
+
+/* ── BUTTON states (Part 3) ──────────────────────────────── */
+.pl-button:hover:not(:disabled) { background: #000 !important; }
+.pl-button:active:not(:disabled) { transform: translateY(1px); }
+
+/* ── News rows ────────────────────────────────────────────
+   A whole row is the link. Hover moves the chevron rather than
+   lifting the row — no card hover-lift anywhere in this product. */
+.pl-news-row:hover .pl-news-chevron {
+  transform: translateX(3px);
+  color: var(--color-ink);
+}
+.pl-news-chevron {
+  display: inline-flex;
+  transition: transform var(--dur-instant) var(--ease-out),
+              color var(--dur-instant) var(--ease-out);
+}
+.pl-news-row:hover {
+  background: var(--color-card);
+}
+.pl-news-row {
+  transition: background var(--dur-instant) var(--ease-out);
+  margin: 0 -12px;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+/* ── Text link underlines stay hairline ──────────────────── */
+a { color: inherit; }
+
+/* ── The TradingView frame must not leak its own styling ─── */
+.tradingview-widget-container,
+.tradingview-widget-container__widget,
+.tradingview-widget-container iframe {
+  width: 100% !important;
+  height: 100% !important;
+}
+.tradingview-widget-copyright { display: none !important; }

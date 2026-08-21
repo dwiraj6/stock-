@@ -1,0 +1,38 @@
+# dependencies
+node_modules/
+
+# build output
+.next/
+out/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# secrets — NEVER commit these
+.env
+.env.local
+.env*.local
+
+# deploy
+.vercel
+
+# agent tooling installed into this directory by `npx skills add`.
+# Third-party packages (emilkowalski/skill, pbakaus/impeccable,
+# Leonxlnx/taste-skill) — not part of Plumbline, and .claude/skills
+# is only a symlink farm pointing at .agents/skills.
+.agents/
+.claude/
+skills-lock.json
+
+# scratch output from verification runs
+.drive/
+.news/
+.tv/
+.after/
+.run/
+.playwright-cli/
+.scratch/
+
+# os
+.DS_Store
+Thumbs.db

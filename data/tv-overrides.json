@@ -1,0 +1,10 @@
+{
+  "_comment": "TradingView symbol overrides. The default is BSE:<nse-symbol>, because TradingView's free embed serves BSE data for Indian equities but blocks NSE ('This symbol is only available on TradingView', verified in-browser on advanced-chart, symbol-overview and mini-chart). Add an entry here only for a symbol whose BSE ticker differs from its NSE ticker, or which is NSE-only. A wrong override renders an empty chart, which is worse than no override.",
+  "verifiedRendering": {
+    "date": "2026-08-22",
+    "method": "loaded the live advanced-chart embed in Chrome and asserted real OHLC text inside the iframe",
+    "passed": ["BSE:RELIANCE", "BSE:TCS", "BSE:HDFCBANK", "BSE:INFY", "BSE:TMCV", "BSE:TMPV", "BSE:ITC", "BSE:SBIN", "BSE:JIOFIN", "BSE:IRCTC", "BSE:LICI"],
+    "blocked": ["NSE:RELIANCE", "NSE:NIFTY", "BSE:500325 (scrip codes are not accepted; use the ticker)"]
+  },
+  "overrides": {}
+}

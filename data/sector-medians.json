@@ -1,0 +1,331 @@
+{
+  "generatedAt": "2026-08-21T19:37:18.584Z",
+  "universe": "NIFTY 500",
+  "source": "yahoo-finance2 quoteSummary, grouped by Yahoo assetProfile.sector",
+  "requested": 500,
+  "withFundamentals": 499,
+  "failed": 0,
+  "missingSector": 1,
+  "note": "Medians are computed from the values actually fetched. `n` is how many constituents contributed to each median; a low n means weak evidence. debtToEquity is stored as a ratio (Yahoo reports a percentage). returnOnEquity, profitMargins and dividendYield are fractions.",
+  "sectors": {
+    "Basic Materials": {
+      "constituents": 62,
+      "metrics": {
+        "trailingPE": {
+          "median": 30.1119185,
+          "n": 60
+        },
+        "priceToBook": {
+          "median": 3.5019628000000003,
+          "n": 62
+        },
+        "debtToEquity": {
+          "median": 0.29186,
+          "n": 60
+        },
+        "returnOnEquity": {
+          "median": 0.00447,
+          "n": 1
+        },
+        "profitMargins": {
+          "median": 0.09437000200000001,
+          "n": 62
+        },
+        "dividendYield": {
+          "median": 0.0055,
+          "n": 57
+        }
+      }
+    },
+    "Communication Services": {
+      "constituents": 15,
+      "metrics": {
+        "trailingPE": {
+          "median": 43.58258,
+          "n": 15
+        },
+        "priceToBook": {
+          "median": 4.7199893,
+          "n": 13
+        },
+        "debtToEquity": {
+          "median": 0.042809999999999994,
+          "n": 13
+        },
+        "returnOnEquity": {
+          "median": 0.19531500499999999,
+          "n": 4
+        },
+        "profitMargins": {
+          "median": 0.16849001,
+          "n": 15
+        },
+        "dividendYield": {
+          "median": 0.0148,
+          "n": 10
+        }
+      }
+    },
+    "Consumer Cyclical": {
+      "constituents": 69,
+      "metrics": {
+        "trailingPE": {
+          "median": 41.507501500000004,
+          "n": 58
+        },
+        "priceToBook": {
+          "median": 6.4088593,
+          "n": 69
+        },
+        "debtToEquity": {
+          "median": 0.28065,
+          "n": 67
+        },
+        "returnOnEquity": {
+          "median": 0.21645,
+          "n": 1
+        },
+        "profitMargins": {
+          "median": 0.05829,
+          "n": 69
+        },
+        "dividendYield": {
+          "median": 0.005,
+          "n": 51
+        }
+      }
+    },
+    "Consumer Defensive": {
+      "constituents": 28,
+      "metrics": {
+        "trailingPE": {
+          "median": 45.78957,
+          "n": 27
+        },
+        "priceToBook": {
+          "median": 7.7924211,
+          "n": 28
+        },
+        "debtToEquity": {
+          "median": 0.141315,
+          "n": 28
+        },
+        "returnOnEquity": {
+          "median": 0.16853,
+          "n": 1
+        },
+        "profitMargins": {
+          "median": 0.095645,
+          "n": 28
+        },
+        "dividendYield": {
+          "median": 0.009399999999999999,
+          "n": 26
+        }
+      }
+    },
+    "Energy": {
+      "constituents": 15,
+      "metrics": {
+        "trailingPE": {
+          "median": 10.441911,
+          "n": 15
+        },
+        "priceToBook": {
+          "median": 1.971816,
+          "n": 15
+        },
+        "debtToEquity": {
+          "median": 0.47243,
+          "n": 15
+        },
+        "returnOnEquity": {
+          "median": 0.56996,
+          "n": 1
+        },
+        "profitMargins": {
+          "median": 0.066149995,
+          "n": 15
+        },
+        "dividendYield": {
+          "median": 0.0343,
+          "n": 15
+        }
+      }
+    },
+    "Financial Services": {
+      "constituents": 97,
+      "metrics": {
+        "trailingPE": {
+          "median": 21.57419,
+          "n": 95
+        },
+        "priceToBook": {
+          "median": 2.550692,
+          "n": 97
+        },
+        "debtToEquity": {
+          "median": 2.4975899999999998,
+          "n": 64
+        },
+        "returnOnEquity": {
+          "median": 0.13856000000000002,
+          "n": 32
+        },
+        "profitMargins": {
+          "median": 0.33076,
+          "n": 95
+        },
+        "dividendYield": {
+          "median": 0.0091,
+          "n": 79
+        }
+      }
+    },
+    "Healthcare": {
+      "constituents": 50,
+      "metrics": {
+        "trailingPE": {
+          "median": 45.46535,
+          "n": 48
+        },
+        "priceToBook": {
+          "median": 6.20951795,
+          "n": 50
+        },
+        "debtToEquity": {
+          "median": 0.199575,
+          "n": 50
+        },
+        "returnOnEquity": {
+          "median": 0.088369995,
+          "n": 1
+        },
+        "profitMargins": {
+          "median": 0.138669995,
+          "n": 50
+        },
+        "dividendYield": {
+          "median": 0.0032,
+          "n": 43
+        }
+      }
+    },
+    "Industrials": {
+      "constituents": 90,
+      "metrics": {
+        "trailingPE": {
+          "median": 46.003155,
+          "n": 88
+        },
+        "priceToBook": {
+          "median": 6.435226,
+          "n": 89
+        },
+        "debtToEquity": {
+          "median": 0.11271,
+          "n": 88
+        },
+        "returnOnEquity": {
+          "median": 0.19131,
+          "n": 7
+        },
+        "profitMargins": {
+          "median": 0.0975,
+          "n": 89
+        },
+        "dividendYield": {
+          "median": 0.0052499999999999995,
+          "n": 80
+        }
+      }
+    },
+    "Real Estate": {
+      "constituents": 11,
+      "metrics": {
+        "trailingPE": {
+          "median": 37.9977185,
+          "n": 10
+        },
+        "priceToBook": {
+          "median": 4.203231,
+          "n": 11
+        },
+        "debtToEquity": {
+          "median": 0.42238,
+          "n": 11
+        },
+        "returnOnEquity": {
+          "median": 0.08927,
+          "n": 2
+        },
+        "profitMargins": {
+          "median": 0.22770001,
+          "n": 11
+        },
+        "dividendYield": {
+          "median": 0.0033,
+          "n": 10
+        }
+      }
+    },
+    "Technology": {
+      "constituents": 41,
+      "metrics": {
+        "trailingPE": {
+          "median": 28.966421,
+          "n": 39
+        },
+        "priceToBook": {
+          "median": 5.902958,
+          "n": 41
+        },
+        "debtToEquity": {
+          "median": 0.09874000000000001,
+          "n": 41
+        },
+        "returnOnEquity": {
+          "median": 0.24067,
+          "n": 9
+        },
+        "profitMargins": {
+          "median": 0.11095,
+          "n": 41
+        },
+        "dividendYield": {
+          "median": 0.0144,
+          "n": 34
+        }
+      }
+    },
+    "Utilities": {
+      "constituents": 21,
+      "metrics": {
+        "trailingPE": {
+          "median": 27.869651,
+          "n": 20
+        },
+        "priceToBook": {
+          "median": 2.5210316,
+          "n": 21
+        },
+        "debtToEquity": {
+          "median": 1.13111,
+          "n": 21
+        },
+        "returnOnEquity": {
+          "median": null,
+          "n": 0
+        },
+        "profitMargins": {
+          "median": 0.111420006,
+          "n": 21
+        },
+        "dividendYield": {
+          "median": 0.0228,
+          "n": 15
+        }
+      }
+    }
+  }
+}
