@@ -195,6 +195,17 @@ const get = async (path, init) => {
   ok(Array.isArray(c.byCutoff) && c.byCutoff.length === c.windows,
      'per-window breakdown published');
 
+  const f = body.factors;
+  ok(f !== null, 'the factor test is published');
+  ok(Array.isArray(f.results) && f.results.length >= 5,
+     `${f.results.length} documented factors were tested before claiming direction is unpredictable`);
+  ok(f.anySignalWorks === false,
+     `none beat the base rate out-of-sample (best ${f.best} at ${(f.bestSkill*100).toFixed(1)}%)`);
+  ok(f.testN > 0 && f.trainN > 0 && f.testN !== f.trainN,
+     `train ${f.trainN} / held-out ${f.testN} are separate — no signal saw its own grading data`);
+  ok(/look-ahead/i.test(f.method),
+     'fundamentals were excluded for look-ahead bias, and the payload says why');
+
   const p = body.probability;
   ok(p !== null, 'the direction test is published too');
   ok(typeof p.skillScore === 'number' && p.skillScore < 0.02,

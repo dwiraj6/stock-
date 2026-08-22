@@ -24,6 +24,7 @@ export default function Results({ run }) {
   const reduced = useReducedMotion();
   const [calibration, setCalibration] = useState(null);
   const [probability, setProbability] = useState(null);
+  const [factors, setFactors] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -31,6 +32,7 @@ export default function Results({ run }) {
       if (!cancelled && res?.ok) {
         setCalibration(adaptCalibration(res.calibration));
         setProbability(res.probability ?? null);
+        setFactors(res.factors ?? null);
       }
     });
     return () => {
@@ -89,6 +91,7 @@ export default function Results({ run }) {
         <CalibrationModule
           calibration={calibration}
           probability={probability}
+          factors={factors}
           animate={animate}
         />
 

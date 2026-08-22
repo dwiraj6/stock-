@@ -28,7 +28,18 @@ export async function GET() {
         probability = null;
       }
 
-      return ok({ calibration: json, probability }, { ttlSeconds: 3600 });
+      /* The third exhibit: six attempts at predicting direction, none
+         of which worked. This is what turns "our model can't forecast
+         direction" from an apology into a result. */
+      let factors = null;
+      try {
+        const f = path.join(process.cwd(), 'data', 'factor-test.json');
+        factors = JSON.parse(fs.readFileSync(f, 'utf8'));
+      } catch {
+        factors = null;
+      }
+
+      return ok({ calibration: json, probability, factors }, { ttlSeconds: 3600 });
     } catch {
       return fail(
         'UPSTREAM_UNAVAILABLE',

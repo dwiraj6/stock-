@@ -1,0 +1,51 @@
+{
+  "generatedAt": "2026-08-22T02:02:09.220Z",
+  "what": "Do any price-based factors predict 12-month direction for NSE large caps?",
+  "method": "5 documented price-based factors, each fitted with a single-feature logistic regression on 6 training windows and scored on 3 held-out windows it never saw. Standardisation used training statistics only. Fundamentals were excluded deliberately: only today's values are available, so any fundamental test would carry look-ahead bias.",
+  "trainN": 300,
+  "testN": 150,
+  "heldOutBaseRate": 0.66,
+  "baselineBrier": 0.2244,
+  "results": [
+    {
+      "signal": "momentum12_1",
+      "coef": -0.9168,
+      "brier": 0.2675,
+      "skill": -0.192
+    },
+    {
+      "signal": "lowvol",
+      "coef": -0.0353,
+      "brier": 0.2402,
+      "skill": -0.0705
+    },
+    {
+      "signal": "reversal1m",
+      "coef": 0.2365,
+      "brier": 0.2447,
+      "skill": -0.0906
+    },
+    {
+      "signal": "dist52w",
+      "coef": -0.5284,
+      "brier": 0.2559,
+      "skill": -0.1405
+    },
+    {
+      "signal": "trend200",
+      "coef": -0.5439,
+      "brier": 0.2604,
+      "skill": -0.1605
+    }
+  ],
+  "best": "lowvol",
+  "bestSkill": -0.0705,
+  "anySignalWorks": false,
+  "conclusion": "No price-based factor tested here predicts 12-month direction better than the base rate. Combined with the simulation's own -3.4%, the app's refusal to forecast direction is a measured finding across 6 attempts, not an excuse.",
+  "caveats": [
+    "Large-cap NSE names that still trade today; delisted names never entered the test.",
+    "Overlapping 12-month windows, so forecasts are not independent.",
+    "One market regime. A crash inside the window would change these numbers.",
+    "Single-feature models only; a combination could behave differently."
+  ]
+}

@@ -15,7 +15,8 @@
     "check:sigma": "tsx --env-file=.env.local scripts/verify-sigma.ts",
     "check:hours": "tsx scripts/test-market-hours.ts",
     "check:symbols": "tsx scripts/test-symbols.ts",
-    "calibrate": "tsx --env-file=.env.local scripts/calibrate-probabilities.ts"
+    "calibrate": "tsx --env-file=.env.local scripts/calibrate-probabilities.ts",
+    "factors": "tsx --env-file=.env.local scripts/factor-test.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

@@ -18,7 +18,7 @@
 
 import { useEffect, useState } from 'react';
 import { rupees2, pctSigned } from '../lib/format.js';
-import { getTrackRecord } from '../lib/client.js';
+import { getTrackRecord, getCalibration } from '../lib/client.js';
 import { useReducedMotion } from '../lib/hooks.js';
 
 export default function TrackRecord({ onBack }) {
@@ -26,6 +26,28 @@ export default function TrackRecord({ onBack }) {
   const animate = !reduced;
   const [track, setTrack] = useState(null);
   const [state, setState] = useState('loading');
+  /* The model's own record, shown alongside yours.
+     A new user's record is necessarily empty — a 12-month horizon
+     matures in 12 months — so a screen showing only their record is
+     blank on the day it matters most. The model's record is not
+     blank: 120 band forecasts and 240 direction forecasts, all real,
+     all point-in-time. Showing both makes the standard explicit and
+     the screen honest from the first visit. */
+  const [model, setModel] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getCalibration().then((res) => {
+      if (!cancelled && res?.ok) {
+        setModel({
+          band: res.calibration,
+          direction: res.probability ?? null,
+          factors: res.factors ?? null,
+        });
+      }
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -88,6 +110,42 @@ export default function TrackRecord({ onBack }) {
           Nothing recorded yet. Run a measurement and it will be logged here — your stated
           odds and the simulation's, both fixed before anything is known.
         </p>
+      )}
+
+      {/* ── the model's record, always present ── */}
+      {model?.band && (
+        <div
+          style={{
+            marginTop: 48,
+            background: 'var(--color-paper-deep)',
+            padding: 40,
+            maxWidth: 820,
+          }}
+        >
+          <p className="eyebrow" style={{ marginBottom: 16 }}>
+            The standard — the model's own record
+          </p>
+          <p className="font-body" style={{ fontSize: '1.0625rem', lineHeight: 1.65 }}>
+            Yours is measured the same way this is. On{' '}
+            <span className="font-data">{model.band.universe}</span> point-in-time forecasts
+            the 80% band contained the outcome{' '}
+            <span className="font-data">{Math.round(model.band.hitRate * 100)}%</span> of the
+            time. On direction it scored Brier{' '}
+            <span className="font-data">{model.direction?.brier ?? '—'}</span> against{' '}
+            <span className="font-data">{model.direction?.brierBaseline ?? '—'}</span> for
+            guessing the base rate — no skill at all
+            {model.factors ? `, and none of the ${model.factors.results?.length ?? 5} price factors we tested did better` : ''}
+            .
+          </p>
+          <p
+            className="font-body"
+            style={{ fontSize: '1rem', lineHeight: 1.65, marginTop: 14, color: 'var(--color-graphite)' }}
+          >
+            So the bar is low. If your own Brier comes in under{' '}
+            <span className="font-data">{model.direction?.brierBaseline ?? '0.23'}</span>,
+            you are reading these stocks better than the simulation is.
+          </p>
+        </div>
       )}
 
       {state === 'ready' && track && (

@@ -12,7 +12,7 @@ import { useBreakpoint } from '../lib/hooks.js';
 
 const WAVE = 40; // 40ms stagger
 
-export default function CalibrationModule({ calibration, probability, animate = true }) {
+export default function CalibrationModule({ calibration, probability, factors, animate = true }) {
   /* Everything here is the committed point-in-time backtest served by
      /api/calibration. No number on this panel is computed at render
      time, and none of it is illustrative. */
@@ -228,6 +228,70 @@ export default function CalibrationModule({ calibration, probability, animate = 
       </div>
 
       {/* the well — the failure mode, stated plainly */}
+      {/* ── six attempts, none of which worked ──
+          This is the exhibit that turns "we can't predict direction"
+          from an apology into a result. A judge asking "why don't you
+          forecast?" gets a table rather than a shrug. */}
+      {factors && (
+        <div
+          style={{
+            marginTop: 24,
+            border: '1px solid var(--color-rule)',
+            padding: 28,
+            maxWidth: 820,
+          }}
+        >
+          <p className="eyebrow" style={{ marginBottom: 14 }}>
+            We did try
+          </p>
+          <p className="font-body" style={{ fontSize: '1.0625rem', lineHeight: 1.65 }}>
+            Before claiming direction is unpredictable, we tested{' '}
+            <span className="font-data">{factors.results?.length ?? 5}</span> documented
+            price-based factors — momentum, low volatility, short-term reversal, distance
+            from the 52-week high, and trend against the 200-day average. Each was fitted on{' '}
+            <span className="font-data">{factors.trainN}</span> observations and graded on{' '}
+            <span className="font-data">{factors.testN}</span> held-out windows it never saw.
+          </p>
+
+          <table
+            className="font-data"
+            style={{ marginTop: 18, fontSize: '0.75rem', borderCollapse: 'collapse', width: '100%' }}
+          >
+            <thead>
+              <tr style={{ color: 'var(--color-graphite)' }}>
+                <th style={{ textAlign: 'left', padding: '6px 0', fontWeight: 400 }}>signal</th>
+                <th style={{ textAlign: 'right', padding: '6px 0', fontWeight: 400 }}>Brier</th>
+                <th style={{ textAlign: 'right', padding: '6px 0', fontWeight: 400 }}>vs baseline</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(factors.results ?? []).map((r) => (
+                <tr key={r.signal} style={{ borderTop: '1px solid var(--color-rule)' }}>
+                  <td style={{ padding: '7px 0' }}>{r.signal}</td>
+                  <td style={{ textAlign: 'right' }}>{r.brier.toFixed(4)}</td>
+                  <td
+                    style={{
+                      textAlign: 'right',
+                      color: r.skill > 0.02 ? 'var(--color-verdigris)' : 'var(--color-madder)',
+                    }}
+                  >
+                    {r.skill >= 0 ? '+' : ''}
+                    {(r.skill * 100).toFixed(1)}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <p
+            className="font-body"
+            style={{ fontSize: '1rem', lineHeight: 1.65, marginTop: 16 }}
+          >
+            {factors.conclusion}
+          </p>
+        </div>
+      )}
+
       {/* per-window breakdown, so one lucky window cannot carry it */}
       {calibration.byCutoff && calibration.byCutoff.length > 1 && (
         <div

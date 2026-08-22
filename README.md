@@ -47,6 +47,26 @@ forecasts**, the probability-of-profit forecast scored Brier
 predicting the base rate. **Skill −3.4%.** That table is on the
 results page under *"and the test it fails"*.
 
+**AND WE DID TRY.** Before claiming direction is unpredictable, five
+documented price-based factors were fitted on 300 observations and
+graded on **150 held-out windows they never saw**:
+
+```
+momentum12_1   Brier 0.2675   skill  -19.2%
+lowvol               0.2402          -7.0%   <- best
+reversal1m           0.2447          -9.1%
+dist52w              0.2559         -14.0%
+trend200             0.2604         -16.1%
+```
+
+None beat the base rate. Fundamentals were deliberately excluded:
+Yahoo serves only today's P/E and book value, so any fundamental test
+would carry look-ahead bias, and a signal that cannot be measured
+honestly is not tested at all.
+
+**Six attempts, zero signals.** The refusal to forecast direction is a
+measured finding, not a limitation.
+
 A tool that publishes only the test it passes has not shown you a
 test.
 
@@ -77,10 +97,13 @@ it just no longer drives the simulation.
 ## Verification
 
 ```bash
-npm run verify          # 43 end-to-end checks, incl. airplane mode
+npm run verify          # 67 end-to-end checks, incl. airplane mode
 npm run check:sigma     # sigma vs an independent implementation
 npm run check:hours     # every market state + the UTC-server trap
 npm run check:symbols   # resolution, ranking, the SODEXO case
+npm run backtest        # band calibration, 6 point-in-time windows
+npm run calibrate       # direction calibration + Brier
+npm run factors         # 5 factors on held-out windows
 ```
 
 `check:sigma` prints the intermediate values so the volatility
@@ -139,6 +162,13 @@ holds itself to, and publishes both.
 An open position is shown as open. It is not right or wrong yet, and
 scoring it early would be the dishonesty the rest of the app spends
 its time avoiding.
+
+The model's own record sits on the same screen. A new user's record is
+necessarily empty — a 12-month horizon matures in 12 months — so the
+page would otherwise be blank on the day it matters most. The model's
+record is not blank, and putting them side by side makes the standard
+explicit: *if your Brier comes in under 0.2333, you are reading these
+stocks better than the simulation is.*
 
 Identity is an anonymous browser-generated id in `localStorage`. No
 accounts, no email, nothing personal.
