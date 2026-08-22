@@ -44,8 +44,24 @@ const JWKS_URL =
 /* Cached across requests, and jose handles key rotation itself. */
 const jwks = createRemoteJWKSet(new URL(JWKS_URL));
 
+/* Read once, and STRIPPED OF QUOTES.
+
+   A .env file wants `X="value"` and a hosting dashboard wants plain
+   `value`, so pasting one into the other is the single most common
+   deployment mistake there is. Here it would be silent and baffling:
+   the project id becomes `"stock-963fa"` including the quote marks,
+   every check that only asks "is it set?" still passes, and then
+   every real token fails the audience check with an error that
+   points nowhere near the cause.
+
+   Trimming costs nothing and removes the whole class. A project id
+   can never legitimately contain a quote character. */
+function projectId(): string {
+  return (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? '').trim().replace(/^["']|["']$/g, '');
+}
+
 export function firebaseConfigured(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
+  return Boolean(projectId());
 }
 
 export type FirebaseIdentity = {
@@ -67,14 +83,14 @@ export type VerifyResult =
     the client, which is safe: none of it says anything an attacker
     does not already know from their own token. */
 export async function verifyFirebaseTokenDetailed(token: string): Promise<VerifyResult> {
-  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-  if (!projectId) return { ok: false, reason: 'NEXT_PUBLIC_FIREBASE_PROJECT_ID is not set on the server' };
+  const pid = projectId();
+  if (!pid) return { ok: false, reason: 'NEXT_PUBLIC_FIREBASE_PROJECT_ID is not set on the server' };
   if (!token) return { ok: false, reason: 'no token supplied' };
 
   try {
     const { payload } = await jwtVerify(token, jwks, {
-      issuer: `https://securetoken.google.com/${projectId}`,
-      audience: projectId,
+      issuer: `https://securetoken.google.com/${pid}`,
+      audience: pid,
     });
 
     const email = typeof payload.email === 'string' ? payload.email.toLowerCase() : '';
@@ -109,6 +125,18 @@ export async function verifyFirebaseTokenDetailed(token: string): Promise<Verify
                                           unreachable from the server */
     const code = (e as { code?: string })?.code ?? '';
     const msg = e instanceof Error ? e.message : String(e);
+
+    /* The commonest real failure, named rather than left as a jose
+       code: the browser signed in against one Firebase project and
+       the server is checking against another. */
+    if (code === 'ERR_JWT_CLAIM_VALIDATION_FAILED') {
+      return {
+        ok: false,
+        reason:
+          `the token was not issued for project "${pid}" — the server's ` +
+          `NEXT_PUBLIC_FIREBASE_PROJECT_ID does not match the one the browser signed in with`,
+      };
+    }
     return { ok: false, reason: code ? `${code}: ${msg}` : msg };
   }
 }
