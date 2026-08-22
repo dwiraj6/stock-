@@ -81,6 +81,13 @@ export function recordDecision({ symbol, amount, userProb, modelProb, priceAt })
   });
 }
 
+/* The user's stated constraints. Read from the session server-side,
+   so there is no identity to pass. */
+export const getProfile = () => call('/api/profile');
+
+export const saveProfile = (profile) =>
+  call('/api/profile', { method: 'POST', body: JSON.stringify(profile) });
+
 export const simulate = (symbol, amount) =>
   call('/api/simulate', { method: 'POST', body: JSON.stringify({ symbol, amount }) });
 

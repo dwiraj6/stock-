@@ -55,10 +55,21 @@ export type PublicUser = {
   id: string;
   email: string;
   name: string | null;
+  /* Whether a risk profile exists, and what it says. The profile is
+     the user's own statement about their situation, so there is
+     nothing to withhold — but it is still built by hand rather than
+     spread from the row, so a field added to User later cannot leak
+     here by accident. */
+  riskProfile: import('./risk-profile').RiskProfile | null;
 };
 
 export function publicUser(u: User): PublicUser {
-  return { id: String(u._id), email: u.email, name: u.name };
+  return {
+    id: String(u._id),
+    email: u.email,
+    name: u.name,
+    riskProfile: u.riskProfile ?? null,
+  };
 }
 
 export async function signOutCurrent(): Promise<void> {

@@ -33,6 +33,7 @@
 import type { Collection, ObjectId } from 'mongodb';
 import { getDb } from './mongo';
 import { hashToken, newToken } from './auth';
+import type { RiskProfile } from './risk-profile';
 
 export type User = {
   _id?: ObjectId;
@@ -49,6 +50,12 @@ export type User = {
      and a laptop that each built up their own anonymous history, and
      both are genuinely theirs. */
   adopted: string[];
+  /* The user's stated constraints — when they need the money, how
+     much they could lose, what they would do on a fall. Optional: the
+     app works without one and simply does not run the comparison.
+     Stored on the account rather than in the browser because it is
+     the kind of thing worth being asked once, not once per device. */
+  riskProfile?: RiskProfile | null;
 };
 
 export type Session = {
@@ -191,6 +198,10 @@ export async function linkGoogle(userId: ObjectId, googleSub: string, name: stri
       },
     }
   );
+}
+
+export async function setRiskProfile(userId: ObjectId, riskProfile: RiskProfile) {
+  await (await users()).updateOne({ _id: userId }, { $set: { riskProfile } });
 }
 
 export async function setPassword(userId: ObjectId, passwordHash: string) {

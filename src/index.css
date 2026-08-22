@@ -402,3 +402,111 @@ a { color: inherit; }
   height: 100% !important;
 }
 .tradingview-widget-copyright { display: none !important; }
+
+/* ── YOUR SITUATION (risk profile) ──────────────────────────────
+   Same rules as the rest of the product: hairlines not shadows,
+   3px radius, no colour used decoratively. A selected answer is
+   marked by an ink rule and a tick, not by a filled blue box. */
+.rp-back {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--color-graphite);
+}
+.rp-q { margin-top: 56px; max-width: 720px; }
+.rp-q-title {
+  font-size: 1.375rem; line-height: 1.25; margin-top: 12px; max-width: 28ch;
+}
+.rp-q-sub {
+  font-size: 0.9375rem; line-height: 1.6; color: var(--color-graphite);
+  margin-top: 10px; max-width: 58ch;
+}
+.rp-choices { margin-top: 20px; display: grid; gap: 8px; }
+
+.rp-choice {
+  display: flex; align-items: flex-start; gap: 12px; width: 100%;
+  text-align: left; cursor: pointer;
+  background: var(--color-card);
+  border: 1px solid var(--color-rule);
+  border-radius: 3px;
+  padding: 14px 16px;
+  transition: border-color var(--dur-instant) var(--ease-out),
+    background var(--dur-instant) var(--ease-out);
+}
+.rp-choice:hover { border-color: var(--color-graphite); }
+.rp-choice.is-on { border-color: var(--color-ink); background: #fff; }
+
+.rp-tick {
+  flex-shrink: 0; width: 18px; height: 18px; margin-top: 2px;
+  border: 1px solid var(--color-rule); border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--color-paper);
+}
+.rp-choice.is-on .rp-tick {
+  background: var(--color-ink); border-color: var(--color-ink);
+}
+.rp-choice-label { display: block; font-size: 1rem; line-height: 1.4; }
+.rp-choice-note {
+  display: block; font-size: 0.8125rem; line-height: 1.5;
+  color: var(--color-graphite); margin-top: 4px;
+}
+
+.rp-amount {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--color-rule); border-radius: 3px;
+  background: var(--color-card);
+  padding: 0 14px; height: 52px; max-width: 260px;
+  transition: border-color var(--dur-instant) var(--ease-out);
+}
+.rp-amount:focus-within { border-color: var(--color-ink); }
+.rp-rupee { font-size: 1.125rem; color: var(--color-graphite); }
+.rp-input {
+  border: none; background: none; outline: none;
+  font-size: 1.25rem; width: 100%; color: var(--color-ink);
+}
+.rp-echo {
+  font-size: 0.875rem; line-height: 1.6; color: var(--color-graphite);
+  margin-top: 12px; max-width: 54ch;
+}
+.rp-error {
+  margin-top: 28px; font-size: 0.9375rem; line-height: 1.55;
+  padding-left: 12px; border-left: 2px solid var(--color-madder);
+}
+.rp-save { padding: 14px 30px; font-size: 0.875rem; }
+.rp-save:disabled { opacity: 0.45; cursor: not-allowed; }
+.rp-fine {
+  margin-top: 48px; padding-top: 20px; max-width: 620px;
+  border-top: 1px solid var(--color-rule);
+  font-size: 0.8125rem; line-height: 1.6; color: var(--color-graphite);
+}
+
+/* ── SITUATION CHECK ────────────────────────────────────────────
+   A finding that breaks a stated limit is marked with a madder rule,
+   the same colour the app uses for losses everywhere else. A note is
+   graphite. No icons, no coloured panels — the text is the content. */
+.sc-invite {
+  font-size: 1.0625rem; line-height: 1.7; max-width: 62ch; margin-top: 16px;
+  color: var(--color-graphite);
+}
+.sc-verdict {
+  font-size: var(--text-head); line-height: 1.2; margin-top: 14px; max-width: 26ch;
+}
+.sc-list { list-style: none; margin: 32px 0 0; padding: 0; max-width: 68ch; display: grid; gap: 20px; }
+.sc-item { display: flex; gap: 14px; align-items: stretch; }
+.sc-mark {
+  flex-shrink: 0; width: 2px; background: var(--color-rule); border-radius: 1px;
+}
+.sc-item.is-hard .sc-mark { background: var(--color-madder); }
+.sc-text { font-size: 1rem; line-height: 1.65; }
+.sc-item.is-hard .sc-text { color: var(--color-ink); }
+.sc-item:not(.is-hard) .sc-text { color: var(--color-graphite); }
+.sc-fine {
+  margin-top: 32px; padding-top: 18px; max-width: 62ch;
+  border-top: 1px solid var(--color-rule);
+  font-size: 0.8125rem; line-height: 1.6; color: var(--color-graphite);
+}
+.sc-link {
+  background: none; border: none; padding: 0; font: inherit;
+  color: var(--color-ink); text-decoration: underline; text-underline-offset: 2px;
+  cursor: pointer;
+}
+.sc-link:hover { color: var(--color-madder); }

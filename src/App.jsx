@@ -7,6 +7,7 @@ import Computing from './screens/Computing.jsx';
 import Results from './screens/Results.jsx';
 import Methodology from './screens/Methodology.jsx';
 import TrackRecord from './screens/TrackRecord.jsx';
+import RiskProfile from './screens/RiskProfile.jsx';
 import ConversationPanel from './components/ConversationPanel.jsx';
 import PlumbCompanion from './components/PlumbCompanion.jsx';
 import { StaleCacheStrip, FailedState, EmptyState } from './components/States.jsx';
@@ -41,6 +42,11 @@ export default function App() {
      answer arrives makes the header flicker for someone who is in
      fact signed in. */
   const [me, setMe] = useState(null);
+  /* The user's stated constraints, carried alongside the session so
+     every result can be checked against them without another
+     request. Null means "not answered", which is a legitimate state
+     the results screen handles by inviting rather than nagging. */
+  const [profile, setProfile] = useState(null);
 
   /* Kick off the three requests as soon as the user submits, then
      let the computing screen play its sequence over the top. The
@@ -170,6 +176,10 @@ export default function App() {
       if (cancelled) return;
       const user = res?.user ?? null;
       setMe(user ?? false);
+      /* It arrives with the session — /api/auth/me already reads the
+         account row, so asking a second endpoint for a field that was
+         already in hand would be a wasted round trip on every load. */
+      setProfile(user?.riskProfile ?? null);
       if (!user) return;
 
       const url = new URL(window.location.href);
@@ -318,10 +328,30 @@ export default function App() {
           onAsk={() => { setSeedQuestion(null); setAskOpen(true); }}
           onHome={home}
           onRecord={() => navigate('record')}
+          onProfile={() => navigate('profile')}
           me={me}
           onSignOut={signOut}
         />
         <TrackRecord onBack={() => navigate('')} />
+        <Footer market={market} />
+      </>
+    );
+  }
+
+  if (route === 'profile') {
+    return (
+      <>
+        <Masthead
+          quote={quoteForChrome}
+          onMethodology={onMethodology}
+          onAsk={() => { setSeedQuestion(null); setAskOpen(true); }}
+          onHome={home}
+          onRecord={() => navigate('record')}
+          onProfile={() => navigate('profile')}
+          me={me}
+          onSignOut={signOut}
+        />
+        <RiskProfile onBack={() => navigate('')} onSaved={setProfile} />
         <Footer market={market} />
       </>
     );
@@ -336,6 +366,7 @@ export default function App() {
           onAsk={() => { setSeedQuestion(null); setAskOpen(true); }}
           onHome={home}
           onRecord={() => navigate('record')}
+          onProfile={() => navigate('profile')}
           me={me}
           onSignOut={signOut}
         />
@@ -353,6 +384,7 @@ export default function App() {
         onAsk={() => { setSeedQuestion(null); setAskOpen(true); }}
         onHome={home}
         onRecord={() => navigate('record')}
+        onProfile={() => navigate('profile')}
         me={me}
         onSignOut={signOut}
       />
@@ -387,7 +419,9 @@ export default function App() {
         />
       )}
 
-      {!failed && phase === 'results' && run && <Results run={run} />}
+      {!failed && phase === 'results' && run && (
+        <Results run={run} profile={profile} onEditProfile={() => navigate('profile')} />
+      )}
 
       {!failed && phase === 'results' && !run && <EmptyState onHome={home} />}
 

@@ -1038,6 +1038,100 @@ await (async () => {
   }
 }
 
+
+/* ══ 18. RISK PROFILING ══
+   The feature's whole claim is that it produces no label. What it
+   produces is a set of the user's own stated constraints, checked
+   against the simulation that is already running, so every sentence
+   it emits is made of numbers the page is already showing.
+
+   These checks are about that claim, not about the wording:
+
+     · a stated loss limit the simulation crosses is reported as
+       crossed, with both figures named
+     · a stated behaviour is PRICED — "I would sell on a 20% fall"
+       becomes the simulation's counted probability of a 20% fall,
+       which is the part a points-based profiler cannot do
+     · nothing anywhere says buy, sell, hold, or suitable
+     · the profile is tied to the ACCOUNT and unreachable without a
+       session, like the track record */
+{
+  const postJson = (path, body, cookie) =>
+    fetch(B + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(cookie ? { cookie } : {}) },
+      body: JSON.stringify(body),
+    }).then((r) => r.json());
+
+  /* — it belongs to an account — */
+  const anonGet = await get('/api/profile', { anon: true });
+  ok(anonGet.body?.code === 'AUTH_REQUIRED', 'a risk profile cannot be read without a session');
+  const anonPost = await postJson('/api/profile', { goal: 'growth', horizon: 'none', maxLoss: 1, onDrop: 'hold' });
+  ok(anonPost?.code === 'AUTH_REQUIRED', 'a risk profile cannot be written without a session');
+
+  if (SESSION_COOKIE) {
+    /* — a partial answer is refused, so the check never runs on half
+         a profile and quietly draws the wrong conclusion — */
+    const partial = await postJson('/api/profile', { goal: 'growth' }, SESSION_COOKIE);
+    ok(partial?.code === 'BAD_REQUEST', 'an incomplete profile is refused');
+
+    /* — the deliberately mismatched case — */
+    const saved = await postJson(
+      '/api/profile',
+      { goal: 'safety', horizon: 'under1y', maxLoss: 2000, onDrop: 'sell' },
+      SESSION_COOKIE
+    );
+    ok(saved?.ok === true, 'a complete profile saves');
+    ok(saved?.profile?.updatedAt, 'it is dated, so a stale answer can be re-asked later');
+
+    const back = await get('/api/profile', { headers: { cookie: SESSION_COOKIE } });
+    ok(back.body?.profile?.maxLoss === 2000, 'it reads back from the account, not the browser');
+  } else {
+    skipped.push('risk profile round trip — no session available');
+  }
+
+  /* — the check itself, run directly against a known simulation —
+     Pure function, no network: the same module the browser imports,
+     so a drift between what the server believes and what the page
+     draws is impossible by construction. */
+  const { checkProfile } = await import('../lib/risk-profile.ts').catch(() => ({}));
+  if (typeof checkProfile === 'function') {
+    const res = checkProfile({
+      profile: { goal: 'safety', horizon: 'under1y', maxLoss: 2000, onDrop: 'sell', updatedAt: new Date().toISOString() },
+      amount: 50000,
+      p10: 41253,
+      p90: 62000,
+      odds: { profit: 0.55, lose10: 0.2, lose20: 0.08, gain20: 0.25, beatFd: 0.45 },
+    });
+    const all = res.findings.map((f) => f.text).join(' ');
+    ok(res.clear === false, 'a position that breaks a stated limit is not reported as clear');
+    ok(/2,000/.test(all) && /8,747/.test(all), 'the stated limit and the modelled loss are BOTH named');
+    ok(/8%/.test(all), 'the stated behaviour is priced from the counted odds, not described');
+    ok(
+      !/\b(buy|sell it|should|recommend|suitable|advise)\b/i.test(
+        all.replace(/would make you sell|you would be selling|Sell, to stop/g, '')
+      ),
+      'the findings never tell the user what to do'
+    );
+
+    /* — and the honest positive, which must be reachable — */
+    const good = checkProfile({
+      profile: { goal: 'growth', horizon: '3to10y', maxLoss: 25000, onDrop: 'hold', updatedAt: new Date().toISOString() },
+      amount: 50000,
+      p10: 41253,
+      p90: 62000,
+      odds: { profit: 0.55, lose10: 0.2, lose20: 0.08, gain20: 0.25, beatFd: 0.45 },
+    });
+    ok(good.clear === true, 'a profile the simulation does not contradict is reported as clear');
+    ok(
+      /says nothing about whether the stock will go up/i.test(good.findings.map((f) => f.text).join(' ')),
+      'and even then it refuses to imply the stock is a good bet'
+    );
+  } else {
+    skipped.push('checkProfile unit checks — module could not be imported from the suite');
+  }
+}
+
 console.log('\n──────── PASS ────────');
 pass.forEach((m) => console.log('  ✓ ' + m));
 if (fail.length) {

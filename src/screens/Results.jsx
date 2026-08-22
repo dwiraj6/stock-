@@ -14,13 +14,14 @@ import NewsModule from '../modules/NewsModule.jsx';
 import SipModule from '../modules/SipModule.jsx';
 import CalibrationModule from '../modules/CalibrationModule.jsx';
 import VerdictModule from '../modules/VerdictModule.jsx';
+import SituationCheck from '../modules/SituationCheck.jsx';
 import { ThinDataNote } from '../components/States.jsx';
 import { useEffect, useState } from 'react';
 import { useReducedMotion, useSettled } from '../lib/hooks.js';
 import { getCalibration } from '../lib/client.js';
 import { adaptCalibration } from '../lib/adapt.js';
 
-export default function Results({ run }) {
+export default function Results({ run, profile, onEditProfile }) {
   const reduced = useReducedMotion();
   const [calibration, setCalibration] = useState(null);
   const [probability, setProbability] = useState(null);
@@ -92,6 +93,17 @@ export default function Results({ run }) {
           calibration={calibration}
           probability={probability}
           factors={factors}
+          animate={animate}
+        />
+
+        {/* Placed immediately before the verdict, because it is the
+            same question asked of the reader instead of the stock:
+            the modules above say what the position does, this one
+            says what that means for the situation they described. */}
+        <SituationCheck
+          run={run}
+          profile={profile}
+          onEdit={onEditProfile}
           animate={animate}
         />
 
