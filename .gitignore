@@ -36,3 +36,4 @@ skills-lock.json
 # os
 .DS_Store
 Thumbs.db
+scripts/_*.mjs
