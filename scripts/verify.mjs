@@ -1183,10 +1183,11 @@ await (async () => {
     );
 
   await p.goto(B + '/', { waitUntil: 'domcontentloaded' });
-  ok(
-    (await p.locator('.lp-header .sk').count()) > 0,
-    'the landing header reserves its width while the session probe is in flight'
-  );
+  const sawHeaderSkeleton = await p
+    .waitForSelector('.lp-header .sk', { timeout: 8000 })
+    .then(() => true)
+    .catch(() => false);
+  ok(sawHeaderSkeleton, 'the landing header reserves its width while the session probe is in flight');
   const landingCls = await measureCls();
   ok(landingCls < 0.1, `the landing page does not jump (CLS ${landingCls})`);
 
@@ -1200,11 +1201,17 @@ await (async () => {
     }]);
 
     await p.goto(B + '/app#record', { waitUntil: 'domcontentloaded' });
-    await p.waitForTimeout(400);
-    ok(
-      (await p.locator('[role="status"]').count()) > 0,
-      'the track record shows a skeleton while its two fetches are in flight'
-    );
+    /* waitForSelector, not count(). count() does not wait, so a fixed
+       400ms sleep was really a bet on how long hydration takes on the
+       machine running the suite — it lost about half the time, and
+       the very next check passed against the same element because
+       innerText() DOES wait. A flaky check is worse than no check:
+       it teaches people to re-run until green. */
+    const sawSkeleton = await p
+      .waitForSelector('[role="status"]', { timeout: 8000 })
+      .then(() => true)
+      .catch(() => false);
+    ok(sawSkeleton, 'the track record shows a skeleton while its two fetches are in flight');
     ok(
       (await p.locator('[role="status"] .sr-only').first().innerText()).length > 0,
       'and announces itself once to a screen reader rather than a dozen empty boxes'
@@ -1213,8 +1220,11 @@ await (async () => {
     ok(recordCls < 0.1, `the track record does not jump when its data lands (CLS ${recordCls})`);
 
     await p.goto(B + '/app#profile', { waitUntil: 'domcontentloaded' });
-    await p.waitForTimeout(400);
-    ok((await p.locator('.sk').count()) > 0, 'the situation screen reserves its four question blocks');
+    const sawProfileSkeleton = await p
+      .waitForSelector('.sk', { timeout: 8000 })
+      .then(() => true)
+      .catch(() => false);
+    ok(sawProfileSkeleton, 'the situation screen reserves its four question blocks');
     const profileCls = await measureCls();
     ok(profileCls < 0.1, `the situation screen does not jump (CLS ${profileCls})`);
   } else {
