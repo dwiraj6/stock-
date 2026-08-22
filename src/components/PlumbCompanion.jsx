@@ -24,13 +24,39 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useBreakpoint, useReducedMotion } from '../lib/hooks.js';
+import { observe } from '../lib/observe.js';
 
-export default function PlumbCompanion({ open, onOpen, symbol, answering, answeredAt }) {
+export default function PlumbCompanion({ open, onOpen, symbol, answering, answeredAt, run }) {
   const reduced = useReducedMotion();
   const bp = useBreakpoint();
   const [mounted, setMounted] = useState(false);
   const [swing, setSwing] = useState(0);
+  const [noticeShown, setNoticeShown] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
   const firstAnswer = useRef(true);
+
+  /* The observation is computed from the payload already on screen —
+     never generated. It cannot contradict the charts beside it, it
+     arrives instantly, and it costs none of the 20-requests-per-day
+     Gemini budget, which a greeting on every page load would spend
+     before anyone asked a real question. */
+  const notice = observe(run);
+
+  /* It appears once, a beat after the page settles, and stays until
+     dismissed or opened. It does not reappear, pulse or re-animate:
+     the brief's one-moment-then-stillness rule applies to the bob as
+     much as to the charts. */
+  useEffect(() => {
+    if (!notice || dismissed) return;
+    const t = window.setTimeout(() => setNoticeShown(true), reduced ? 0 : 3200);
+    return () => window.clearTimeout(t);
+  }, [notice, dismissed, reduced]);
+
+  // A new stock is a new observation.
+  useEffect(() => {
+    setNoticeShown(false);
+    setDismissed(false);
+  }, [symbol]);
 
   // Dock once, shortly after the results settle.
   useEffect(() => {
@@ -62,23 +88,95 @@ export default function PlumbCompanion({ open, onOpen, symbol, answering, answer
      button is the affordance there. */
   if (open || bp === 'sm') return null;
 
+  const showNotice = noticeShown && notice && !dismissed && !answering;
+
   const H = 46;
   const W = 26;
   const cx = W / 2;
   const lineLen = H - 13;
 
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="pl-companion"
-      aria-label={`Ask about ${symbol ?? 'this stock'}`}
-      title={`Ask about ${symbol ?? 'this stock'}`}
+    <div
       style={{
         position: 'fixed',
         right: 28,
         bottom: 28,
         zIndex: 50,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        gap: 12,
+        maxWidth: 340,
+      }}
+    >
+      {/* ── what the bob noticed ── */}
+      {showNotice && (
+        <div
+          style={{
+            background: 'var(--color-card)',
+            border: '1px solid var(--color-rule)',
+            borderRight: '2px solid var(--color-ink)',
+            padding: '16px 18px',
+            animation: reduced ? 'none' : 'pl-fade-up 340ms var(--ease-out) both',
+            '--pl-rise': '8px',
+          }}
+        >
+          <p
+            className="font-body"
+            style={{ fontSize: '0.9375rem', lineHeight: 1.55, color: 'var(--color-ink)', margin: 0 }}
+          >
+            {notice.text}
+          </p>
+          <div className="flex items-center" style={{ gap: 14, marginTop: 12 }}>
+            <button
+              type="button"
+              onClick={() => onOpen(notice.followUp)}
+              className="font-data"
+              style={{
+                background: 'var(--color-ink)',
+                color: 'var(--color-paper)',
+                border: 'none',
+                borderRadius: 3,
+                padding: '7px 12px',
+                fontSize: '0.75rem',
+                letterSpacing: '0.06em',
+                cursor: 'pointer',
+              }}
+            >
+              {notice.followUp}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setDismissed(true);
+                setNoticeShown(false);
+              }}
+              className="font-data"
+              aria-label="Dismiss"
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                fontSize: '0.75rem',
+                color: 'var(--color-graphite)',
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+              }}
+            >
+              Not now
+            </button>
+          </div>
+        </div>
+      )}
+
+    <button
+      type="button"
+      onClick={() => onOpen()}
+      className="pl-companion"
+      aria-label={`Ask about ${symbol ?? 'this stock'}`}
+      title={`Ask about ${symbol ?? 'this stock'}`}
+      style={{
         background: 'var(--color-paper)',
         border: '1px solid var(--color-rule)',
         borderRadius: 3,
@@ -134,5 +232,6 @@ export default function PlumbCompanion({ open, onOpen, symbol, answering, answer
         {answering ? 'Thinking' : 'Ask'}
       </span>
     </button>
+    </div>
   );
 }

@@ -148,6 +148,42 @@ HDFCBANK   kept=8  fetched=110  tooOld=81  offTopic=10  dupes=1  trimmed=10
 Age, not relevance, is the dominant filter. A rolled-up figure would
 have implied 102 headlines were rejected as off-topic when 10 were.
 
+## The plumb bob notices things
+
+After the results settle, the docked bob raises one observation about
+*this* page — the widest thing it found — and offers a follow-up that
+opens the chat already on that thread.
+
+The observations are **computed from the payload, never generated**,
+for three reasons in order of weight:
+
+1. **They cannot be wrong.** Each is a template over numbers already
+   on screen, so the bob can never contradict the chart beside it.
+2. **They cost nothing.** The free Gemini tier allows 20 requests per
+   model per day; a generated greeting on every page load would spend
+   that during one demo and leave none for real questions.
+3. **They are instant.** A generated greeting arrives seconds late,
+   which is when a greeting stops being welcome.
+
+Candidates are weighted, so the bob says the single most interesting
+true thing rather than the first thing in a list — TMCV gets *"the
+spread covers 100% of what you'd put in"*, RELIANCE gets *"spreading
+this across twelve months cuts the worst case by 35%"*.
+
+It appears once, and stays until dismissed or opened. It does not
+pulse, reappear or re-animate.
+
+### A number the model invented
+
+Wiring this up caught a real fault. Asked to explain the SIP, the chat
+said *"₹10,000 every month"* for a ₹50,000 stake that splits into
+₹4,167. The context held the total and the outcome percentiles but not
+the instalment, so the model derived one — and derived it wrong.
+
+The instalment is now in the context, and the system prompt gained a
+rule above the formatting ones: **never derive a number.** Anything
+the model has to compute, it will invent instead.
+
 ## Your track record
 
 Every measurement is logged the moment it is made — the stock, the

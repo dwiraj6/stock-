@@ -107,7 +107,7 @@ function parseAnswer(src) {
   return out;
 }
 
-export default function ConversationPanel({ open, onClose, run, onAnswering, onAnswered }) {
+export default function ConversationPanel({ open, onClose, run, seedQuestion, onSeedConsumed, onAnswering, onAnswered }) {
   const bp = useBreakpoint();
   const reduced = useReducedMotion();
   const small = bp === 'sm';
@@ -173,6 +173,21 @@ export default function ConversationPanel({ open, onClose, run, onAnswering, onA
     },
     [run, thinking, turns, onAnswering, onAnswered]
   );
+
+  /* Opened from the bob's observation: ask its follow-up straight
+     away, so the panel arrives already in the middle of the thread
+     the user tapped rather than at an empty prompt. Fires once. */
+  const seeded = useRef(false);
+  useEffect(() => {
+    if (!open) {
+      seeded.current = false;
+      return;
+    }
+    if (seeded.current || !seedQuestion || turns.length > 0) return;
+    seeded.current = true;
+    onSeedConsumed?.();
+    ask(seedQuestion);
+  }, [open, seedQuestion, turns.length, ask, onSeedConsumed]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;

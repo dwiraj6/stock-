@@ -238,7 +238,26 @@ const get = async (path, init) => {
   ok(empty.body.track.total === 0, 'an unknown identity gets an empty record, not an error');
 }
 
-/* ══ 13. AIRPLANE MODE — the whole point of the cache ══ */
+/* ══ 13. THE CHAT CANNOT DERIVE A NUMBER ══
+   The context now carries the monthly instalment. It did not, and
+   the model filled the gap by stating "10,000 every month" for a
+   50,000 stake that splits into 4,167. Anything the model has to
+   derive, it will invent instead. */
+{
+  const r = await fetch(B + '/api/chat', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ symbol: 'RELIANCE', amount: 50000, conviction: 72,
+      question: 'How much per month is the SIP?' }),
+  });
+  const text = await r.text();
+  const hasRight = /4,?167/.test(text);
+  const hasWrong = /10,?000 (a|per|every) month|month.{0,12}10,?000/i.test(text);
+  ok(hasRight || !/month/i.test(text),
+     `the monthly instalment is stated from context, not derived${hasRight ? ' (4,167)' : ''}`);
+  ok(!hasWrong, 'no fabricated instalment');
+}
+
+/* ══ 14. AIRPLANE MODE — the whole point of the cache ══ */
 {
   const browser = await chromium.launch({ channel: 'chrome' });
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 } });

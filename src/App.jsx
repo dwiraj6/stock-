@@ -22,6 +22,10 @@ export default function App() {
   const [failed, setFailed] = useState(null);
   const [staleDismissed, setStaleDismissed] = useState(false);
   const [askOpen, setAskOpen] = useState(false);
+  /* A question the bob's observation handed over, asked the moment
+     the panel opens so the conversation starts mid-thread rather
+     than at a blank prompt. */
+  const [seedQuestion, setSeedQuestion] = useState(null);
   const [market, setMarket] = useState(null);
   // Bumped when an answer finishes, so the bob can nudge once.
   const [answeredAt, setAnsweredAt] = useState(null);
@@ -209,7 +213,7 @@ export default function App() {
         <Masthead
           quote={quoteForChrome}
           onMethodology={onMethodology}
-          onAsk={() => setAskOpen(true)}
+          onAsk={() => { setSeedQuestion(null); setAskOpen(true); }}
           onHome={home}
           onRecord={() => navigate('record')}
         />
@@ -225,7 +229,7 @@ export default function App() {
         <Masthead
           quote={quoteForChrome}
           onMethodology={onMethodology}
-          onAsk={() => setAskOpen(true)}
+          onAsk={() => { setSeedQuestion(null); setAskOpen(true); }}
           onHome={home}
           onRecord={() => navigate('record')}
         />
@@ -240,7 +244,7 @@ export default function App() {
       <Masthead
         quote={quoteForChrome}
         onMethodology={onMethodology}
-        onAsk={() => setAskOpen(true)}
+        onAsk={() => { setSeedQuestion(null); setAskOpen(true); }}
         onHome={home}
         onRecord={() => navigate('record')}
       />
@@ -284,15 +288,24 @@ export default function App() {
           {/* The plumb bob docks here and becomes the way in. */}
           <PlumbCompanion
             open={askOpen}
-            onOpen={() => setAskOpen(true)}
+            onOpen={(q) => {
+              setSeedQuestion(typeof q === 'string' ? q : null);
+              setAskOpen(true);
+            }}
             symbol={run.quote.ticker}
             answering={answering}
             answeredAt={answeredAt}
+            run={run}
           />
           <ConversationPanel
             open={askOpen}
-            onClose={() => setAskOpen(false)}
+            onClose={() => {
+              setAskOpen(false);
+              setSeedQuestion(null);
+            }}
             run={run}
+            seedQuestion={seedQuestion}
+            onSeedConsumed={() => setSeedQuestion(null)}
             onAnswering={setAnswering}
             onAnswered={() => setAnsweredAt(Date.now())}
           />

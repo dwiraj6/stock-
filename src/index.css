@@ -350,6 +350,11 @@ button,
 .pl-button:hover:not(:disabled) { background: #000 !important; }
 .pl-button:active:not(:disabled) { transform: translateY(1px); }
 
+/* The bob's observation card. Its right edge is a 2px ink rule — the
+   only other 2px border in the product marks the discounting panel,
+   and both mean the same thing: this is the app telling you something
+   you did not ask for. */
+
 /* ── The docked plumb bob ──
    Hover deepens the ground and the label; it does NOT lift, scale or
    glow. The weight stays exactly where it hangs, because a plumb bob
