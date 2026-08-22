@@ -171,9 +171,19 @@ export async function POST(req: NextRequest) {
        dead model's timeout on every cold start. */
     await loadSharedCooldowns();
 
+    /* A cooldown exists to avoid PAYING a dead model's timeout when a
+       live one is available. If every model in the chain is cooling
+       down there is no live one to protect, so skipping them all
+       guarantees a failure that trying could not have made worse.
+       Better to pay one timeout than to refuse to try. */
+    const allCoolingDown = MODEL_CHAIN.every((m) => isCoolingDown(m));
+    if (allCoolingDown) {
+      console.warn('[stockshishya] chat: every model is cooling down — trying anyway');
+    }
+
     for (const modelName of MODEL_CHAIN) {
       // Skip a model we already know is out of quota.
-      if (isCoolingDown(modelName)) {
+      if (!allCoolingDown && isCoolingDown(modelName)) {
         quotaHits++;
         continue;
       }
@@ -307,8 +317,17 @@ ${contextBlock(ctx)}`.length;
                end — measured: 25 chars, then 327 in a single step. */
             'X-Accel-Buffering': 'no',
             'Transfer-Encoding': 'chunked',
-            'X-stockಶಿಷ್ಯ-Model': modelName,
-            'X-stockಶಿಷ್ಯ-Grounded': 'true',
+            /* ASCII, and it must stay ASCII. The rename to stockಶಿಷ್ಯ
+               rewrote these two header NAMES along with everything
+               else, which put ಶ (U+0CB6) at index 7 of
+               `X-stockಶಿಷ್ಯ-Model`. HTTP header names and values are
+               ByteStrings — Latin-1 — so setting them threw
+               "Cannot convert argument to a ByteString" before a
+               single request reached Gemini. Every model in the chain
+               failed identically, which read as "the chat service did
+               not respond" when the service was perfectly fine. */
+            'X-Shishya-Model': modelName,
+            'X-Shishya-Grounded': 'true',
           },
         });
       } catch (e) {
@@ -350,11 +369,20 @@ ${contextBlock(ctx)}`.length;
       );
     }
 
+    /* Say what actually broke. "The chat service did not respond"
+       sent someone hunting a network fault for an hour when the real
+       cause was a Kannada character in an HTTP header name — the
+       service was never contacted at all. The upstream message is
+       surfaced because a TypeError and a 503 need completely
+       different fixes. */
+    const reason = lastErr instanceof Error ? lastErr.message : String(lastErr ?? '');
     console.error('[stockshishya] all chat models failed:', lastErr);
     return fail(
       'UPSTREAM_UNAVAILABLE',
-      'The chat service did not respond.',
-      'The rest of the page is unaffected — the score, the simulation and the charts all still work.'
+      'The assistant could not be reached.',
+      reason
+        ? `${reason.slice(0, 140)} — the rest of the page is unaffected.`
+        : 'The rest of the page is unaffected — the score, the simulation and the charts all still work.'
     );
   });
 }
