@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Masthead, Footer } from './components/Chrome.jsx';
 import Entry from './screens/Entry.jsx';
 import Computing from './screens/Computing.jsx';
@@ -12,7 +12,13 @@ import PlumbCompanion from './components/PlumbCompanion.jsx';
 import { StaleCacheStrip, FailedState, EmptyState } from './components/States.jsx';
 import { useHashRoute } from './lib/hooks.js';
 import * as api from './lib/client.js';
+import { getMe, adoptAnonymous, logOut } from './lib/auth-client.js';
 import { adaptStock, adaptSim, adaptScore } from './lib/adapt.js';
+
+/* Where an interrupted measurement waits while the user signs in.
+   sessionStorage, not localStorage: it belongs to this tab and this
+   visit, and should not still be sitting there tomorrow. */
+const PARKED = 'plumbline.parked-run';
 
 export default function App() {
   const [route, navigate] = useHashRoute();
@@ -30,6 +36,11 @@ export default function App() {
   // Bumped when an answer finishes, so the bob can nudge once.
   const [answeredAt, setAnsweredAt] = useState(null);
   const [answering, setAnswering] = useState(false);
+  /* null while unknown, then the user object or false. The three
+     states matter: rendering "Sign in" during the moment before the
+     answer arrives makes the header flicker for someone who is in
+     fact signed in. */
+  const [me, setMe] = useState(null);
 
   /* Kick off the three requests as soon as the user submits, then
      let the computing screen play its sequence over the top. The
@@ -37,6 +48,30 @@ export default function App() {
      waits on a request that has already finished, and never cuts a
      request short. */
   const start = useCallback(async ({ symbol, amount, conviction }) => {
+    /* ── THE GATE ──
+       You can search a stock, size a position and commit your number
+       without an account. Running the analysis is where it stops,
+       because that is the moment the measurement gets SEALED: your
+       odds and the model's are written down together, before the
+       outcome exists, and settled twelve months later. A record like
+       that is worth nothing if it cannot be found again, so this is
+       the one action that needs somewhere durable to put it.
+
+       The half-finished measurement is parked first. Losing a
+       carefully chosen conviction to a login redirect would be its
+       own small betrayal — you come back to the same three values
+       and it runs by itself. */
+    if (me === false) {
+      try {
+        sessionStorage.setItem(PARKED, JSON.stringify({ symbol, amount, conviction }));
+      } catch {
+        /* Private mode. The sign-in still works; the entry screen is
+           simply blank on the way back. */
+      }
+      window.location.assign(`/login?next=${encodeURIComponent('/app')}`);
+      return;
+    }
+
     setFailed(null);
     setPending({ symbol, amount, conviction, ready: null });
     setPhase('computing');
@@ -102,7 +137,63 @@ export default function App() {
       asOfLabel: stockRes.asOfLabel,
       meta: stockRes.meta,
     });
+  }, [me]);
+
+  /* ── session, adoption, and the parked measurement ──
+     One effect, in order, because each step depends on the last:
+
+       1. ask the server who this is
+       2. if we have just come back from Google, offer this browser's
+          anonymous history to the account — the redirect could not
+          carry localStorage, so the client has to hand it over
+       3. if a measurement was parked before the sign-in, put it back
+          and run it
+
+     Step 3 is what makes the gate feel like a pause rather than a
+     wall: the number you chose before signing in is the number that
+     gets sealed after. */
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const res = await getMe();
+      if (cancelled) return;
+      const user = res?.user ?? null;
+      setMe(user ?? false);
+      if (!user) return;
+
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('adopt') === '1') {
+        await adoptAnonymous().catch(() => undefined);
+        url.searchParams.delete('adopt');
+        // Tidy the address bar without adding a history entry.
+        window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+      }
+
+      let parked = null;
+      try {
+        const raw = sessionStorage.getItem(PARKED);
+        if (raw) { parked = JSON.parse(raw); sessionStorage.removeItem(PARKED); }
+      } catch { /* private mode — nothing to resume */ }
+
+      if (!cancelled && parked?.symbol?.symbol) startRef.current?.(parked);
+    })();
+    return () => { cancelled = true; };
   }, []);
+
+  const signOut = useCallback(async () => {
+    await logOut().catch(() => undefined);
+    /* A full reload rather than clearing state in place. Signing out
+       has to leave nothing behind — a stale run still on screen after
+       it would be showing one account's measurement to whoever signs
+       in next on this machine. */
+    window.location.assign('/');
+  }, []);
+
+  /* start() is recreated whenever `me` changes, and the effect above
+     must not re-run for that — it would re-adopt and re-resume. A
+     ref keeps the effect pointing at the current one. */
+  const startRef = useRef(null);
+  useEffect(() => { startRef.current = start; }, [start]);
 
   /* The computing screen calls this when its sequence finishes. If
      the data has not landed yet it waits for it rather than showing
@@ -216,6 +307,8 @@ export default function App() {
           onAsk={() => { setSeedQuestion(null); setAskOpen(true); }}
           onHome={home}
           onRecord={() => navigate('record')}
+          me={me}
+          onSignOut={signOut}
         />
         <TrackRecord onBack={() => navigate('')} />
         <Footer market={market} />
@@ -232,6 +325,8 @@ export default function App() {
           onAsk={() => { setSeedQuestion(null); setAskOpen(true); }}
           onHome={home}
           onRecord={() => navigate('record')}
+          me={me}
+          onSignOut={signOut}
         />
         <Methodology onBack={() => navigate('')} />
         <Footer market={market} />
@@ -247,6 +342,8 @@ export default function App() {
         onAsk={() => { setSeedQuestion(null); setAskOpen(true); }}
         onHome={home}
         onRecord={() => navigate('record')}
+        me={me}
+        onSignOut={signOut}
       />
 
       {showStale && (

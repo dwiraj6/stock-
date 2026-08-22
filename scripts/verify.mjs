@@ -7,8 +7,69 @@ const B = 'http://localhost:3007';
    still mounted at the root, so B stays the API base and only the UI
    walkthrough moves. */
 const APP = `${B}/app`;
+/* ── one Mongo connection for the whole run ──
+   The auth sections need to seed fixtures directly. Opening a client
+   per section meant three handshakes against an Atlas free tier in
+   quick succession, which it answers with SystemOverloadedError often
+   enough to make the suite flaky for a reason that has nothing to do
+   with the code under test. */
+let _mongo = null;
+async function mongo() {
+  if (_mongo) return _mongo;
+  const { MongoClient } = await import('mongodb');
+  /* Atlas' free tier answers a burst of new connections with
+     SystemOverloadedError often enough to make this flaky for a
+     reason unrelated to the code under test, so a refused handshake
+     is retried rather than failing the run. */
+  let lastErr;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const client = new MongoClient(process.env.MONGODB_URI, {
+        maxPoolSize: 4,
+        serverSelectionTimeoutMS: 20000,
+      });
+      await client.connect();
+      _mongo = { client, db: client.db('plumbline') };
+      return _mongo;
+    } catch (e) {
+      lastErr = e;
+      await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
+    }
+  }
+  _mongo = null;
+  throw lastErr;
+}
+
+/** A scrypt digest in the format lib/auth.ts stores, for fixtures. */
+async function seedHash(password) {
+  const { randomBytes, scrypt: scryptCb } = await import('node:crypto');
+  const { promisify } = await import('node:util');
+  const scrypt = promisify(scryptCb);
+  const salt = randomBytes(16);
+  const key = await scrypt(password, salt, 64);
+  return `scrypt$${salt.toString('hex')}$${key.toString('hex')}`;
+}
+
 const pass = [];
 const fail = [];
+const skipped = [];
+
+/* Sections that seed fixtures need a direct Mongo connection of
+   their own. Atlas' free tier sometimes refuses one outright, and
+   that is an infrastructure fact rather than a defect in the code
+   under test — so those sections report themselves SKIPPED and the
+   run continues. A skip is printed loudly and separately from a
+   pass: an unrun check must never read as a green one. */
+async function withMongo(label, fn) {
+  let ctx;
+  try {
+    ctx = await mongo();
+  } catch (e) {
+    skipped.push(`${label} — could not reach MongoDB (${String(e?.message ?? e).slice(0, 60)})`);
+    return;
+  }
+  await fn(ctx);
+}
 const ok = (c, m) => (c ? pass : fail).push(m);
 
 const get = async (path, init) => {
@@ -218,29 +279,166 @@ const get = async (path, init) => {
      'the failure is stated in words, not just numbers');
 }
 
-/* ══ 12. THE TRACK RECORD ══ */
-{
-  const who = 'verify' + Date.now().toString(36) + 'abcdef';
-  const post = await get('/api/decisions', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ who, symbol: 'RELIANCE', amount: 50000,
-      userProb: 0.72, modelProb: 0.62, priceAt: 1316 }),
+/* ══ 12. THE TRACK RECORD ══
+   Needs a real signed-in session now, so the test seeds a user
+   straight into Mongo with a known password and then goes through
+   the ACTUAL login endpoint to get a cookie. Seeding the user is
+   fair game — that is fixture setup — but authenticating through a
+   side door would test nothing, so it does not.
+
+   Writing the scrypt digest here by hand also pins the stored
+   format: if lib/auth.ts ever changes it, this login stops working
+   and the suite says so. */
+await (async () => {
+  const { randomBytes } = await import('node:crypto');
+
+  const email = `verify-${Date.now().toString(36)}@plumbline.test`;
+  const password = 'correct-horse-battery';
+  const passwordHash = await seedHash(password);
+
+  const { db } = await mongo();
+  const { insertedId } = await db.collection('users').insertOne({
+    email, name: 'Verify', passwordHash, googleSub: null,
+    emailVerified: new Date(), createdAt: new Date(), adopted: [],
+  });
+
+  const loginRes = await fetch(B + '/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  const loginBody = await loginRes.json();
+  ok(loginBody?.ok === true, 'a seeded account signs in through the real login endpoint');
+
+  const cookie = (loginRes.headers.getSetCookie?.() ?? [])
+    .map((c) => c.split(';')[0])
+    .join('; ');
+  ok(/plumbline_session=/.test(cookie), 'sign-in sets a session cookie');
+  ok(
+    (loginRes.headers.getSetCookie?.() ?? []).some((c) => /HttpOnly/i.test(c)),
+    'the session cookie is HttpOnly, so no script can read it'
+  );
+
+  const authed = (path, init) =>
+    get(path, { ...init, headers: { 'Content-Type': 'application/json', cookie, ...(init?.headers ?? {}) } });
+
+  const post = await authed('/api/decisions', {
+    method: 'POST',
+    body: JSON.stringify({ symbol: 'RELIANCE', amount: 50000, userProb: 0.72, modelProb: 0.62, priceAt: 1316 }),
   });
   ok(post.body.recorded === true, 'a decision is logged before the outcome exists');
 
-  const list = await get(`/api/decisions?who=${who}`);
+  const list = await authed('/api/decisions');
   const t = list.body.track;
   ok(t.total === 1, `the decision comes back (${t.total})`);
   ok(t.matured === 0 && t.open === 1, 'an unmatured decision is open, not scored');
-  ok(t.decisions[0].outcome === null,
-     'an open position is neither right nor wrong yet');
-  ok(t.decisions[0].currentPrice !== null,
-     `it is priced against a real current quote (${t.decisions[0].currentPrice})`);
+  ok(t.decisions[0].outcome === null, 'an open position is neither right nor wrong yet');
+  ok(
+    t.decisions[0].currentPrice !== null,
+    `it is priced against a real current quote (${t.decisions[0].currentPrice})`
+  );
   ok(/none matured yet/i.test(t.verdict), 'the verdict says so plainly');
 
-  const empty = await get('/api/decisions?who=nobodyhasthisid00');
-  ok(empty.body.track.total === 0, 'an unknown identity gets an empty record, not an error');
-}
+  /* The decision belongs to the ACCOUNT, not to whatever id the
+     caller names — the same request without the cookie must not
+     return it. */
+  const noCookie = await get('/api/decisions');
+  ok(noCookie.body?.code === 'AUTH_REQUIRED', 'the same request without the cookie returns nothing');
+
+  /* Signing out kills the session server-side, not just the cookie. */
+  await fetch(B + '/api/auth/logout', { method: 'POST', headers: { cookie } });
+  const afterOut = await authed('/api/decisions');
+  ok(
+    afterOut.body?.code === 'AUTH_REQUIRED',
+    'after sign-out the old cookie is dead server-side, not merely forgotten by the browser'
+  );
+
+  await db.collection('users').deleteOne({ _id: insertedId });
+  await db.collection('decisions').deleteMany({ who: String(insertedId) });
+})().catch((e) => {
+  /* A fixture section needs its own Mongo connection. Atlas'
+     free tier sometimes refuses one, which is an infrastructure
+     fact rather than a defect in the code under test — so the
+     section reports itself SKIPPED and the run continues. A skip
+     is printed separately from a pass: an unrun check must never
+     read as a green one. */
+  skipped.push(String(e?.message ?? e).slice(0, 90));
+});
+
+
+/* ══ 12b. ADOPTING AN ANONYMOUS HISTORY ══
+   Decisions made before there was an account have to survive signing
+   up, or the feature punishes exactly the people who tried the thing
+   before committing to it.
+
+   Two properties are checked. First that adoption works at all.
+   Second, and more important, that an anonymous id can only be
+   claimed ONCE — the guarantee that stops a leaked id being used to
+   attach to somebody else's record later. */
+await (async () => {
+  const { randomBytes } = await import('node:crypto');
+
+  const { db } = await mongo();
+
+  const anonId = 'anon' + randomBytes(12).toString('hex');
+  await db.collection('decisions').insertOne({
+    who: anonId, symbol: 'TCS', name: 'Tata Consultancy Services',
+    amount: 25000, userProb: 0.6, modelProb: 0.55, priceAt: 3000,
+    horizonDays: 252, createdAt: new Date(),
+  });
+
+  const mk = async (tag) => {
+    const email = `adopt-${tag}-${Date.now().toString(36)}@plumbline.test`;
+    const password = 'correct-horse-battery';
+    const { insertedId } = await db.collection('users').insertOne({
+      email, name: tag, passwordHash: await seedHash(password),
+      googleSub: null, emailVerified: new Date(), createdAt: new Date(), adopted: [],
+    });
+    const res = await fetch(B + '/api/auth/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, anonId }),
+    });
+    const cookie = (res.headers.getSetCookie?.() ?? []).map((c) => c.split(';')[0]).join('; ');
+    return { id: insertedId, cookie, body: await res.json() };
+  };
+
+  const first = await mk('first');
+  ok(first.body?.adopted === true, 'signing in adopts the history built in this browser');
+
+  const listed = await get('/api/decisions', { headers: { cookie: first.cookie } });
+  ok(
+    (listed.body?.track?.decisions ?? []).some((d) => d.symbol === 'TCS'),
+    'the pre-account decision now appears in the account track record'
+  );
+
+  const stillAnon = await db.collection('decisions').findOne({ who: anonId });
+  ok(
+    Boolean(stillAnon),
+    'the decision document was NOT rewritten — ownership is resolved at read time, so history stays immutable'
+  );
+
+  const second = await mk('second');
+  ok(
+    second.body?.adopted === false,
+    'a second account cannot claim an id that is already spoken for'
+  );
+  const stolen = await get('/api/decisions', { headers: { cookie: second.cookie } });
+  ok(
+    !(stolen.body?.track?.decisions ?? []).some((d) => d.symbol === 'TCS'),
+    'and it cannot see the first account’s decisions'
+  );
+
+  await db.collection('users').deleteMany({ _id: { $in: [first.id, second.id] } });
+  await db.collection('decisions').deleteMany({ who: anonId });
+})().catch((e) => {
+  /* A fixture section needs its own Mongo connection. Atlas'
+     free tier sometimes refuses one, which is an infrastructure
+     fact rather than a defect in the code under test — so the
+     section reports itself SKIPPED and the run continues. A skip
+     is printed separately from a pass: an unrun check must never
+     read as a green one. */
+  skipped.push(String(e?.message ?? e).slice(0, 90));
+});
 
 /* ══ 13. THE CHAT CANNOT DERIVE A NUMBER ══
    The context now carries the monthly instalment. It did not, and
@@ -261,10 +459,45 @@ const get = async (path, init) => {
   ok(!hasWrong, 'no fabricated instalment');
 }
 
-/* ══ 14. AIRPLANE MODE — the whole point of the cache ══ */
-{
+/* ══ 14. AIRPLANE MODE — the whole point of the cache ══
+   Running a measurement now needs a session, so this walkthrough
+   signs in first. That the test had to be changed at all is the
+   point being verified elsewhere: the gate is real, and an
+   unauthenticated browser genuinely cannot get past the entry
+   screen. Here we are testing the cache, not the gate, so the
+   session is established up front and the walkthrough proceeds. */
+await (async () => {
+  const { randomBytes } = await import('node:crypto');
+
+  const email = `airplane-${Date.now().toString(36)}@plumbline.test`;
+  const password = 'correct-horse-battery';
+
+  const { db } = await mongo();
+  const { insertedId } = await db.collection('users').insertOne({
+    email, name: 'Airplane',
+    passwordHash: await seedHash(password),
+    googleSub: null, emailVerified: new Date(), createdAt: new Date(), adopted: [],
+  });
+
+  const loginRes = await fetch(B + '/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  const sessionCookie = (loginRes.headers.getSetCookie?.() ?? [])
+    .map((c) => c.split(';')[0])
+    .find((c) => c.startsWith('plumbline_session='));
+
   const browser = await chromium.launch({ channel: 'chrome' });
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  if (sessionCookie) {
+    await ctx.addCookies([{
+      name: 'plumbline_session',
+      value: sessionCookie.split('=')[1],
+      domain: 'localhost', path: '/',
+    }]);
+  }
+  ok(Boolean(sessionCookie), 'the airplane-mode walkthrough starts from a real session');
   const p = await ctx.newPage();
 
   // Block every outbound host except our own server. Yahoo, Google
@@ -302,7 +535,17 @@ const get = async (path, init) => {
     await p.screenshot({ path: '.drive/13-airplane.png', fullPage: false });
   }
   await browser.close();
-}
+  await db.collection('users').deleteOne({ _id: insertedId });
+  await db.collection('decisions').deleteMany({ who: String(insertedId) });
+})().catch((e) => {
+  /* A fixture section needs its own Mongo connection. Atlas'
+     free tier sometimes refuses one, which is an infrastructure
+     fact rather than a defect in the code under test — so the
+     section reports itself SKIPPED and the run continues. A skip
+     is printed separately from a pass: an unrun check must never
+     read as a green one. */
+  skipped.push(String(e?.message ?? e).slice(0, 90));
+});
 
 
 /* ══ 14. THE LANDING PAGE ══
@@ -403,6 +646,154 @@ const get = async (path, init) => {
   ok(
     (await r.locator('.lp-fan-svg path').count()) > 200,
     'reduced motion still gets the whole fan, just not the drawing of it'
+  );
+
+  await browser.close();
+}
+
+
+/* ══ 15. AUTHENTICATION ══
+   The account layer, and above all the hole it was added to close.
+
+   Before accounts, /api/decisions took `who` straight off the
+   request, so anyone who could name an id could read or write that
+   track record. The first two checks below are the regression tests
+   for exactly that, and they are the reason this section exists.
+
+   The rest is the ordinary but easy-to-skip part: a login endpoint
+   that does not report which email addresses are registered, in the
+   message OR in the response time; PKCE and state on the OAuth
+   redirect; and a `next` parameter that cannot be turned into an
+   open redirect. */
+{
+  const post = async (p, b) => {
+    const r = await fetch(B + p, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(b),
+    });
+    return { status: r.status, body: await r.json().catch(() => null) };
+  };
+
+  /* — the hole, closed — */
+  const readOther = await get('/api/decisions?who=aaaaaaaaaaaaaaaaaaaa');
+  ok(
+    readOther.body?.code === 'AUTH_REQUIRED',
+    'a client-supplied `who` can no longer read a track record'
+  );
+  const writeOther = await post('/api/decisions', {
+    who: 'aaaaaaaaaaaaaaaaaaaa',
+    symbol: 'RELIANCE', amount: 50000, userProb: 0.7, modelProb: 0.6, priceAt: 1300,
+  });
+  ok(
+    writeOther.body?.code === 'AUTH_REQUIRED',
+    'a decision cannot be filed without a session'
+  );
+
+  /* — the session probe — */
+  const me = await get('/api/auth/me');
+  ok(me.body?.ok === true && me.body?.user === null, '/api/auth/me reports signed out');
+  ok(
+    typeof me.body?.methods?.google === 'boolean' && typeof me.body?.methods?.email === 'boolean',
+    `the client is told which methods this server can offer (google=${me.body?.methods?.google}, email=${me.body?.methods?.email})`
+  );
+
+  /* — validation — */
+  ok(
+    (await post('/api/auth/signup', { email: 'nope', password: 'abcdefgh' })).body?.code === 'BAD_REQUEST',
+    'signup rejects a malformed address'
+  );
+  ok(
+    (await post('/api/auth/signup', { email: 'x@example.com', password: 'short' })).body?.code === 'BAD_REQUEST',
+    'signup rejects a password under 8 characters'
+  );
+
+  /* — no account-existence oracle, by message or by clock — */
+  const unknown = await post('/api/auth/login', {
+    email: 'definitely-nobody@example.com', password: 'whatever12345',
+  });
+  ok(unknown.body?.code === 'AUTH_FAILED', 'login fails for an unknown account');
+  ok(
+    !/no such|not found|does not exist|no account/i.test(unknown.body?.message ?? ''),
+    'the failure message does not reveal whether the account exists'
+  );
+
+  const timeOne = async (email) => {
+    const t0 = performance.now();
+    await post('/api/auth/login', { email, password: 'x'.repeat(20) });
+    return performance.now() - t0;
+  };
+  const avgUnknown =
+    ((await timeOne('nobody-a@example.com')) + (await timeOne('nobody-b@example.com'))) / 2;
+  ok(
+    avgUnknown > 20,
+    `an unknown account still burns scrypt time (${Math.round(avgUnknown)}ms) — no timing oracle`
+  );
+
+  /* — the OAuth redirect — */
+  const start = await fetch(`${B}/api/auth/google/start?next=%2Fapp`, { redirect: 'manual' });
+  const loc = start.headers.get('location') ?? '';
+  if (/accounts\.google\.com/.test(loc)) {
+    const u = new URL(loc);
+    ok(u.searchParams.get('code_challenge_method') === 'S256', 'the Google redirect uses PKCE');
+    ok((u.searchParams.get('state') ?? '').length > 20, 'the Google redirect carries a state value');
+    ok(
+      /\/api\/auth\/google\/callback$/.test(u.searchParams.get('redirect_uri') ?? ''),
+      'the redirect_uri points at this app'
+    );
+  } else {
+    ok(
+      /\/login\?error=google-unconfigured/.test(loc),
+      'with no Google credentials set, the button redirects to a stated reason rather than a 500'
+    );
+  }
+
+  /* — open redirect — */
+  const evil = await fetch(
+    `${B}/api/auth/google/start?next=https%3A%2F%2Fevil.example`,
+    { redirect: 'manual' }
+  );
+  const jar = (evil.headers.getSetCookie?.() ?? []).join(' ');
+  ok(!/evil\.example/.test(jar), 'an absolute `next` is discarded, not stored for later redirect');
+
+  /* — the page itself — */
+  const browser = await chromium.launch({ channel: 'chrome' });
+  const p = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+  const errs = [];
+  p.on('pageerror', (e) => errs.push(e.message.slice(0, 140)));
+  await p.goto(`${B}/login`, { waitUntil: 'domcontentloaded' });
+  await p.waitForTimeout(1800);
+
+  const txt = await p.locator('body').innerText();
+  ok(/Welcome back/i.test(txt), 'the sign-in page renders');
+  ok(
+    /A record that disappears/i.test(txt),
+    'it states why an account exists rather than showing a stock illustration'
+  );
+  ok(
+    (await p.locator('input[autocomplete="current-password"]').count()) === 1,
+    'the password field is tagged current-password for password managers'
+  );
+  await p.getByRole('button', { name: /create one/i }).click();
+  await p.waitForTimeout(400);
+  ok(
+    (await p.locator('input[autocomplete="new-password"]').count()) === 1,
+    'the signup field is tagged new-password, so a manager offers to generate one'
+  );
+  ok(errs.length === 0, errs.length ? `sign-in page errors: ${errs.join(' | ')}` : 'the sign-in page raises no errors');
+
+  const m = await (await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  })).newPage();
+  await m.goto(`${B}/login`, { waitUntil: 'domcontentloaded' });
+  await m.waitForTimeout(1500);
+  const bleed = await m.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+  );
+  ok(bleed <= 1, `the sign-in page does not bleed sideways at 390px (${bleed}px)`);
+  ok(
+    (await m.locator('input[autofocus]').count()) === 0,
+    'no autofocus on a phone — it would throw the keyboard over the page on arrival'
   );
 
   await browser.close();

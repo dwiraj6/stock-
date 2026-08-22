@@ -199,6 +199,7 @@ export default function Landing({ stats }) {
 
   return (
     <div className="lp">
+      <LandingHeader />
       {/* ── THE SPINE ──
           One 1px line down the whole page, with the bob riding it.
           It is the plumb line: the thing that shows you what is
@@ -225,6 +226,47 @@ export default function Landing({ stats }) {
       <Evidence stats={stats} reduced={reduced} />
       <Receipt reduced={reduced} />
       <Close stats={stats} />
+    </div>
+  );
+}
+
+/* ── THE HEADER ───────────────────────────────────────────────────
+   The one part of this page that is not static.
+
+   The page itself is prerendered at build time, which is why it
+   paints instantly, and reading a session cookie on the server would
+   have made the whole thing dynamic to personalise one corner. So
+   the corner asks after hydration instead and the other 99% of the
+   page stays static.
+
+   Nothing renders until the answer arrives. A "Sign in" link that
+   flips to a name a moment later tells a returning visitor they were
+   logged out, which is both wrong and alarming. */
+function LandingHeader() {
+  const [me, setMe] = useState(null); // null = unknown, false = signed out
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/auth/me', { credentials: 'same-origin', cache: 'no-store' })
+      .then((r) => r.json())
+      .then((res) => { if (!cancelled) setMe(res?.user ?? false); })
+      .catch(() => { if (!cancelled) setMe(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (me === null) return null;
+
+  return (
+    <div className="lp-header">
+      {me ? (
+        <a className="lp-header-link" href="/app">
+          Continue as {me.name || me.email}
+        </a>
+      ) : (
+        <a className="lp-header-link" href="/login?next=%2Fapp">
+          Sign in
+        </a>
+      )}
     </div>
   );
 }

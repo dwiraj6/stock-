@@ -19,7 +19,13 @@ export type ErrorCode =
   | 'UPSTREAM_DEGRADED'
   | 'RATE_LIMITED'
   | 'BAD_REQUEST'
-  | 'UPSTREAM_UNAVAILABLE';
+  | 'UPSTREAM_UNAVAILABLE'
+  /* auth. AUTH_REQUIRED is the one the app itself reacts to: it is
+     what /api/decisions returns when nobody is signed in, and what
+     makes the client open the sign-in panel instead of failing. */
+  | 'AUTH_REQUIRED'
+  | 'AUTH_FAILED'
+  | 'AUTH_NOT_CONFIGURED';
 
 export type ApiError = {
   ok: false;

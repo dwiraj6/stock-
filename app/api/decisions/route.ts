@@ -14,11 +14,18 @@ import { resolveSymbol, getSymbol } from '@/lib/symbols';
 import { fetchQuote, fetchHistory } from '@/lib/market-data';
 import { recordDecision, listDecisions, scoreDecisions } from '@/lib/decisions';
 import { marketBlock } from '@/lib/api';
+import { currentUser, userKey } from '@/lib/current-user';
 
 export const dynamic = 'force-dynamic';
 
+/* `who` is deliberately ABSENT from this schema.
+
+   It used to be here, taken straight off the request, which meant a
+   client could write into — and read back — any track record whose
+   id it could name. Identity now comes from the session cookie and
+   from nowhere else, so a decision can only ever be filed against
+   the account that actually made it. */
 const PostBody = z.object({
-  who: z.string().min(8).max(64),
   symbol: z.string().min(1),
   amount: z.number().positive().max(1_000_000_000),
   userProb: z.number().min(0).max(1),
@@ -29,12 +36,21 @@ const PostBody = z.object({
 
 export async function POST(req: NextRequest) {
   return guard('decisions:post', async () => {
+    const user = await currentUser();
+    if (!user) {
+      return fail(
+        'AUTH_REQUIRED',
+        'Sign in to record this measurement.',
+        'Your answer is kept — signing in seals it with today’s price and starts the twelve-month clock.'
+      );
+    }
+
     let body;
     try {
       body = PostBody.parse(await req.json());
     } catch {
       return fail('BAD_REQUEST', 'The decision could not be recorded.',
-        'Send { who, symbol, amount, userProb, modelProb, priceAt }.');
+        'Send { symbol, amount, userProb, modelProb, priceAt }.');
     }
 
     const r = resolveSymbol(body.symbol);
@@ -45,7 +61,7 @@ export async function POST(req: NextRequest) {
     }
 
     const saved = await recordDecision({
-      who: body.who,
+      who: userKey(user),
       symbol: r.symbol.symbol,
       name: r.symbol.name,
       amount: body.amount,
@@ -65,12 +81,20 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   return guard('decisions:get', async () => {
-    const who = req.nextUrl.searchParams.get('who') ?? '';
-    if (who.length < 8) {
-      return ok({ track: null, reason: 'no identity supplied' });
+    const user = await currentUser();
+    if (!user) {
+      return fail(
+        'AUTH_REQUIRED',
+        'Sign in to see your track record.',
+        'It is tied to your account so it survives a cleared browser — the horizon is twelve months.'
+      );
     }
 
-    const decisions = await listDecisions(who, 100);
+    /* The account's own key, plus every anonymous browser id it has
+       adopted. Someone who measured on a laptop and a phone before
+       signing up made both sets of decisions and owns both. */
+    const keys = [userKey(user), ...(user.adopted ?? [])];
+    const decisions = await listDecisions(keys, 100);
     if (decisions.length === 0) {
       return ok({
         track: {

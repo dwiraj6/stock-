@@ -425,3 +425,31 @@
   .lp-dim { opacity: 1 !important; transform: translateX(-50%) !important; }
   .lp-dim { transform: none !important; }
 }
+
+/* ── the header ──
+   Fixed, quiet, and out of the way. The landing page's job is the
+   argument; the sign-in link is for the minority who have already
+   been convinced and are coming back. */
+.lp-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 30;
+  padding: 22px clamp(20px, 4vw, 40px);
+}
+.lp-header-link {
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 3px;
+  transition: color var(--dur-instant) var(--ease-out),
+    border-color var(--dur-instant) var(--ease-out);
+}
+.lp-header-link:hover {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-ink);
+}

@@ -13,6 +13,10 @@ async function call(path, init) {
   try {
     const res = await fetch(path, {
       ...init,
+      /* The session cookie is HttpOnly, so the only way it reaches
+         the API is the browser attaching it. Same-origin keeps it off
+         any cross-site request. */
+      credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
     });
     const body = await res.json();
@@ -63,18 +67,17 @@ export function whoAmI() {
   }
 }
 
-export const getTrackRecord = () => {
-  const who = whoAmI();
-  if (!who) return Promise.resolve({ ok: true, track: null });
-  return call(`/api/decisions?who=${encodeURIComponent(who)}`);
-};
+/* No `who` on the wire any more. It used to be a query parameter,
+   which meant the track record of anyone whose id you could name was
+   readable. Identity is now taken from the session cookie on the
+   server, and this call simply asks "mine". */
+export const getTrackRecord = () => call('/api/decisions');
 
 export function recordDecision({ symbol, amount, userProb, modelProb, priceAt }) {
-  const who = whoAmI();
-  if (!who || modelProb == null || !priceAt) return Promise.resolve({ ok: false });
+  if (modelProb == null || !priceAt) return Promise.resolve({ ok: false });
   return call('/api/decisions', {
     method: 'POST',
-    body: JSON.stringify({ who, symbol, amount, userProb, modelProb, priceAt }),
+    body: JSON.stringify({ symbol, amount, userProb, modelProb, priceAt }),
   });
 }
 

@@ -19,6 +19,27 @@ const schema = z.object({
 
 export type Env = z.infer<typeof schema>;
 
+/* ── auth, and why none of it is in the schema above ──
+   The three variables above are load-bearing: without Mongo or
+   Gemini the app has nothing to show. Auth is different. A missing
+   Google client should disable the Google button, and a missing SMTP
+   host should make the signup form say "email is not configured on
+   this server" — neither should stop the app from booting, because
+   the whole product still works for a visitor who never signs in.
+
+   So these are read where they are used, through the two predicates
+   below, and every auth surface degrades to a clear message instead
+   of a boot failure. */
+export const AUTH_ENV_KEYS = [
+  'GOOGLE_CLIENT_ID',
+  'GOOGLE_CLIENT_SECRET',
+  'SMTP_HOST',
+  'SMTP_PORT',
+  'SMTP_USER',
+  'SMTP_PASS',
+  'SMTP_FROM',
+] as const;
+
 let cached: Env | null = null;
 
 export function getEnv(): Env {

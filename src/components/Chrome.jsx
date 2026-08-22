@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { rupees2, pctSigned } from '../lib/format.js';
 import { useBreakpoint } from '../lib/hooks.js';
 
-export function Masthead({ quote, onMethodology, onAsk, onHome, onRecord }) {
+export function Masthead({ quote, onMethodology, onAsk, onHome, onRecord, me, onSignOut }) {
   const [compact, setCompact] = useState(false);
   const bp = useBreakpoint();
 
@@ -98,6 +98,60 @@ export function Masthead({ quote, onMethodology, onAsk, onHome, onRecord }) {
 
         {/* right */}
         <div className="flex items-center" style={{ gap: 20, flexShrink: 0 }}>
+          {/* Identity. `me` is null while the answer is still in
+              flight, and nothing renders in that gap — showing
+              "Sign in" for a moment to someone who is already signed
+              in reads as having been logged out. */}
+          {me === false && (
+            <a
+              href="/login?next=%2Fapp"
+              className="font-body"
+              style={{
+                fontSize: '0.9375rem',
+                color: 'var(--color-ink)',
+                textDecoration: 'underline',
+                textUnderlineOffset: 3,
+                textDecorationColor: 'var(--color-rule)',
+              }}
+            >
+              Sign in
+            </a>
+          )}
+          {me && !small && (
+            <span
+              className="font-data"
+              title={me.email}
+              style={{
+                fontSize: '0.75rem',
+                color: 'var(--color-graphite)',
+                maxWidth: 168,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {me.name || me.email}
+            </span>
+          )}
+          {me && onSignOut && (
+            <button
+              onClick={onSignOut}
+              className="font-body"
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                fontSize: '0.9375rem',
+                color: 'var(--color-graphite)',
+                textDecoration: 'underline',
+                textUnderlineOffset: 3,
+                textDecorationColor: 'var(--color-rule)',
+              }}
+            >
+              Sign out
+            </button>
+          )}
           {!small && onRecord && (
             <button
               onClick={onRecord}

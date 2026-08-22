@@ -1,0 +1,26 @@
+/* GET /api/auth/me — who is this browser?
+   ────────────────────────────────────────────────────────────────
+   The one call the client makes on load to decide whether to show
+   "Sign in" or a name. Never cached: a stale answer here means the
+   UI claims someone is signed in after they signed out. */
+
+import { ok, guard } from '@/lib/api';
+import { currentUser, publicUser } from '@/lib/current-user';
+import { googleConfigured } from '@/lib/google';
+import { mailConfigured } from '@/lib/mailer';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
+  return guard('auth:me', async () => {
+    const user = await currentUser();
+    /* The client is told which methods this server can actually
+       offer, so the login page can hide a Google button that would
+       only 500, or explain that email codes are unavailable, rather
+       than presenting a control that cannot work. */
+    return ok({
+      user: user ? publicUser(user) : null,
+      methods: { google: googleConfigured(), email: mailConfigured() },
+    });
+  });
+}

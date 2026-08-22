@@ -56,6 +56,8 @@ export default function TrackRecord({ onBack }) {
       if (res?.ok && res.track) {
         setTrack(res.track);
         setState('ready');
+      } else if (res?.code === 'AUTH_REQUIRED') {
+        setState('signed-out');
       } else {
         setState('empty');
       }
@@ -103,6 +105,32 @@ export default function TrackRecord({ onBack }) {
         <p className="font-data" style={{ marginTop: 48, color: 'var(--color-graphite)', fontSize: '0.875rem' }}>
           Reading your decisions…
         </p>
+      )}
+
+      {state === 'signed-out' && (
+        <div style={{ marginTop: 48, maxWidth: 640 }}>
+          <p className="font-body prose-measure" style={{ fontSize: '1rem' }}>
+            Your record lives with your account rather than in this browser. That is not
+            bureaucracy — a decision recorded here settles twelve months from now, and browser
+            storage does not reliably last that long.
+          </p>
+          <a
+            href="/login?next=%2Fapp%23record"
+            className="font-data"
+            style={{
+              display: 'inline-block',
+              marginTop: 24,
+              padding: '13px 22px',
+              background: 'var(--color-ink)',
+              color: 'var(--color-paper)',
+              fontSize: '0.875rem',
+              borderRadius: 3,
+              textDecoration: 'none',
+            }}
+          >
+            Sign in
+          </a>
+        </div>
       )}
 
       {state === 'empty' && (

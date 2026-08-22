@@ -86,17 +86,56 @@ export async function recordDecision(d: Omit<Decision, 'createdAt'>): Promise<bo
   }
 }
 
-export async function listDecisions(who: string, limit = 50): Promise<Decision[]> {
+/**
+ * Every decision belonging to a set of owner keys.
+ *
+ * Takes a LIST rather than one id because an account owns its own
+ * key plus every anonymous browser id it has adopted. Someone who
+ * used the app on a laptop and a phone before signing up genuinely
+ * made both sets of decisions, and both should count.
+ *
+ * Note what this does NOT do: rewrite `who` on the stored rows to
+ * point at the account. The documents are written before the outcome
+ * exists and are never touched again — that immutability is the
+ * product's whole claim, so ownership is resolved at read time
+ * instead of by editing history at signup.
+ */
+export async function listDecisions(who: string | string[], limit = 50): Promise<Decision[]> {
+  const keys = (Array.isArray(who) ? who : [who]).filter((k) => typeof k === 'string' && k.length >= 8);
+  if (keys.length === 0) return [];
   try {
     const db = await getDb();
     return await db
       .collection<Decision>(COLL)
-      .find({ who })
+      .find(keys.length === 1 ? { who: keys[0] } : { who: { $in: keys } })
       .sort({ createdAt: -1 })
       .limit(limit)
       .toArray();
   } catch {
     return [];
+  }
+}
+
+/**
+ * Has some OTHER account already adopted this anonymous id?
+ *
+ * An anonymous id can be claimed once. The first account to adopt it
+ * owns it and every later claim is refused, so a leaked id cannot be
+ * used to attach to — or quietly steal — a record that already
+ * belongs to somebody.
+ */
+export async function anonIdIsClaimed(anonId: string, exceptUserId: string): Promise<boolean> {
+  try {
+    const db = await getDb();
+    const owner = await db
+      .collection('users')
+      .findOne({ adopted: anonId }, { projection: { _id: 1 } });
+    return Boolean(owner) && String(owner!._id) !== exceptUserId;
+  } catch {
+    /* Fail CLOSED. If we cannot tell whether the id is already
+       spoken for, refusing to adopt costs the user one unlinked
+       history; adopting anyway could hand them someone else's. */
+    return true;
   }
 }
 
