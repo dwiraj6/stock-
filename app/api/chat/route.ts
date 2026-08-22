@@ -213,6 +213,11 @@ export async function POST(req: NextRequest) {
 
         const chat = model.startChat({ history });
 
+        /* Prompt size, behind a flag. It was worth measuring once —
+           1,445 tokens — when the chat was slow and it was not
+           obvious whether the delay was the context or the model. It
+           was the model chain. Left in because the next person
+           asking that question should not have to add it back. */
         if (process.env.PLUMBLINE_CHAT_PROFILE === '1') {
           const sysLen = `${SYSTEM_PROMPT}
 

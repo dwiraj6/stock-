@@ -12,19 +12,18 @@
    row it refers to in Module 4 on the page behind. Small and cheap,
    and it makes the panel feel wired into the product. */
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { Chevron } from './marks/Marks.jsx';
 import { useFocusTrap, useBreakpoint, useReducedMotion } from '../lib/hooks.js';
 import { setHighlight } from '../lib/highlight.js';
 import { chat as apiChat } from '../lib/client.js';
+import { startersFor } from '../lib/starters.js';
 
-/* Starters are questions about THIS stock's own numbers, so the
-   model can always answer them from the grounded context. */
-const STARTERS = (score) => [
-  `Why is the score only ${score}?`,
-  'What would change your mind?',
-  'Explain the debt number',
-];
+/* Starters come from src/lib/starters.js, derived from THIS stock's
+   payload. They used to be three near-fixed strings, and one of them
+   — "Explain the debt number" — was offered even for stocks whose
+   debt figure the source does not report, so tapping it asked the
+   model about a number that was not in its context. */
 
 /* Human-readable labels for the keys the model cites. */
 const METRIC_LABELS = {
@@ -117,7 +116,7 @@ export default function ConversationPanel({ open, onClose, run, seedQuestion, on
   const scrollRef = useRef(null);
   const trapRef = useFocusTrap(open, onClose);
 
-  const starters = STARTERS(run.model.score);
+  const starters = useMemo(() => startersFor(run), [run]);
 
   const ask = useCallback(
     async (text) => {
