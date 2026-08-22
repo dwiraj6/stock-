@@ -32,11 +32,31 @@ import { SESSION_COOKIE, sessionCookieOptions } from '@/lib/current-user';
 
 export const dynamic = 'force-dynamic';
 
-function back(req: NextRequest, error: string) {
-  return NextResponse.redirect(new URL(`/login?error=${error}`, req.nextUrl.origin));
+function back(req: NextRequest, error: string, detail?: string) {
+  const u = new URL(`/login`, req.nextUrl.origin);
+  u.searchParams.set('error', error);
+  if (detail) u.searchParams.set('detail', detail.slice(0, 160));
+  return NextResponse.redirect(u);
 }
 
+/* THIS IS A BROWSER NAVIGATION, NOT A FETCH.
+   Every outcome has to end at a page the user can read. Before this
+   wrapper an exception anywhere below — an unreachable account
+   store, a Mongo timeout mid-signup — surfaced as a bare HTTP 500
+   in the address bar, which tells the person nothing and tells
+   whoever is debugging it even less. Now it lands on /login with a
+   stated reason, and the full error goes to the server log. */
 export async function GET(req: NextRequest) {
+  try {
+    return await handle(req);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error('[plumbline] auth:google callback threw —', msg);
+    return back(req, 'server', msg);
+  }
+}
+
+async function handle(req: NextRequest) {
   if (!googleConfigured()) return back(req, 'google-unconfigured');
 
   const url = req.nextUrl;

@@ -93,4 +93,5 @@ export const GOOGLE_ERRORS = {
   'unverified-google':
     'That Google account has not verified its email address, so it cannot be used to sign in here.',
   account: 'The account could not be opened. Try again in a moment.',
+  server: 'That sign-in failed on our side.',
 };

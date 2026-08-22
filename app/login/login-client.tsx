@@ -19,6 +19,7 @@ function Inner({ stats }: { stats: any }) {
       stats={stats}
       next={next}
       initialError={params.get('error')}
+      initialErrorDetail={params.get('detail')}
       initialStep={params.get('mode') === 'signup' ? 'signup' : 'signin'}
     />
   );

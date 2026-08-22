@@ -44,12 +44,22 @@ import { MIN_PASSWORD } from './constants.js';
  * @param {string} [props.next]         same-site path to land on once signed in
  * @param {string|null} [props.initialError]
  *        a failure code bounced back from the Google callback
+ * @param {string|null} [props.initialErrorDetail]
+ *        the specific reason behind that code, when the server had
+ *        one worth showing — a redirect that lands on a page saying
+ *        only "error=server" is a dead end for whoever hits it
  * @param {string} [props.initialStep]
  *        'signup' to open on the create-account step, so a "Sign up"
  *        link anywhere in the app lands on the right form rather than
  *        on a login box the visitor has to notice and click past
  */
-export default function AuthScreen({ stats, next = '/app', initialError = null, initialStep = 'signin' }) {
+export default function AuthScreen({
+  stats,
+  next = '/app',
+  initialError = null,
+  initialErrorDetail = null,
+  initialStep = 'signin',
+}) {
   const [step, setStep] = useState(initialStep === 'signup' ? 'signup' : 'signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,7 +67,11 @@ export default function AuthScreen({ stats, next = '/app', initialError = null, 
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(
-    initialError ? GOOGLE_ERRORS[initialError] ?? 'That sign-in did not complete.' : null
+    initialError
+      ? [GOOGLE_ERRORS[initialError] ?? 'That sign-in did not complete.', initialErrorDetail]
+          .filter(Boolean)
+          .join(' ')
+      : null
   );
   const [notice, setNotice] = useState(null);
   const [methods, setMethods] = useState({ google: true, firebase: false, email: true });
