@@ -56,28 +56,6 @@ function useScrollProgress() {
   return p;
 }
 
-/** Reveal once, then disconnect. Never repeats on scroll back. */
-function useReveal(threshold = 0.25) {
-  const ref = useRef(null);
-  const [shown, setShown] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || shown) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setShown(true);
-          io.disconnect();
-        }
-      },
-      { threshold, rootMargin: '0px 0px -8% 0px' }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [shown, threshold]);
-  return [ref, shown];
-}
-
 /** Once `on` is true, tween 0 → 1 over `ms` on the compositor clock.
     Pure rAF, no library, cancels on unmount. */
 function useTween(on, ms) {
@@ -96,6 +74,52 @@ function useTween(on, ms) {
     return () => cancelAnimationFrame(raf);
   }, [on, ms]);
   return v;
+}
+
+/** Reveal once, then disconnect. Never repeats on scroll back.
+
+    THE FAILSAFE IS THE POINT. This used to be a plain
+    IntersectionObserver, and the content it guarded sat at opacity 0
+    until the observer fired — so any renderer that does not scroll
+    saw a blank page. A screenshot of the full page came back almost
+    empty; so would a crawler, a background tab, or a browser with no
+    IntersectionObserver at all.
+
+    A reveal is an enhancement on content that is already there. If
+    the observer has not fired within 1.2 seconds, the content
+    appears anyway. */
+function useReveal(threshold = 0.2) {
+  const ref = useRef(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    if (shown) return;
+    const el = ref.current;
+    if (!el) return;
+
+    const failsafe = setTimeout(() => setShown(true), 1200);
+    if (typeof IntersectionObserver !== 'function') {
+      return () => clearTimeout(failsafe);
+    }
+
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+          clearTimeout(failsafe);
+        }
+      },
+      { threshold, rootMargin: '0px 0px -6% 0px' }
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      clearTimeout(failsafe);
+    };
+  }, [shown, threshold]);
+
+  return [ref, shown];
 }
 
 /** How far a section has travelled through the viewport, 0..1. */
@@ -301,31 +325,36 @@ function LandingHeader() {
    up. A product that publishes its own -3.4% skill score has earned
    the right to make a point of it. */
 function TheName({ reduced }) {
-  const [ref, shown] = useReveal(0.35);
+  const [ref, shown] = useReveal(0.3);
   const on = shown || reduced;
 
   return (
-    <section className="lp-sec" ref={ref}>
+    <section className="lp-sec lp-sec-pivot lp-name" ref={ref}>
       <div className="lp-inner">
-        <p className={`eyebrow lp-fade ${on ? 'in' : ''}`}>The name</p>
-
-        <h2 className={`lp-h2 lp-fade ${on ? 'in' : ''}`} style={{ '--d': '80ms' }}>
-          <span className="knd">ಶಿಷ್ಯ</span> means student.
-        </h2>
-
-        <div className={`lp-name-row lp-fade ${on ? 'in' : ''}`} style={{ '--d': '200ms' }}>
-          <Shishya size={92} state="idle" />
-          <p className="lp-body" style={{ margin: 0 }}>
-            Not guru. Not oracle. The one still learning — which is the only honest thing
-            to call a model that gets the range right 87% of the time and scores worse than
-            a coin flip on direction. Both numbers are on this page.
-          </p>
+        <div className={`lp-name-bob lp-fade ${on ? 'in' : ''}`} aria-hidden="true">
+          <Shishya size={104} state="idle" />
         </div>
 
-        <p className={`lp-body lp-fade ${on ? 'in' : ''}`} style={{ '--d': '320ms' }}>
-          The figure is the plumb bob itself. A plumb line is the oldest instrument there
-          is for telling what is actually true from what merely looks it, and it turns out
-          to be shaped like someone paying attention.
+        {/* The largest thing on the page. Everything above it argues;
+            everything below it invites. */}
+        <p className={`lp-name-mark lp-fade ${on ? 'in' : ''}`} style={{ '--d': '90ms' }}>
+          stock<span className="knd">ಶಿಷ್ಯ</span>
+        </p>
+
+        <p className={`lp-name-gloss lp-fade ${on ? 'in' : ''}`} style={{ '--d': '180ms' }}>
+          <span className="knd">ಶಿಷ್ಯ</span> means <em>student</em>. Not guru. Not oracle.
+        </p>
+
+        <p className={`lp-name-body lp-fade ${on ? 'in' : ''}`} style={{ '--d': '270ms' }}>
+          The one still learning is the only honest thing to call a model that gets the
+          range right 87% of the time and scores worse than a coin flip on direction. Both
+          numbers are on this page, in the same size type.
+        </p>
+
+        <p className={`lp-name-body lp-fade ${on ? 'in' : ''}`} style={{ '--d': '340ms' }}>
+          The figure is the plumb bob itself — the oldest instrument there is for telling
+          what is actually true from what merely looks it. It turns out to be shaped like
+          someone paying attention.
         </p>
       </div>
     </section>
@@ -437,7 +466,6 @@ function Problem({ reduced }) {
   return (
     <section className="lp-sec">
       <div className="lp-inner" ref={seen}>
-        <p className={`eyebrow lp-fade ${shown ? 'in' : ''}`}>The problem</p>
         <h2 className={`lp-h2 lp-fade ${shown ? 'in' : ''}`} style={{ '--d': '80ms' }}>
           Confidence is easy to feel and impossible to check.
         </h2>
@@ -503,8 +531,22 @@ function FanSection({ reduced }) {
   const W = 1000;
   const H = 340;
 
+  /* The same failsafe the reveals carry, and for the same reason.
+     The bundle opens left→right as the section crosses the screen,
+     which means a renderer that never scrolls draws nothing at all —
+     the fan is the largest thing in this section, so the section
+     shipped as a 600px void. If no scroll has moved it within 1.4s,
+     it draws itself. */
+  const [drawn, setDrawn] = useState(false);
+  useEffect(() => {
+    if (drawn) return;
+    const t = setTimeout(() => setDrawn(true), 1400);
+    return () => clearTimeout(t);
+  }, [drawn]);
+
   // The bundle opens left→right as the section crosses the screen.
-  const t = reduced ? 1 : Math.min(1, Math.max(0, (p - 0.12) * 1.9));
+  const scrolled = Math.min(1, Math.max(0, (p - 0.12) * 1.9));
+  const t = reduced || drawn ? Math.max(scrolled, 1) : scrolled;
 
   /* Mapped in LOG space, and symmetrically. Two reasons, and both
      are the same reason the app plots returns this way:
@@ -530,9 +572,8 @@ function FanSection({ reduced }) {
   };
 
   return (
-    <section className="lp-sec lp-sec-wide" ref={ref}>
+    <section className="lp-sec lp-sec-tight lp-sec-wide" ref={ref}>
       <div className="lp-inner">
-        <p className="eyebrow">What it shows you</p>
         <h2 className="lp-h2">Ten thousand futures, drawn as ink.</h2>
       </div>
 
@@ -609,16 +650,14 @@ function Evidence({ stats, reduced }) {
   const run = shown || reduced;
 
   return (
-    <section className="lp-sec" ref={ref}>
+    <section className="lp-sec lp-sec-tight lp-sec-wide" ref={ref}>
       <div className="lp-inner">
-        <p className={`eyebrow lp-fade ${run ? 'in' : ''}`}>The part nobody else does</p>
         <h2 className={`lp-h2 lp-fade ${run ? 'in' : ''}`} style={{ '--d': '80ms' }}>
           We tested ourselves and published what failed.
         </h2>
 
         <div className="lp-cards">
           <div className={`lp-card lp-pass lp-fade ${run ? 'in' : ''}`} style={{ '--d': '160ms' }}>
-            <p className="eyebrow">The test it passes</p>
             <p className="lp-stat">
               <CountUp to={stats.bandHitPct} suffix="%" run={run} />
             </p>
@@ -630,7 +669,6 @@ function Evidence({ stats, reduced }) {
           </div>
 
           <div className={`lp-card lp-fail lp-fade ${run ? 'in' : ''}`} style={{ '--d': '280ms' }}>
-            <p className="eyebrow">The test it fails</p>
             <p className="lp-stat">
               <CountUp to={stats.directionSkillPct} decimals={1} suffix="%" run={run} />
             </p>
@@ -641,7 +679,6 @@ function Evidence({ stats, reduced }) {
           </div>
 
           <div className={`lp-card lp-fail lp-fade ${run ? 'in' : ''}`} style={{ '--d': '400ms' }}>
-            <p className="eyebrow">And we did try</p>
             <p className="lp-stat">
               <CountUp to={stats.factorsTested} run={run} /> <span className="lp-stat-sm">more</span>
             </p>
@@ -675,7 +712,6 @@ function Receipt({ reduced }) {
   return (
     <section className="lp-sec" ref={ref}>
       <div className="lp-inner">
-        <p className={`eyebrow lp-fade ${on ? 'in' : ''}`}>What changes behaviour</p>
         <h2 className={`lp-h2 lp-fade ${on ? 'in' : ''}`} style={{ '--d': '80ms' }}>
           It writes down what you believed, before you knew.
         </h2>
