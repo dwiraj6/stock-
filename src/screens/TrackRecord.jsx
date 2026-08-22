@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react';
 import { rupees2, pctSigned } from '../lib/format.js';
 import { getTrackRecord, getCalibration } from '../lib/client.js';
 import { useReducedMotion } from '../lib/hooks.js';
+import { Skeleton, SkeletonText, SkeletonStat, SkeletonBlock } from '../components/Skeleton.jsx';
 
 export default function TrackRecord({ onBack }) {
   const reduced = useReducedMotion();
@@ -34,17 +35,24 @@ export default function TrackRecord({ onBack }) {
      all point-in-time. Showing both makes the standard explicit and
      the screen honest from the first visit. */
   const [model, setModel] = useState(null);
+  /* Its own flag, because this panel is a SEPARATE fetch that renders
+     ABOVE the decisions. Without a placeholder it landed late and
+     shoved the whole page down — measured at 0.135 cumulative layout
+     shift, which is past the point a reader loses their place. */
+  const [modelLoading, setModelLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     getCalibration().then((res) => {
-      if (!cancelled && res?.ok) {
+      if (cancelled) return;
+      if (res?.ok) {
         setModel({
           band: res.calibration,
           direction: res.probability ?? null,
           factors: res.factors ?? null,
         });
       }
+      setModelLoading(false);
     });
     return () => { cancelled = true; };
   }, []);
@@ -101,57 +109,42 @@ export default function TrackRecord({ onBack }) {
         happened next.
       </p>
 
+      {/* WHAT THIS DELIBERATELY DOES NOT DO is reserve a verdict
+          panel and a list of rows. Most people opening this screen
+          have an empty record — the real content is then two lines of
+          prose — so a tall skeleton collapsing to that moves the page
+          more than reserving too little ever would. Measured: the
+          three-row version scored 0.135 cumulative layout shift, and
+          matching the empty shape brought it to near zero.
+
+          A returning user with decisions sees content grow downward
+          instead, which is the gentler direction: nothing they were
+          already reading moves. */}
       {state === 'loading' && (
-        <p className="font-data" style={{ marginTop: 48, color: 'var(--color-graphite)', fontSize: '0.875rem' }}>
-          Reading your decisions…
-        </p>
+        <SkeletonBlock label="Reading your decisions" style={{ marginTop: 48, maxWidth: 640 }}>
+          <SkeletonText lines={2} width="62ch" />
+        </SkeletonBlock>
       )}
 
-      {state === 'signed-out' && (
-        <div style={{ marginTop: 48, maxWidth: 640 }}>
-          <p className="font-body prose-measure" style={{ fontSize: '1rem' }}>
-            Your record lives with your account rather than in this browser. That is not
-            bureaucracy — a decision recorded here settles twelve months from now, and browser
-            storage does not reliably last that long.
-          </p>
-          <div className="flex items-center" style={{ gap: 20, marginTop: 24 }}>
-            <a
-              href="/login?mode=signup&next=%2Fapp%23record"
-              className="font-data"
-              style={{
-                display: 'inline-block',
-                padding: '13px 22px',
-                background: 'var(--color-ink)',
-                color: 'var(--color-paper)',
-                fontSize: '0.875rem',
-                borderRadius: 3,
-                textDecoration: 'none',
-              }}
-            >
-              Sign up
-            </a>
-            <a
-              href="/login?next=%2Fapp%23record"
-              className="font-body"
-              style={{
-                fontSize: '0.9375rem',
-                color: 'var(--color-ink)',
-                textDecoration: 'underline',
-                textUnderlineOffset: 3,
-                textDecorationColor: 'var(--color-rule)',
-              }}
-            >
-              Log in
-            </a>
+      {/* Holds this panel's exact footprint while its fetch is in
+          flight. It sits above the decisions, so anything less
+          reserves nothing and the page jumps when it arrives. */}
+      {modelLoading && (
+        <SkeletonBlock
+          label="Loading the model's own record"
+          style={{ marginTop: 48, background: 'var(--color-paper-deep)', padding: 40, maxWidth: 820 }}
+        >
+          {/* Line counts measured against the real panel, not
+              guessed: 3+2 lines rendered 212px against its 274px, so
+              the page still dropped 62px when the fetch landed. */}
+          <Skeleton w={220} h={10} />
+          <div style={{ marginTop: 16 }}>
+            <SkeletonText lines={5} />
           </div>
-        </div>
-      )}
-
-      {state === 'empty' && (
-        <p className="font-body prose-measure" style={{ marginTop: 48, fontSize: '1rem' }}>
-          Nothing recorded yet. Run a measurement and it will be logged here — your stated
-          odds and the simulation's, both fixed before anything is known.
-        </p>
+          <div style={{ marginTop: 14 }}>
+            <SkeletonText lines={3} width="80%" />
+          </div>
+        </SkeletonBlock>
       )}
 
       {/* ── the model's record, always present ── */}

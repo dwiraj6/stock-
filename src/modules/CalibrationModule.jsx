@@ -7,15 +7,48 @@
    Admitting the failure mode is the point. It is not softened. */
 
 import { useState } from 'react';
+import { Skeleton, SkeletonText, SkeletonStat, SkeletonBlock } from '../components/Skeleton.jsx';
 import { pctSigned } from '../lib/format.js';
 import { useBreakpoint } from '../lib/hooks.js';
 
 const WAVE = 40; // 40ms stagger
 
-export default function CalibrationModule({ calibration, probability, factors, animate = true }) {
+export default function CalibrationModule({ calibration, probability, factors, animate = true, loading = false }) {
   /* Everything here is the committed point-in-time backtest served by
      /api/calibration. No number on this panel is computed at render
      time, and none of it is illustrative. */
+
+  /* STILL FETCHING is not the same as NEVER GENERATED, and the panel
+     used to show the second message during the first. "No accuracy
+     claim is being made" is a strong statement to put in front of
+     someone for the second before the accuracy claim arrives. */
+  if (loading) {
+    return (
+      <section aria-labelledby="calib-eyebrow">
+        <p className="eyebrow" id="calib-eyebrow">Does this model actually work?</p>
+        <SkeletonBlock label="Loading the backtest" style={{ marginTop: 18 }}>
+          <Skeleton w="46ch" h={26} />
+          <div style={{ marginTop: 26, maxWidth: 760 }}>
+            <SkeletonText lines={2} width="62ch" />
+          </div>
+          <div
+            style={{
+              marginTop: 30,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+              gap: 24,
+              maxWidth: 760,
+            }}
+          >
+            {[0, 1, 2].map((i) => (
+              <SkeletonStat key={i} />
+            ))}
+          </div>
+        </SkeletonBlock>
+      </section>
+    );
+  }
+
   if (!calibration || !calibration.entries?.length) {
     return (
       <section aria-labelledby="calib-eyebrow">

@@ -7,6 +7,7 @@
    the sector median it should be read against. */
 
 import { useEffect, useRef, useState } from 'react';
+import { Skeleton, SkeletonBlock } from '../components/Skeleton.jsx';
 import CandleChart from './CandleChart.jsx';
 import { marketCap, rupees, pct } from '../lib/format.js';
 
@@ -251,6 +252,49 @@ function TradingViewFrame({ quote }) {
         }}
       >
         <div ref={host} style={{ position: 'absolute', inset: 0 }} />
+
+        {/* TradingView is a third-party iframe that takes a second or
+            two to paint, and until it does this card is 420px of
+            nothing. The skeleton is drawn as a chart — axis, bars,
+            legend — so the shape of what is coming is legible before
+            it arrives. It sits UNDER the widget and is simply covered
+            when the iframe paints, which avoids a swap that flashes. */}
+        {status === 'loading' && (
+          <SkeletonBlock
+            label="Loading the price chart"
+            style={{ position: 'absolute', inset: 0, padding: 20, pointerEvents: 'none' }}
+          >
+            <div className="flex items-center" style={{ gap: 12 }}>
+              <Skeleton w={92} h={13} />
+              <Skeleton w={64} h={13} />
+            </div>
+            <div
+              style={{
+                marginTop: 26,
+                display: 'flex',
+                alignItems: 'flex-end',
+                gap: 6,
+                height: 250,
+              }}
+            >
+              {Array.from({ length: 34 }, (_, i) => (
+                <Skeleton
+                  key={i}
+                  w="100%"
+                  /* A settled pseudo-random profile, so it reads as a
+                     price series rather than a bar chart of noise. */
+                  h={Math.round(70 + 150 * Math.abs(Math.sin(i * 1.7)))}
+                />
+              ))}
+            </div>
+            <div className="flex justify-between" style={{ marginTop: 18 }}>
+              {[0, 1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} w={46} h={10} />
+              ))}
+            </div>
+          </SkeletonBlock>
+        )}
+
         {status === 'failed' && (
           <div
             className="flex items-center justify-center"

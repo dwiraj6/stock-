@@ -99,9 +99,18 @@ export function Masthead({ quote, onMethodology, onAsk, onHome, onRecord, onProf
         {/* right */}
         <div className="flex items-center" style={{ gap: 20, flexShrink: 0 }}>
           {/* Identity. `me` is null while the answer is still in
-              flight, and nothing renders in that gap — showing
-              "Sign in" for a moment to someone who is already signed
-              in reads as having been logged out. */}
+              flight; a skeleton holds the width so the rest of the bar
+              does not shuffle sideways when the answer lands. What is
+              NOT done is guess: showing "Sign in" for a moment to
+              someone who is already signed in reads as having been
+              logged out. */}
+          {me === null && !small && (
+            <span
+              aria-hidden="true"
+              className="sk"
+              style={{ width: 108, height: 13, borderRadius: 2 }}
+            />
+          )}
           {me === false && (
             <>
               <a

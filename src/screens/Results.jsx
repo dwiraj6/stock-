@@ -24,17 +24,27 @@ import { adaptCalibration } from '../lib/adapt.js';
 export default function Results({ run, profile, onEditProfile }) {
   const reduced = useReducedMotion();
   const [calibration, setCalibration] = useState(null);
+  /* Distinguishes "the fetch has not finished" from "the backtest was
+     never generated for this deployment" — the panel says something
+     very different for each, and it used to say the second while the
+     first was still true. */
+  const [calibLoading, setCalibLoading] = useState(true);
   const [probability, setProbability] = useState(null);
   const [factors, setFactors] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
     getCalibration().then((res) => {
-      if (!cancelled && res?.ok) {
+      if (cancelled) return;
+      if (res?.ok) {
         setCalibration(adaptCalibration(res.calibration));
         setProbability(res.probability ?? null);
         setFactors(res.factors ?? null);
       }
+      /* Cleared whether it succeeded or not: a failed fetch means the
+         backtest genuinely is not available, which is the panel's
+         other message, not a reason to hold a skeleton forever. */
+      setCalibLoading(false);
     });
     return () => {
       cancelled = true;
@@ -94,6 +104,7 @@ export default function Results({ run, profile, onEditProfile }) {
           probability={probability}
           factors={factors}
           animate={animate}
+          loading={calibLoading}
         />
 
         {/* Placed immediately before the verdict, because it is the

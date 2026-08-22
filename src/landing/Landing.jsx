@@ -254,7 +254,18 @@ function LandingHeader() {
     return () => { cancelled = true; };
   }, []);
 
-  if (me === null) return null;
+  /* A skeleton, not nothing. The header reserves its own width while
+     the session probe is in flight, so the Log in / Sign up pair does
+     not pop into existence a beat after the page paints — which on a
+     cold serverless start can be a second or more. */
+  if (me === null) {
+    return (
+      <div className="lp-header" aria-hidden="true">
+        <span className="sk" style={{ width: 52, height: 11 }} />
+        <span className="sk" style={{ width: 86, height: 30, borderRadius: 3 }} />
+      </div>
+    );
+  }
 
   return (
     <div className="lp-header">

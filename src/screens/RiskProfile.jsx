@@ -23,6 +23,7 @@
 import { useEffect, useState } from 'react';
 import { rupees } from '../lib/format.js';
 import { getProfile, saveProfile } from '../lib/client.js';
+import { Skeleton, SkeletonBlock } from '../components/Skeleton.jsx';
 
 const GOALS = [
   {
@@ -118,6 +119,23 @@ export default function RiskProfile({ onBack, onSaved }) {
         Four questions. There is no score at the end and no label — what these do is let every
         measurement check what you said against what the simulation found.
       </p>
+
+      {/* The four question blocks, at their real heights. */}
+      {state === 'loading' && (
+        <SkeletonBlock label="Loading your answers" style={{ maxWidth: 720 }}>
+          {[4, 4, 1, 4].map((choices, q) => (
+            <section key={q} style={{ marginTop: 56 }}>
+              <Skeleton w={84} h={10} />
+              <Skeleton w={q === 2 ? '78%' : '58%'} h={22} style={{ marginTop: 14 }} />
+              <div style={{ marginTop: 20, display: 'grid', gap: 8 }}>
+                {Array.from({ length: choices }, (_, i) => (
+                  <Skeleton key={i} h={choices === 1 ? 52 : 50} w={choices === 1 ? 260 : '100%'} />
+                ))}
+              </div>
+            </section>
+          ))}
+        </SkeletonBlock>
+      )}
 
       {state === 'signed-out' && (
         <p className="font-body prose-measure" style={{ marginTop: 40 }}>

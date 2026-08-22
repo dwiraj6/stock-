@@ -510,3 +510,51 @@ a { color: inherit; }
   cursor: pointer;
 }
 .sc-link:hover { color: var(--color-madder); }
+
+/* ── SKELETONS ──────────────────────────────────────────────────
+   Paper tones, not the grey of a component library. The block is
+   `paper-deep`, which is the same colour the app already uses for
+   inset panels, so a loading page looks like this product rather
+   than like a generic loading page.
+
+   The sweep is a translated pseudo-element: compositor-only, like
+   every other animation here. `background-position` would repaint
+   the element every frame for the same effect. */
+.sk {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--color-paper-deep);
+}
+.sk::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 100%
+  );
+  animation: sk-sweep 1.35s var(--ease-out) infinite;
+  will-change: transform;
+}
+@keyframes sk-sweep {
+  to { transform: translateX(100%); }
+}
+
+.sk-lines { display: grid; gap: 9px; }
+.sk-stat { display: block; }
+
+/* Staggered, so a column of skeletons reads as one surface being
+   filled rather than a row of identical blinking boxes. */
+.sk-lines .sk:nth-child(2)::after { animation-delay: 0.12s; }
+.sk-lines .sk:nth-child(3)::after { animation-delay: 0.24s; }
+.sk-lines .sk:nth-child(4)::after { animation-delay: 0.36s; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* Still holds the space; simply stops moving. */
+  .sk::after { animation: none; display: none; }
+}

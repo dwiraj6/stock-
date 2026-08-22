@@ -1139,6 +1139,113 @@ await (async () => {
   }
 }
 
+
+/* ══ 19. SKELETONS, AND THE THING THEY EXIST FOR ══
+   Not decoration. The point is that the page does not JUMP when data
+   lands: a layout that reflows makes a reader lose their place, and
+   on a page whose whole argument is precision, moving furniture
+   reads as sloppiness.
+
+   So the check is not "is there a skeleton" — it is CUMULATIVE
+   LAYOUT SHIFT, measured with the browser's own PerformanceObserver
+   on a throttled connection. Under 0.1 is the threshold Google calls
+   good; the track record scored 0.135 before this work, because a
+   panel fetched separately landed above the decisions and shoved the
+   whole page down.
+
+   The sizes were measured rather than guessed. The model's-record
+   skeleton rendered 212px against the real panel's 274px, which is a
+   62px drop nobody would have noticed by eye but every reader would
+   have felt. */
+{
+  const browser = await chromium.launch({ channel: 'chrome' });
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const p = await ctx.newPage();
+
+  /* Throttled, or everything resolves before a skeleton is ever
+     drawn and the test passes without testing anything. */
+  const cdp = await ctx.newCDPSession(p);
+  await cdp.send('Network.enable');
+  await cdp.send('Network.emulateNetworkConditions', {
+    offline: false, latency: 600, downloadThroughput: 250 * 1024, uploadThroughput: 120 * 1024,
+  });
+
+  const measureCls = () =>
+    p.evaluate(
+      () =>
+        new Promise((resolve) => {
+          let total = 0;
+          new PerformanceObserver((l) => {
+            for (const e of l.getEntries()) if (!e.hadRecentInput) total += e.value;
+          }).observe({ type: 'layout-shift', buffered: true });
+          setTimeout(() => resolve(+total.toFixed(4)), 2500);
+        })
+    );
+
+  await p.goto(B + '/', { waitUntil: 'domcontentloaded' });
+  ok(
+    (await p.locator('.lp-header .sk').count()) > 0,
+    'the landing header reserves its width while the session probe is in flight'
+  );
+  const landingCls = await measureCls();
+  ok(landingCls < 0.1, `the landing page does not jump (CLS ${landingCls})`);
+
+  /* Signed out, /app#record shows the sign-in prompt rather than a
+     skeleton, so the shift-sensitive screens are checked signed in. */
+  if (SESSION_COOKIE) {
+    await ctx.addCookies([{
+      name: 'plumbline_session',
+      value: SESSION_COOKIE.split('=')[1],
+      domain: 'localhost', path: '/',
+    }]);
+
+    await p.goto(B + '/app#record', { waitUntil: 'domcontentloaded' });
+    await p.waitForTimeout(400);
+    ok(
+      (await p.locator('[role="status"]').count()) > 0,
+      'the track record shows a skeleton while its two fetches are in flight'
+    );
+    ok(
+      (await p.locator('[role="status"] .sr-only').first().innerText()).length > 0,
+      'and announces itself once to a screen reader rather than a dozen empty boxes'
+    );
+    const recordCls = await measureCls();
+    ok(recordCls < 0.1, `the track record does not jump when its data lands (CLS ${recordCls})`);
+
+    await p.goto(B + '/app#profile', { waitUntil: 'domcontentloaded' });
+    await p.waitForTimeout(400);
+    ok((await p.locator('.sk').count()) > 0, 'the situation screen reserves its four question blocks');
+    const profileCls = await measureCls();
+    ok(profileCls < 0.1, `the situation screen does not jump (CLS ${profileCls})`);
+  } else {
+    skipped.push('skeleton CLS on signed-in screens — no session available');
+  }
+
+  /* Reduced motion: the sweep stops, the block stays. It is still
+     doing its job — holding the space — with no animation at all. */
+  const rm = await (await browser.newContext({
+    viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce',
+  })).newPage();
+  await rm.goto(B + '/login', { waitUntil: 'domcontentloaded' });
+  await rm.waitForTimeout(1000);
+  const reduced = await rm.evaluate(() => {
+    const el = document.createElement('span');
+    el.className = 'sk';
+    el.style.width = '100px';
+    el.style.height = '14px';
+    document.body.appendChild(el);
+    const after = getComputedStyle(el, '::after');
+    return { sweep: after.display, block: getComputedStyle(el).backgroundColor };
+  });
+  ok(reduced.sweep === 'none', 'reduced motion stops the sweep');
+  ok(
+    reduced.block !== 'rgba(0, 0, 0, 0)',
+    'and the block still holds its space rather than disappearing'
+  );
+
+  await browser.close();
+}
+
 console.log('\n──────── PASS ────────');
 pass.forEach((m) => console.log('  ✓ ' + m));
 if (fail.length) {
