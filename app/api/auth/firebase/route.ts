@@ -19,7 +19,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { ok, fail, guard } from '@/lib/api';
-import { verifyFirebaseToken, firebaseConfigured } from '@/lib/firebase-verify';
+import { verifyFirebaseTokenDetailed, firebaseConfigured } from '@/lib/firebase-verify';
 import { findUserByEmail, createUser, linkGoogle } from '@/lib/users';
 import { establishSession } from '@/lib/signin';
 import { publicUser } from '@/lib/current-user';
@@ -49,14 +49,19 @@ export async function POST(req: NextRequest) {
       return fail('BAD_REQUEST', 'That sign-in could not be read.', 'Try again.');
     }
 
-    const identity = await verifyFirebaseToken(body.idToken);
-    if (!identity) {
+    const verified = await verifyFirebaseTokenDetailed(body.idToken);
+    if (!verified.ok) {
+      /* Logged in full for whoever is debugging, and summarised for
+         the person stuck on the screen. A bare "could not be
+         verified" sends everyone hunting blind. */
+      console.error('[plumbline] auth:firebase rejected —', verified.reason);
       return fail(
         'AUTH_FAILED',
         'That Google sign-in could not be verified.',
-        'Try again — if it keeps failing, use email and password.'
+        `${verified.reason.slice(0, 120)} — or sign in with email and password.`
       );
     }
+    const identity = verified.identity;
     if (!identity.emailVerified) {
       return fail(
         'AUTH_FAILED',

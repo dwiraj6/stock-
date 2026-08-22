@@ -55,10 +55,21 @@ export type FirebaseIdentity = {
   name: string | null;
 };
 
-/** @returns a verified identity, or null. Never throws. */
-export async function verifyFirebaseToken(token: string): Promise<FirebaseIdentity | null> {
+export type VerifyResult =
+  | { ok: true; identity: FirebaseIdentity }
+  | { ok: false; reason: string };
+
+/** Verify, and say WHY when it fails.
+    "Could not be verified" is useless to the person hitting it and
+    useless to whoever has to debug it — a wrong audience, an expired
+    token and an unreachable JWKS endpoint need three different
+    fixes. The reason is logged server-side and a short code goes to
+    the client, which is safe: none of it says anything an attacker
+    does not already know from their own token. */
+export async function verifyFirebaseTokenDetailed(token: string): Promise<VerifyResult> {
   const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-  if (!projectId || !token) return null;
+  if (!projectId) return { ok: false, reason: 'NEXT_PUBLIC_FIREBASE_PROJECT_ID is not set on the server' };
+  if (!token) return { ok: false, reason: 'no token supplied' };
 
   try {
     const { payload } = await jwtVerify(token, jwks, {
@@ -73,15 +84,37 @@ export async function verifyFirebaseToken(token: string): Promise<FirebaseIdenti
       (typeof payload.sub === 'string' && payload.sub) ||
       (typeof payload.user_id === 'string' && payload.user_id) ||
       '';
-    if (!email || !uid) return null;
+    if (!email) return { ok: false, reason: 'the token carries no email address' };
+    if (!uid) return { ok: false, reason: 'the token carries no subject' };
 
     return {
-      uid,
-      email,
-      emailVerified: payload.email_verified === true || payload.email_verified === 'true',
-      name: typeof payload.name === 'string' ? payload.name : null,
+      ok: true,
+      identity: {
+        uid,
+        email,
+        emailVerified: payload.email_verified === true || payload.email_verified === 'true',
+        name: typeof payload.name === 'string' ? payload.name : null,
+      },
     };
-  } catch {
-    return null;
+  } catch (e) {
+    /* jose's codes are specific and worth passing through:
+         ERR_JWT_CLAIM_VALIDATION_FAILED  wrong audience or issuer —
+                                          almost always a project-id
+                                          mismatch between the browser
+                                          config and the server env
+         ERR_JWT_EXPIRED                  stale token
+         ERR_JWKS_NO_MATCHING_KEY         key rotation, or not a
+                                          Firebase token at all
+         anything fetch-shaped            the JWKS endpoint was
+                                          unreachable from the server */
+    const code = (e as { code?: string })?.code ?? '';
+    const msg = e instanceof Error ? e.message : String(e);
+    return { ok: false, reason: code ? `${code}: ${msg}` : msg };
   }
+}
+
+/** @returns a verified identity, or null. Never throws. */
+export async function verifyFirebaseToken(token: string): Promise<FirebaseIdentity | null> {
+  const res = await verifyFirebaseTokenDetailed(token);
+  return res.ok ? res.identity : null;
 }
