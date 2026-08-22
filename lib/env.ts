@@ -45,10 +45,27 @@ let cached: Env | null = null;
 export function getEnv(): Env {
   if (cached) return cached;
 
+  /* TRIMMED, AND QUOTES STRIPPED, BEFORE VALIDATION.
+
+     Both are paste damage, both are invisible in a hosting
+     dashboard, and both used to be fatal in a way that pointed
+     nowhere near the cause. A connection string copied out of a
+     terminal carries a trailing newline; one copied out of a .env
+     file keeps its surrounding quotes. Either makes
+     `startsWith('mongodb')` false, and the app then reports that
+     MONGODB_URI is malformed while the value sitting in the
+     dashboard looks perfectly correct to the person reading it.
+
+     This cost an afternoon in production. Neither a quote nor
+     whitespace can ever be part of a legitimate value here, so
+     removing them is free. */
+  const clean = (v: string | undefined) =>
+    typeof v === 'string' ? v.trim().replace(/^["']|["']$/g, '').trim() : v;
+
   const parsed = schema.safeParse({
-    MONGODB_URI: process.env.MONGODB_URI,
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-    TWELVEDATA_API_KEY: process.env.TWELVEDATA_API_KEY,
+    MONGODB_URI: clean(process.env.MONGODB_URI),
+    GEMINI_API_KEY: clean(process.env.GEMINI_API_KEY),
+    TWELVEDATA_API_KEY: clean(process.env.TWELVEDATA_API_KEY),
   });
 
   if (!parsed.success) {

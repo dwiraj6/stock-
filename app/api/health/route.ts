@@ -37,6 +37,13 @@ function safeMongoHost(uri: string | undefined): string | null {
   }
 }
 
+/* Whitespace around a value is invisible in every dashboard UI and
+   was, for one long afternoon, fatal. Reported explicitly. */
+const padded = (k: string) => {
+  const v = process.env[k] ?? '';
+  return v.length > 0 && v !== v.trim();
+};
+
 const present = (k: string) => {
   const v = process.env[k];
   return typeof v === 'string' && v.trim().length > 0;
@@ -57,6 +64,7 @@ export async function GET() {
     MONGODB_URI: {
       present: present('MONGODB_URI'),
       quoted: quoted('MONGODB_URI'),
+      padded: padded('MONGODB_URI'),
       wellFormed: Boolean(uri && /^mongodb(\+srv)?:\/\//.test(uri.trim())),
       host: safeMongoHost(uri),
     },
