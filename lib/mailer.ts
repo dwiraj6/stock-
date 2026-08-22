@@ -28,17 +28,31 @@ export type MailConfig = {
   from: string;
 };
 
+/* Trimmed and unquoted, the same as lib/env.ts, and for the same
+   reason: a value pasted into a hosting dashboard carries whatever
+   invisible characters came with it. A trailing newline on
+   MONGODB_URI cost an afternoon; the identical mistake on SMTP_PASS
+   would produce "Invalid login" from Gmail and look for all the
+   world like a wrong password.
+
+   The app password specifically is shown by Google as four
+   space-separated groups — `abcd efgh ijkl mnop` — and people copy
+   it exactly as displayed. Gmail wants it without the spaces, so
+   they are removed here rather than left as a trap. */
+const clean = (v: string | undefined) =>
+  typeof v === 'string' ? v.trim().replace(/^["']|["']$/g, '').trim() : undefined;
+
 export function mailConfig(): MailConfig | null {
-  const host = process.env.SMTP_HOST;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const host = clean(process.env.SMTP_HOST);
+  const user = clean(process.env.SMTP_USER);
+  const pass = clean(process.env.SMTP_PASS)?.replace(/\s+/g, '');
   if (!host || !user || !pass) return null;
   return {
     host,
-    port: Number(process.env.SMTP_PORT ?? 587),
+    port: Number(clean(process.env.SMTP_PORT) ?? 587) || 587,
     user,
     pass,
-    from: process.env.SMTP_FROM || `Plumbline <${user}>`,
+    from: clean(process.env.SMTP_FROM) || `Plumbline <${user}>`,
   };
 }
 

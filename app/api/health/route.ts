@@ -78,9 +78,15 @@ export async function GET() {
       quoted: quoted('NEXT_PUBLIC_FIREBASE_PROJECT_ID'),
     },
     GOOGLE_CLIENT_ID: { present: present('GOOGLE_CLIENT_ID'), quoted: quoted('GOOGLE_CLIENT_ID') },
-    SMTP_HOST: { present: present('SMTP_HOST'), quoted: quoted('SMTP_HOST') },
-    SMTP_USER: { present: present('SMTP_USER') },
-    SMTP_PASS: { present: present('SMTP_PASS') },
+    SMTP_HOST: { present: present('SMTP_HOST'), quoted: quoted('SMTP_HOST'), padded: padded('SMTP_HOST') },
+    SMTP_USER: { present: present('SMTP_USER'), quoted: quoted('SMTP_USER') },
+    /* Never the value, only its shape. A Gmail app password is 16
+       characters; anything else here is the wrong thing pasted. */
+    SMTP_PASS: {
+      present: present('SMTP_PASS'),
+      quoted: quoted('SMTP_PASS'),
+      length: (process.env.SMTP_PASS ?? '').trim().replace(/\s+/g, '').length,
+    },
   };
 
   /* The actual attempt, with the driver's own message on failure.
