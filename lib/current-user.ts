@@ -17,6 +17,8 @@
 import { cookies } from 'next/headers';
 import { readSession, destroySession, SESSION_TTL_MS, type User } from './users';
 
+/* Frozen across the rename: changing the cookie name signs out
+   everyone who is currently signed in, for no user-visible gain. */
 export const SESSION_COOKIE = 'plumbline_session';
 
 const isProd = process.env.NODE_ENV === 'production';

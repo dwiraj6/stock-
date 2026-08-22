@@ -161,7 +161,7 @@ export default function NewsModule({ news, symbol, animate = true }) {
               <br />
             </>
           )}
-          Headlines are the publisher’s own words, unedited. Plumbline does not summarise
+          Headlines are the publisher’s own words, unedited. stockಶಿಷ್ಯ does not summarise
           or interpret them.
         </p>
       )}

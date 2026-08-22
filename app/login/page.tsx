@@ -8,7 +8,7 @@ import LoginClient from './login-client';
 import { readExhibits } from '@/lib/exhibits';
 
 export const metadata: Metadata = {
-  title: 'Sign in — Plumbline',
+  title: 'Sign in — stockಶಿಷ್ಯ',
   description: 'Sign in to record a measurement and keep your track record.',
   // A sign-in page has nothing to offer a search index.
   robots: { index: false, follow: false },

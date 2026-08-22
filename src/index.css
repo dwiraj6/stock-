@@ -558,3 +558,32 @@ a { color: inherit; }
   /* Still holds the space; simply stops moving. */
   .sk::after { animation: none; display: none; }
 }
+
+/* ── KANNADA ────────────────────────────────────────────────────
+   ಶಿಷ್ಯ has to be drawn by a font that actually contains the script.
+   Archivo does not, and the browser fallback for a missing glyph is
+   an empty box — the product name would render as tofu on most
+   Windows machines and some Linux ones. Noto Sans Kannada is loaded
+   for exactly these characters.
+
+   The size and weight are nudged because Kannada's optical size runs
+   smaller than Latin at the same point size; without this the name
+   reads as "stock" in bold with a smaller word tacked on, rather
+   than as one word. */
+.knd {
+  font-family: 'Noto Sans Kannada', 'Nirmala UI', 'Tunga', sans-serif;
+  font-weight: 600;
+  font-size: 0.94em;
+  letter-spacing: 0;
+  /* Kannada sits on a different baseline metric to Archivo; this
+     puts the two halves of the name on the same visual line. */
+  line-height: 1;
+}
+
+/* The conversation panel's title: the mascot's face beside its name,
+   so the person can see who is answering. */
+.cv-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}

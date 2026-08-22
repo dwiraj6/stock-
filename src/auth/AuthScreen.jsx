@@ -230,7 +230,7 @@ export default function AuthScreen({
           </svg>
         </div>
 
-        <p className="eyebrow">Plumbline</p>
+        <p className="eyebrow">stockಶಿಷ್ಯ</p>
         <h2 id="au-why" className="au-aside-h">
           A record that disappears cannot be a record.
         </h2>

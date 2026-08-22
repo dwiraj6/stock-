@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
          surfaced because "Invalid login" and "connection timed out"
          need completely different fixes and hiding that just means
          someone reads Vercel logs for an hour. */
-      console.error('[plumbline] auth:signup mail failed —', sent.reason);
+      console.error('[stockshishya] auth:signup mail failed —', sent.reason);
       return fail(
         'AUTH_NOT_CONFIGURED',
         'The code could not be sent.',

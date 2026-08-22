@@ -52,7 +52,12 @@ export function mailConfig(): MailConfig | null {
     port: Number(clean(process.env.SMTP_PORT) ?? 587) || 587,
     user,
     pass,
-    from: clean(process.env.SMTP_FROM) || `Plumbline <${user}>`,
+    /* ASCII in the From display name, on purpose. Nodemailer will
+       RFC 2047 encode a Unicode one correctly, but an encoded-word
+       display name is a small deliverability tax with some filters
+       and renders as mojibake in a few older clients. The name is
+       spelled properly inside the message, where it is just text. */
+    from: clean(process.env.SMTP_FROM) || `stockshishya <${user}>`,
   };
 }
 
@@ -106,7 +111,7 @@ async function send(to: string, subject: string, text: string, html: string): Pr
 const shell = (heading: string, body: string) => `
 <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f2e8e2;padding:40px 24px;color:#1a1a1c">
   <div style="max-width:440px;margin:0 auto;background:#faf5f2;padding:36px 32px;border:1px solid #e0d5cd">
-    <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6b6560">Plumbline</div>
+    <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6b6560">stock<span style="font-family:'Noto Sans Kannada','Nirmala UI','Tunga','Kedage',sans-serif;text-transform:none;letter-spacing:0">ಶಿಷ್ಯ</span></div>
     <h1 style="font-family:Georgia,serif;font-size:20px;font-weight:600;margin:20px 0 16px">${heading}</h1>
     ${body}
   </div>
@@ -118,8 +123,8 @@ const codeBlock = (code: string) => `
 export function sendVerificationCode(to: string, code: string): Promise<SendResult> {
   return send(
     to,
-    `${code} is your Plumbline code`,
-    `Your Plumbline verification code is ${code}. It expires in 10 minutes.\n\n` +
+    `${code} is your stockshishya code`,
+    `Your stockshishya verification code is ${code}. It expires in 10 minutes.\n\n` +
       `If you did not try to create an account, ignore this — no account exists until this code is used.`,
     shell(
       'Confirm your email',
@@ -135,8 +140,8 @@ export function sendVerificationCode(to: string, code: string): Promise<SendResu
 export function sendResetCode(to: string, code: string): Promise<SendResult> {
   return send(
     to,
-    `${code} is your Plumbline reset code`,
-    `Your Plumbline password reset code is ${code}. It expires in 10 minutes.\n\n` +
+    `${code} is your stockshishya reset code`,
+    `Your stockshishya password reset code is ${code}. It expires in 10 minutes.\n\n` +
       `If you did not ask to reset your password, ignore this and nothing changes.`,
     shell(
       'Reset your password',
@@ -158,14 +163,14 @@ export function sendResetCode(to: string, code: string): Promise<SendResult> {
 export function sendAlreadyRegistered(to: string): Promise<SendResult> {
   return send(
     to,
-    'You already have a Plumbline account',
-    `Someone tried to create a Plumbline account with this address, but it already has one.\n\n` +
+    'You already have a stockshishya account',
+    `Someone tried to create a stockshishya account with this address, but it already has one.\n\n` +
       `If that was you, just sign in instead — or use "forgot password" if you cannot remember it.\n\n` +
       `If it was not you, nothing has happened and you can ignore this.`,
     shell(
       'You already have an account',
       `<p style="font-family:Georgia,serif;font-size:14px;line-height:1.6;color:#4a4540;margin:0">
-         Someone just tried to sign up with this address, but it already has a Plumbline account.
+         Someone just tried to sign up with this address, but it already has a stockshishya account.
          If that was you, sign in instead — or reset your password if you cannot remember it.</p>
        <p style="font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#6b6560;margin:18px 0 0">
          If it was not you, nothing has happened and no change was made.</p>`

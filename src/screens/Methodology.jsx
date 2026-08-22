@@ -57,7 +57,7 @@ export default function Methodology({ onBack }) {
         className="font-body prose-measure"
         style={{ fontSize: 'var(--text-lead)', marginTop: 24, color: 'var(--color-graphite)' }}
       >
-        Plumbline makes one measurement and shows its working. This page is the working.
+        stockಶಿಷ್ಯ makes one measurement and shows its working. This page is the working.
       </p>
 
       <div style={{ display: 'grid', gap: 96, marginTop: 96, paddingBottom: 96 }}>
@@ -177,7 +177,7 @@ export default function Methodology({ onBack }) {
             the market is shut it shows the last close and says which close it was.
           </p>
           <p>
-            Plumbline is an educational tool. It is not registered investment advice and it
+            stockಶಿಷ್ಯ is an educational tool. It is not registered investment advice and it
             does not recommend trades.
           </p>
         </Section>

@@ -97,7 +97,7 @@ async function yahooCall<T>(label: string, fn: () => Promise<T>): Promise<T> {
       lastErr = err;
       if (!isRateLimited(err) || attempt === 3) break;
       const backoff = 1000 * Math.pow(2, attempt);
-      console.warn(`[plumbline] yahoo 429 on ${label}; backing off ${backoff}ms`);
+      console.warn(`[stockshishya] yahoo 429 on ${label}; backing off ${backoff}ms`);
       await sleep(backoff);
     }
   }
@@ -232,7 +232,7 @@ export async function fetchQuote(rec: SymbolRec): Promise<Fetched<Quote> | null>
         return { data: q, meta: makeMeta('yahoo', new Date()) };
       }
     } catch (err) {
-      console.warn(`[plumbline] yahoo quote failed for ${rec.symbol}: ${(err as Error).message}`);
+      console.warn(`[stockshishya] yahoo quote failed for ${rec.symbol}: ${(err as Error).message}`);
     }
 
     const td = await twelveQuote(rec);
@@ -320,7 +320,7 @@ export async function fetchHistory(rec: SymbolRec, years = 3): Promise<Fetched<B
         return { data: bars, meta: makeMeta('yahoo', new Date()) };
       }
     } catch (err) {
-      console.warn(`[plumbline] yahoo chart failed for ${rec.symbol}: ${(err as Error).message}`);
+      console.warn(`[stockshishya] yahoo chart failed for ${rec.symbol}: ${(err as Error).message}`);
     }
 
     if (cached?.data?.length) {
@@ -418,7 +418,7 @@ export async function fetchFundamentals(rec: SymbolRec): Promise<Fetched<Fundame
         return { data: f, meta: makeMeta('yahoo', new Date()) };
       }
     } catch (err) {
-      console.warn(`[plumbline] yahoo quoteSummary failed for ${rec.symbol}: ${(err as Error).message}`);
+      console.warn(`[stockshishya] yahoo quoteSummary failed for ${rec.symbol}: ${(err as Error).message}`);
     }
 
     if (cached) {
@@ -444,7 +444,7 @@ export async function yahooSearch(query: string): Promise<any | null> {
       yf.search(query, { newsCount: 12, quotesCount: 1 })
     );
   } catch (err) {
-    console.warn(`[plumbline] yahoo search failed for ${query}: ${(err as Error).message}`);
+    console.warn(`[stockshishya] yahoo search failed for ${query}: ${(err as Error).message}`);
     return null;
   }
 }

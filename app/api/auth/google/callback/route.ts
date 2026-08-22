@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     return await handle(req);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error('[plumbline] auth:google callback threw —', msg);
+    console.error('[stockshishya] auth:google callback threw —', msg);
     return back(req, 'server', msg);
   }
 }

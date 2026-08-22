@@ -62,7 +62,7 @@ export function Masthead({ quote, onMethodology, onAsk, onHome, onRecord, onProf
               lineHeight: 1,
             }}
           >
-            Plumbline
+            stock<span className="knd">ಶಿಷ್ಯ</span>
           </button>
           {!small && (
             <>
@@ -343,7 +343,7 @@ export function Footer({ market }) {
           <div>
             <p className="eyebrow" style={{ marginBottom: 10 }}>Legal</p>
             <p style={{ maxWidth: '26ch' }}>
-              Not investment advice. Plumbline is an educational tool. It does not
+              Not investment advice. stock<span className="knd">ಶಿಷ್ಯ</span> is an educational tool. It does not
               recommend trades.
             </p>
           </div>

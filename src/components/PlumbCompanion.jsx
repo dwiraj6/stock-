@@ -25,6 +25,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useBreakpoint, useReducedMotion } from '../lib/hooks.js';
 import { observe } from '../lib/observe.js';
+import Shishya from './Shishya.jsx';
 
 export default function PlumbCompanion({ open, onOpen, symbol, answering, answeredAt, run }) {
   const reduced = useReducedMotion();
@@ -34,6 +35,15 @@ export default function PlumbCompanion({ open, onOpen, symbol, answering, answer
   const [noticeShown, setNoticeShown] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const firstAnswer = useRef(true);
+  /* Held for a moment after an answer lands, then released. A mascot
+     that stays pleased forever is just a different resting face. */
+  const [justAnswered, setJustAnswered] = useState(false);
+  useEffect(() => {
+    if (!answeredAt) return;
+    setJustAnswered(true);
+    const t = window.setTimeout(() => setJustAnswered(false), 2600);
+    return () => window.clearTimeout(t);
+  }, [answeredAt]);
 
   /* The observation is computed from the payload already on screen —
      never generated. It cannot contradict the charts beside it, it
@@ -174,8 +184,8 @@ export default function PlumbCompanion({ open, onOpen, symbol, answering, answer
       type="button"
       onClick={() => onOpen()}
       className="pl-companion"
-      aria-label={`Ask about ${symbol ?? 'this stock'}`}
-      title={`Ask about ${symbol ?? 'this stock'}`}
+      aria-label={`Ask ಶಿಷ್ಯ about ${symbol ?? 'this stock'}`}
+      title={`Ask ಶಿಷ್ಯ about ${symbol ?? 'this stock'}`}
       style={{
         background: 'var(--color-paper)',
         border: '1px solid var(--color-rule)',
@@ -193,31 +203,36 @@ export default function PlumbCompanion({ open, onOpen, symbol, answering, answer
           : 'opacity var(--dur-normal) var(--ease-out), transform var(--dur-normal) var(--ease-out)',
       }}
     >
-      <svg
+      <div
         key={swing}
-        width={W}
-        height={H}
-        viewBox={`0 0 ${W} ${H}`}
         aria-hidden="true"
         style={{
-          overflow: 'visible',
-          transformOrigin: `${cx}px 0px`,
-          /* The same damped pendulum as the entry bob, shortened.
-             It runs once per key change and then holds. */
+          transformOrigin: '50% 0%',
+          /* The same damped pendulum as the entry bob. It is the same
+             object, so it moves the same way — the face does not
+             change that. */
           animation:
             reduced || swing === 0
               ? 'none'
               : 'pl-plumb-swing 1100ms cubic-bezier(0.33,0,0.25,1) both',
         }}
       >
-        <path d={`M${cx} 0 V${lineLen}`} stroke="var(--color-ink)" strokeWidth="1" />
-        <path
-          d={`M${cx} ${lineLen}
-              C${cx - 3.6} ${lineLen + 2} ${cx - 3.9} ${lineLen + 6} ${cx} ${lineLen + 13}
-              C${cx + 3.9} ${lineLen + 6} ${cx + 3.6} ${lineLen + 2} ${cx} ${lineLen} Z`}
-          fill="var(--color-ink)"
+        <Shishya
+          size={H}
+          /* The face reports what the app is actually doing. Thinking
+             while an answer streams, pleased for the beat after one
+             lands, curious when it has an observation waiting. */
+          state={
+            answering
+              ? 'thinking'
+              : justAnswered
+                ? 'pleased'
+                : noticeShown && !open
+                  ? 'curious'
+                  : 'idle'
+          }
         />
-      </svg>
+      </div>
 
       <span
         className="font-data"
@@ -229,7 +244,7 @@ export default function PlumbCompanion({ open, onOpen, symbol, answering, answer
           lineHeight: 1,
         }}
       >
-        {answering ? 'Thinking' : 'Ask'}
+        {answering ? 'Thinking' : <>Ask <span className="knd">ಶಿಷ್ಯ</span></>}
       </span>
     </button>
     </div>

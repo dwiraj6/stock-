@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       expiresAt: new Date(Date.now() + OTP_TTL_MS),
     });
     const sent = await sendVerificationCode(email, code);
-    if (!sent.ok) console.error('[plumbline] auth:resend mail failed —', sent.reason);
+    if (!sent.ok) console.error('[stockshishya] auth:resend mail failed —', sent.reason);
 
     return ok({ sent: true, email });
   });

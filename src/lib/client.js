@@ -26,7 +26,7 @@ async function call(path, init) {
     return {
       ok: false,
       code: 'UPSTREAM_UNAVAILABLE',
-      message: 'Could not reach the Plumbline server.',
+      message: 'Could not reach the stockಶಿಷ್ಯ server.',
       action: 'Check your connection and try again.',
       _transport: String(err?.message ?? err),
     };
@@ -49,6 +49,11 @@ export const getCalibration = () => call('/api/calibration');
    Not an account, not an email, nothing personal — it exists only so
    your own decisions can be shown back to you. It lives in this
    browser and nowhere else; clearing site data ends it. */
+/* FROZEN ACROSS THE RENAME. This key holds the anonymous id that
+   owns a browser's pre-account track record. Renaming it would make
+   every existing visitor look like a brand new one and orphan
+   decisions that were recorded before the outcome existed — which is
+   the one promise this product actually makes. */
 const WHO_KEY = 'plumbline.who';
 export function whoAmI() {
   if (typeof window === 'undefined') return '';
@@ -123,7 +128,7 @@ export async function chat({ symbol, question, conviction, amount, history }, on
       full += chunk;
       onChunk?.(chunk, full);
     }
-    return { ok: true, text: full, model: res.headers.get('x-plumbline-model') };
+    return { ok: true, text: full, model: res.headers.get('x-stockshishya-model') };
   } catch (err) {
     return {
       ok: false,

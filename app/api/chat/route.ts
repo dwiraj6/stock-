@@ -223,7 +223,7 @@ export async function POST(req: NextRequest) {
 
 ${contextBlock(ctx)}`.length;
           console.log(
-            `[plumbline] chat prompt: system ${sysLen} chars (~${Math.round(sysLen / 4)} tokens), history ${history.length} turns`
+            `[stockshishya] chat prompt: system ${sysLen} chars (~${Math.round(sysLen / 4)} tokens), history ${history.length} turns`
           );
         }
 
@@ -284,7 +284,7 @@ ${contextBlock(ctx)}`.length;
                 );
               }
             } catch (e) {
-              console.error('[plumbline] chat stream broke:', e);
+              console.error('[stockshishya] chat stream broke:', e);
               controller.enqueue(
                 enc.encode(
                   wrote > 0
@@ -307,8 +307,8 @@ ${contextBlock(ctx)}`.length;
                end — measured: 25 chars, then 327 in a single step. */
             'X-Accel-Buffering': 'no',
             'Transfer-Encoding': 'chunked',
-            'X-Plumbline-Model': modelName,
-            'X-Plumbline-Grounded': 'true',
+            'X-stockಶಿಷ್ಯ-Model': modelName,
+            'X-stockಶಿಷ್ಯ-Grounded': 'true',
           },
         });
       } catch (e) {
@@ -319,7 +319,7 @@ ${contextBlock(ctx)}`.length;
           retryAfter = secs ?? retryAfter;
           markExhausted(modelName, secs);
           void saveSharedCooldowns();
-          console.warn(`[plumbline] chat model ${modelName}: quota exhausted, trying the next bucket`);
+          console.warn(`[stockshishya] chat model ${modelName}: quota exhausted, trying the next bucket`);
         } else {
           /* Not a quota problem — a timeout, a dead model name, a
              network fault. Skip it for a few minutes rather than
@@ -328,7 +328,7 @@ ${contextBlock(ctx)}`.length;
           markUnreachable(modelName);
           void saveSharedCooldowns();
           console.warn(
-            `[plumbline] chat model ${modelName} failed (${(e as Error).message?.slice(0, 100)}) — skipping it for ${UNREACHABLE_COOLDOWN_MS / 60000} min`
+            `[stockshishya] chat model ${modelName} failed (${(e as Error).message?.slice(0, 100)}) — skipping it for ${UNREACHABLE_COOLDOWN_MS / 60000} min`
           );
         }
       }
@@ -339,7 +339,7 @@ ${contextBlock(ctx)}`.length;
        rather than "the service did not respond", which would send
        someone hunting for a bug that isn't there. */
     if (quotaHits > 0) {
-      console.error(`[plumbline] chat: all ${MODEL_CHAIN.length} model quotas exhausted`);
+      console.error(`[stockshishya] chat: all ${MODEL_CHAIN.length} model quotas exhausted`);
       return fail(
         'RATE_LIMITED',
         `The free Gemini quota is used up — ${FREE_TIER_DAILY_PER_MODEL} questions per model per day, across ${MODEL_CHAIN.length} models.`,
@@ -350,7 +350,7 @@ ${contextBlock(ctx)}`.length;
       );
     }
 
-    console.error('[plumbline] all chat models failed:', lastErr);
+    console.error('[stockshishya] all chat models failed:', lastErr);
     return fail(
       'UPSTREAM_UNAVAILABLE',
       'The chat service did not respond.',

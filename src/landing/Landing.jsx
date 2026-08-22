@@ -30,6 +30,7 @@
    exists to prevent, but it is a departure and it is deliberate. */
 
 import { useEffect, useRef, useState, useMemo } from 'react';
+import Shishya from '../components/Shishya.jsx';
 
 /* ── scroll progress, rAF-coalesced ──
    One listener for the whole page. Reading scrollY inside the
@@ -199,6 +200,9 @@ export default function Landing({ stats }) {
 
   return (
     <div className="lp">
+      <a className="lp-wordmark" href="/">
+        stock<span className="knd">ಶಿಷ್ಯ</span>
+      </a>
       <LandingHeader />
       {/* ── THE SPINE ──
           One 1px line down the whole page, with the bob riding it.
@@ -224,6 +228,7 @@ export default function Landing({ stats }) {
       <Problem reduced={reduced} />
       <FanSection reduced={reduced} />
       <Evidence stats={stats} reduced={reduced} />
+      <TheName reduced={reduced} />
       <Receipt reduced={reduced} />
       <Close stats={stats} />
     </div>
@@ -287,6 +292,46 @@ function LandingHeader() {
   );
 }
 
+/* ── THE NAME ──────────────────────────────────────────────────
+   Worth a section of its own, because the name is the argument.
+
+   Every other tool in this category is named for authority — guru,
+   oracle, pro, alpha, edge. This one is named for the opposite, and
+   the page should say so plainly rather than hoping someone looks it
+   up. A product that publishes its own -3.4% skill score has earned
+   the right to make a point of it. */
+function TheName({ reduced }) {
+  const [ref, shown] = useReveal(0.35);
+  const on = shown || reduced;
+
+  return (
+    <section className="lp-sec" ref={ref}>
+      <div className="lp-inner">
+        <p className={`eyebrow lp-fade ${on ? 'in' : ''}`}>The name</p>
+
+        <h2 className={`lp-h2 lp-fade ${on ? 'in' : ''}`} style={{ '--d': '80ms' }}>
+          <span className="knd">ಶಿಷ್ಯ</span> means student.
+        </h2>
+
+        <div className={`lp-name-row lp-fade ${on ? 'in' : ''}`} style={{ '--d': '200ms' }}>
+          <Shishya size={92} state="idle" />
+          <p className="lp-body" style={{ margin: 0 }}>
+            Not guru. Not oracle. The one still learning — which is the only honest thing
+            to call a model that gets the range right 87% of the time and scores worse than
+            a coin flip on direction. Both numbers are on this page.
+          </p>
+        </div>
+
+        <p className={`lp-body lp-fade ${on ? 'in' : ''}`} style={{ '--d': '320ms' }}>
+          The figure is the plumb bob itself. A plumb line is the oldest instrument there
+          is for telling what is actually true from what merely looks it, and it turns out
+          to be shaped like someone paying attention.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 /* ── 1 · HERO ─────────────────────────────────────────────────── */
 
 function Hero({ reduced }) {
@@ -307,11 +352,21 @@ function Hero({ reduced }) {
               strokeWidth="1"
               className={reduced ? '' : 'lp-bob-line'}
             />
-            <path
-              d="M17 164 C10 168 9.4 176 17 190 C24.6 176 24 168 17 164 Z"
-              fill="var(--color-ink)"
-              className={reduced ? '' : 'lp-bob-weight'}
-            />
+            {/* The bob, with a face. It is the same object the whole
+                product is built around — the thing that shows you what
+                is actually vertical — and giving it eyes turns the
+                brand mark into the character without inventing a
+                second visual language. */}
+            <g className={reduced ? '' : 'lp-bob-weight'}>
+              <path
+                d="M17 164 C10 168 9.4 176 17 190 C24.6 176 24 168 17 164 Z"
+                fill="var(--color-ink)"
+              />
+              <ellipse cx="14.1" cy="175.4" rx="1.85" ry="2.1" fill="var(--color-paper)" />
+              <ellipse cx="19.9" cy="175.4" rx="1.85" ry="2.1" fill="var(--color-paper)" />
+              <circle cx="14.1" cy="175.6" r="0.95" fill="var(--color-ink)" />
+              <circle cx="19.9" cy="175.6" r="0.95" fill="var(--color-ink)" />
+            </g>
           </svg>
         </div>
 
@@ -671,7 +726,9 @@ function Close({ stats }) {
         </h2>
         <p className={`lp-body lp-fade ${shown ? 'in' : ''}`} style={{ '--d': '120ms' }}>
           {stats.symbols.toLocaleString('en-IN')} NSE equities. Sector medians from{' '}
-          {stats.constituents} NIFTY 500 constituents. No account, no email.
+          {stats.constituents} NIFTY 500 constituents. Search and size a position freely —
+          an account is only needed to seal a measurement, because a record that settles in
+          twelve months has to still be here in twelve months.
         </p>
         <div className={`lp-cta-row lp-fade ${shown ? 'in' : ''}`} style={{ '--d': '240ms' }}>
           <a href="/app" className="lp-cta">

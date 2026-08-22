@@ -142,7 +142,7 @@ async function fromGoogleNews(rec: SymbolRec): Promise<NewsItem[]> {
   try {
     const res = await fetch(url, {
       signal: AbortSignal.timeout(8000),
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Plumbline/1.0)' },
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; stockಶಿಷ್ಯ/1.0)' },
     });
     if (!res.ok) return [];
     const xml = await res.text();

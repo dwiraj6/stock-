@@ -1,9 +1,24 @@
-# Plumbline
+# stockಶಿಷ್ಯ
 
 Conviction, measured. An educational tool that shows an Indian retail
 investor the distance between how confident they *feel* about a stock
 and how confident the *data* is — then explains why the distance
 exists.
+
+**ಶಿಷ್ಯ** (*shishya*) means **student** — not guru, not oracle. It is
+the only honest name for a model that gets the 80% band right 87% of
+the time and scores *worse than a coin flip* on direction, and
+publishes both numbers in the same size type. The mascot is the plumb
+bob itself, given a face: the oldest instrument there is for telling
+what is actually true from what merely looks it.
+
+One naming note for anyone reading the source. Storage keys were
+deliberately **not** renamed — the Mongo database is still
+`plumbline`, the session cookie is still `plumbline_session`, and the
+anonymous browser id is still `plumbline.who`. Renaming any of them
+does not rename anything; it points the app at a new empty place and
+orphans every account, every recorded decision and every anonymous
+track record. Those strings are invisible to users. The data is not.
 
 Next.js 14 App Router · TypeScript · MongoDB Atlas · Gemini · Vercel.
 
@@ -408,7 +423,7 @@ Seven, each forced by something real:
 
 ## Not investment advice
 
-Plumbline is educational. It does not recommend trades. The model
+stockಶಿಷ್ಯ is educational. It does not recommend trades. The model
 reads price history and reported fundamentals; it does not see news,
 guidance, or policy, and its backtest misses are the moves that price
 history could not have implied.

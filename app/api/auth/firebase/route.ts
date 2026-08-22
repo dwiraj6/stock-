@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       /* Logged in full for whoever is debugging, and summarised for
          the person stuck on the screen. A bare "could not be
          verified" sends everyone hunting blind. */
-      console.error('[plumbline] auth:firebase rejected —', verified.reason);
+      console.error('[stockshishya] auth:firebase rejected —', verified.reason);
       return fail(
         'AUTH_FAILED',
         'That Google sign-in could not be verified.',

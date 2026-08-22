@@ -14,6 +14,12 @@
 import { MongoClient, type Db, type Collection } from 'mongodb';
 import { getEnv } from './env';
 
+/* DELIBERATELY NOT RENAMED when the product became stockಶಿಷ್ಯ.
+   This string is where every account, every recorded decision and
+   every cached price actually lives. Changing it does not rename the
+   database — it points the app at a NEW, EMPTY one, and silently
+   orphans everything in the old. The name is invisible to users and
+   the data is not. */
 const DB_NAME = 'plumbline';
 
 declare global {

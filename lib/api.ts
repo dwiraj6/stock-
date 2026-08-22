@@ -46,7 +46,7 @@ export function fail(
 /** Log which tier served a request, with symbol and timestamp (Part 12). */
 export function logTier(route: string, symbol: string, meta: Meta): void {
   const bits = [
-    `[plumbline] ${route}`,
+    `[stockshishya] ${route}`,
     symbol,
     `tier=${meta.source}`,
     meta.isCached ? 'cached' : 'fresh',
@@ -83,7 +83,7 @@ export async function guard(
   try {
     return await fn();
   } catch (err) {
-    console.error(`[plumbline] ${route} threw:`, err);
+    console.error(`[stockshishya] ${route} threw:`, err);
     return fail(
       'UPSTREAM_DEGRADED',
       'Something failed while building this response.',

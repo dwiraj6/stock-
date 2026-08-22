@@ -178,7 +178,7 @@ export async function createUser(input: {
        benign and handled by the caller. Anything else is a real
        fault and must not vanish — a swallowed error here looks
        identical to "the database is down" from the outside. */
-    console.error('[plumbline] createUser failed —', e instanceof Error ? e.message : e);
+    console.error('[stockshishya] createUser failed —', e instanceof Error ? e.message : e);
     return null;
   }
 }

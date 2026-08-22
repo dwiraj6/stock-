@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
         expiresAt: new Date(Date.now() + OTP_TTL_MS),
       });
       const sent = await sendResetCode(email, code);
-      if (!sent.ok) console.error('[plumbline] auth:forgot mail failed —', sent.reason);
+      if (!sent.ok) console.error('[stockshishya] auth:forgot mail failed —', sent.reason);
     }
 
     return ok({ sent: true, email });

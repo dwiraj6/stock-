@@ -73,7 +73,7 @@ export function getEnv(): Env {
       .map((i) => `  ${i.path.join('.') || '(root)'}: ${i.message}`)
       .join('\n');
     throw new Error(
-      `Plumbline cannot start — environment is incomplete:\n${missing}\n\n` +
+      `stockಶಿಷ್ಯ cannot start — environment is incomplete:\n${missing}\n\n` +
         `Copy .env.example to .env.local and fill in the values above.`
     );
   }

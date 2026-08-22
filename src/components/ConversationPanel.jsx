@@ -18,6 +18,7 @@ import { useFocusTrap, useBreakpoint, useReducedMotion } from '../lib/hooks.js';
 import { setHighlight } from '../lib/highlight.js';
 import { chat as apiChat } from '../lib/client.js';
 import { startersFor } from '../lib/starters.js';
+import Shishya from './Shishya.jsx';
 
 /* Starters come from src/lib/starters.js, derived from THIS stock's
    payload. They used to be three near-fixed strings, and one of them
@@ -233,7 +234,12 @@ export default function ConversationPanel({ open, onClose, run, seedQuestion, on
           className="font-display"
           style={{ fontSize: '1.25rem', fontWeight: 700, fontVariationSettings: '"wdth" 125' }}
         >
-          Ask about {run.quote.ticker}
+          <span className="cv-title">
+            <Shishya size={26} cord={false} state={thinking ? 'thinking' : 'idle'} />
+            <span>
+              <span className="knd">ಶಿಷ್ಯ</span> on {run.quote.ticker}
+            </span>
+          </span>
         </h2>
         <button
           onClick={onClose}
@@ -259,7 +265,8 @@ export default function ConversationPanel({ open, onClose, run, seedQuestion, on
               className="font-body"
               style={{ fontSize: '1rem', color: 'var(--color-graphite)', marginBottom: 16 }}
             >
-              Ask anything the model can answer from its own numbers.
+              <span className="knd">ಶಿಷ್ಯ</span> means <em>student</em>. It answers from the
+              numbers on this page and says so when it cannot.
             </p>
             <div className="flex flex-col" style={{ gap: 8, alignItems: 'flex-start' }}>
               {starters.map((s) => (
