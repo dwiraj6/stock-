@@ -21,6 +21,8 @@ import {
   MAX_MESSAGES_PER_WINDOW,
   RATE_WINDOW_MS,
   MODEL_TIMEOUT_MS,
+  UNREACHABLE_COOLDOWN_MS,
+  markUnreachable,
   FREE_TIER_DAILY_PER_MODEL,
   isQuotaError,
   retryAfterSeconds,
@@ -203,7 +205,10 @@ export async function POST(req: NextRequest) {
         const result = await Promise.race([
           chat.sendMessageStream(parsed.question),
           new Promise<never>((_, rej) =>
-            setTimeout(() => rej(new Error(`model timeout after ${MODEL_TIMEOUT_MS}ms`)), MODEL_TIMEOUT_MS)
+            setTimeout(
+              () => rej(new Error(`no first token after ${MODEL_TIMEOUT_MS}ms`)),
+              MODEL_TIMEOUT_MS
+            )
           ),
         ]);
 
@@ -287,7 +292,14 @@ export async function POST(req: NextRequest) {
           markExhausted(modelName, secs);
           console.warn(`[plumbline] chat model ${modelName}: quota exhausted, trying the next bucket`);
         } else {
-          console.warn(`[plumbline] chat model ${modelName} failed: ${(e as Error).message?.slice(0, 140)}`);
+          /* Not a quota problem — a timeout, a dead model name, a
+             network fault. Skip it for a few minutes rather than
+             paying its timeout again on the very next question. This
+             is what turned 26 seconds to first word into under two. */
+          markUnreachable(modelName);
+          console.warn(
+            `[plumbline] chat model ${modelName} failed (${(e as Error).message?.slice(0, 100)}) — skipping it for ${UNREACHABLE_COOLDOWN_MS / 60000} min`
+          );
         }
       }
     }

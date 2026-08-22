@@ -38,7 +38,29 @@ export const FREE_TIER_DAILY_PER_MODEL = 20;
 
 /** Never let a model call hang. A request with no deadline is how a
     reply ends up half-written with nothing following it. */
-export const MODEL_TIMEOUT_MS = 25_000;
+/* TIME TO FIRST TOKEN, not time to finish.
+
+   This was 25 seconds, and the cost of that was measured on the
+   deployed site: the first model in the chain hangs, the request
+   waits the whole 25s, and only then does a working model answer —
+   26.4 seconds to first byte, on every single question.
+
+   Nobody experiences 25 seconds as a chat. A model that has not
+   begun speaking in nine has nothing to say worth waiting for, and
+   the next one in the chain typically answers in under two. */
+export const MODEL_TIMEOUT_MS = 9_000;
+
+/* Once a model has started streaming it is allowed much longer to
+   finish — the user can already see words appearing, which is a
+   completely different experience from a blank panel. */
+export const STREAM_TIMEOUT_MS = 45_000;
+
+/* How long a model that timed out or errored is skipped for.
+   Much shorter than a quota cooldown: a quota is a fact until it
+   resets, while a timeout is usually a blip and blacklisting a good
+   model for an hour over one slow request would be worse than the
+   problem. */
+export const UNREACHABLE_COOLDOWN_MS = 5 * 60 * 1000;
 
 /* Remember which models are quota-exhausted.
    The free tier's ceiling is a DAILY one, so once a model 429s it
@@ -59,6 +81,16 @@ export function isCoolingDown(model: string): boolean {
     return false;
   }
   return true;
+}
+
+/* A model that timed out or failed for a non-quota reason.
+
+   Without this, a dead model is retried on EVERY request and every
+   one of them pays the full timeout before falling through — which
+   is exactly what made the deployed chat take 26 seconds to say its
+   first word. One request pays the cost; the rest skip it. */
+export function markUnreachable(model: string): void {
+  COOLDOWN.set(model, Date.now() + UNREACHABLE_COOLDOWN_MS);
 }
 
 export function markExhausted(model: string, retrySeconds: number | null): void {
