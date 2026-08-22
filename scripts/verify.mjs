@@ -159,7 +159,75 @@ const get = async (path, init) => {
   ok(!/\byes\b|\bbuy it\b/i.test(text), 'refusal contains no recommendation');
 }
 
-/* ══ 10. AIRPLANE MODE — the whole point of the cache ══ */
+/* ══ 10. THE HEADLINE IS A PROBABILITY, AND IT IS VALIDATED ══ */
+{
+  const { body } = await get('/api/score', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ symbol: 'RELIANCE', conviction: 72, amount: 50000 }),
+  });
+  ok(body.userProb === 0.72, `user odds echoed as a probability (${body.userProb})`);
+  ok(typeof body.modelProb === 'number' && body.modelProb > 0 && body.modelProb < 1,
+     `model odds are a probability, counted from outcomes (${body.modelProb})`);
+  ok(body.oddsGapPp === Math.round((body.userProb - body.modelProb) * 100),
+     `the gap is the difference of two like quantities (${body.oddsGapPp}pp)`);
+  ok(typeof body.width === 'number' && body.width > 0,
+     `band width shipped as a share of stake (${Math.round(body.width * 100)}%)`);
+
+  const sim = await get('/api/simulate', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ symbol: 'RELIANCE', amount: 50000 }),
+  });
+  ok(sim.body.params.driftSource === 'flat',
+     'drift is flat, not the per-stock estimate that measured -51% skill');
+  ok(typeof sim.body.params.observedMu === 'number',
+     `the stock's own drift is still reported for display (${(sim.body.params.observedMu * 100).toFixed(1)}%)`);
+}
+
+/* ══ 11. BOTH CALIBRATION EXHIBITS, INCLUDING THE FAILURE ══ */
+{
+  const { body } = await get('/api/calibration');
+  const c = body.calibration;
+  ok(c.windows >= 6 && c.universe >= 100,
+     `band test spans ${c.windows} windows, ${c.universe} forecasts (not one lucky window)`);
+  ok(Array.isArray(c.hitRateCI) && c.hitRateCI.length === 2,
+     `hit rate carries a confidence interval (${Math.round(c.hitRate*100)}%, CI ${Math.round(c.hitRateCI[0]*100)}-${Math.round(c.hitRateCI[1]*100)}%)`);
+  ok(Array.isArray(c.byCutoff) && c.byCutoff.length === c.windows,
+     'per-window breakdown published');
+
+  const p = body.probability;
+  ok(p !== null, 'the direction test is published too');
+  ok(typeof p.skillScore === 'number' && p.skillScore < 0.02,
+     `direction forecast has no skill and says so (skill ${(p.skillScore*100).toFixed(1)}%)`);
+  ok(/worse than|no better|little stock-specific|as good as/i.test(p.interpretation),
+     'the failure is stated in words, not just numbers');
+}
+
+/* ══ 12. THE TRACK RECORD ══ */
+{
+  const who = 'verify' + Date.now().toString(36) + 'abcdef';
+  const post = await get('/api/decisions', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ who, symbol: 'RELIANCE', amount: 50000,
+      userProb: 0.72, modelProb: 0.62, priceAt: 1316 }),
+  });
+  ok(post.body.recorded === true, 'a decision is logged before the outcome exists');
+
+  const list = await get(`/api/decisions?who=${who}`);
+  const t = list.body.track;
+  ok(t.total === 1, `the decision comes back (${t.total})`);
+  ok(t.matured === 0 && t.open === 1, 'an unmatured decision is open, not scored');
+  ok(t.decisions[0].outcome === null,
+     'an open position is neither right nor wrong yet');
+  ok(t.decisions[0].currentPrice !== null,
+     `it is priced against a real current quote (${t.decisions[0].currentPrice})`);
+  ok(/none matured yet/i.test(t.verdict), 'the verdict says so plainly');
+
+  const empty = await get('/api/decisions?who=nobodyhasthisid00');
+  ok(empty.body.track.total === 0, 'an unknown identity gets an empty record, not an error');
+}
+
+/* ══ 13. AIRPLANE MODE — the whole point of the cache ══ */
 {
   const browser = await chromium.launch({ channel: 'chrome' });
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 } });

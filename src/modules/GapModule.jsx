@@ -18,6 +18,7 @@ import Rail from '../components/Rail.jsx';
 import { TriangleDown, TriangleUp, TriangleLeft, ArrowHead } from '../components/marks/Marks.jsx';
 import { useCountUp, useBreakpoint } from '../lib/hooks.js';
 import { gapCaption } from '../lib/viz.js';
+import { rupees } from '../lib/format.js';
 
 const T = {
   rail: 0,        // rail and ticks draw left→right, 500ms, ease-plot
@@ -29,39 +30,57 @@ const T = {
   caption: 1300,  // caption fades in, 240ms
 };
 
-export default function GapModule({ conviction, score, animate = true }) {
+/* THE MEASUREMENT — now between two probabilities of the same event.
+   ────────────────────────────────────────────────────────────────
+   It used to compare a 0-100 slider against a 0-100 composite score.
+   Those were different units, and nothing validated the score. Both
+   numbers are now the odds of the same thing — ending the year with
+   more money than you put in — so subtracting them means something,
+   and the model's half is a count of simulated outcomes rather than
+   a weighted average of hand-picked weights. */
+export default function GapModule({ conviction, score, model, amount, animate = true }) {
   const bp = useBreakpoint();
-  const gap = Math.abs(conviction - score);
+  const userPct = Math.round((model?.userProb ?? conviction / 100) * 100);
+  const modelPct =
+    model?.modelProb != null ? Math.round(model.modelProb * 100) : score;
+  const gap = Math.abs(userPct - modelPct);
   const counted = useCountUp(gap, { duration: 600, delay: T.count, active: animate });
   const shown = Math.round(counted);
 
-  const dataColor = score < 50 ? 'var(--color-madder)' : 'var(--color-verdigris)';
-  const lo = Math.min(conviction, score);
-  const hi = Math.max(conviction, score);
+  const dataColor = modelPct < 50 ? 'var(--color-madder)' : 'var(--color-verdigris)';
+  const lo = Math.min(userPct, modelPct);
+  const hi = Math.max(userPct, modelPct);
 
   const caption = useMemo(() => gapCaption(gap), [gap]);
 
   const alt =
-    `Measurement. Your conviction ${conviction} of 100. The model's conviction ${score} of 100. ` +
-    `The gap between them is ${gap} points. ${caption}`;
+    `Measurement. You put the odds of making money at ${userPct} in 100. ` +
+    `The simulation put them at ${modelPct} in 100. The gap is ${gap} points. ${caption}`;
 
   return (
     <section aria-labelledby="gap-eyebrow" className="w-full">
       <p className="eyebrow" id="gap-eyebrow">The measurement</p>
+      <p
+        className="font-body prose-measure"
+        style={{ fontSize: '0.9375rem', color: 'var(--color-graphite)', marginTop: 10 }}
+      >
+        Both numbers are the odds of the same thing: ending a year from now with more
+        money than you put in.
+      </p>
       <p className="sr-only">{alt}</p>
 
       {bp === 'sm' ? (
         <VerticalGap
-          conviction={conviction}
-          score={score}
+          conviction={userPct}
+          score={modelPct}
           gap={shown}
           dataColor={dataColor}
           animate={animate}
         />
       ) : (
         <HorizontalGap
-          conviction={conviction}
-          score={score}
+          conviction={userPct}
+          score={modelPct}
           gap={shown}
           lo={lo}
           hi={hi}
@@ -77,8 +96,48 @@ export default function GapModule({ conviction, score, animate = true }) {
           animation: animate ? `pl-fade-in 240ms var(--ease-out) ${T.caption}ms both` : 'none',
         }}
       >
-        {caption}
+        You put the odds of making money at <span className="font-data">{userPct}</span> in
+        100. The simulation put them at <span className="font-data">{modelPct}</span>.{' '}
+        {gap < 10
+          ? 'Your read and the simulation agree. That is rarer than you think.'
+          : `${gap} points of daylight between them.`}
       </p>
+
+      {/* The honest qualifier, at the top of the page rather than
+          buried: the direction number is calibrated but carries no
+          skill. The WIDTH is the part that is validated. */}
+      {model?.band && (
+        <p
+          className="prose-measure"
+          style={{
+            marginTop: 20,
+            fontSize: '1rem',
+            color: 'var(--color-graphite)',
+            borderTop: '1px solid var(--color-rule)',
+            paddingTop: 18,
+            animation: animate ? `pl-fade-in 240ms var(--ease-out) ${T.caption + 160}ms both` : 'none',
+          }}
+        >
+          Neither number is a forecast of direction — we tested that and it has no more
+          skill than guessing. What the simulation can tell you is the spread: the middle
+          80% of outcomes runs from{' '}
+          <span className="font-data" style={{ color: 'var(--color-madder)' }}>
+            {rupees(model.band.p10)}
+          </span>{' '}
+          to{' '}
+          <span className="font-data" style={{ color: 'var(--color-verdigris)' }}>
+            {rupees(model.band.p90)}
+          </span>
+          {amount ? (
+            <>
+              {' '}— a range of{' '}
+              <span className="font-data">{Math.round((model.width ?? 0) * 100)}%</span> of
+              what you put in
+            </>
+          ) : null}
+          . That is the number our backtest checks.
+        </p>
+      )}
     </section>
   );
 }

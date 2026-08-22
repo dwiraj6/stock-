@@ -52,6 +52,21 @@ export async function POST(req: NextRequest) {
 
     const params = estimateParams(hist.data, rec.symbol, 2);
     const result = scoreStock(hist.data, fund.data, params);
+
+    /* The headline gap is now between two PROBABILITIES of the same
+       event — the user's stated odds of making money, and the share
+       of simulated futures that did. Same unit, same question.
+       The composite 0-100 score is still computed and still shown as
+       the evidence underneath, but it is no longer the headline: it
+       is a weighted average of hand-chosen weights and nothing
+       validates it. The odds are a count of outcomes. */
+    const amountForOdds = parsed.amount ?? 50_000;
+    const simForOdds = params ? simulate(params, amountForOdds) : null;
+    const modelProb = simForOdds ? simForOdds.odds['12M'].profit : null;
+    const userProb = parsed.conviction / 100;
+    const oddsGapPp =
+      modelProb === null ? null : Math.round((userProb - modelProb) * 100);
+
     const gap = parsed.conviction - result.modelScore;
     const verdict = verdictFor(parsed.conviction, result.modelScore);
 
@@ -109,6 +124,19 @@ export async function POST(req: NextRequest) {
         symbol: rec.symbol,
         name: rec.name,
         conviction: parsed.conviction,
+        // ── the headline ──
+        userProb,
+        modelProb,
+        oddsGapPp,
+        absOddsGapPp: oddsGapPp === null ? null : Math.abs(oddsGapPp),
+        odds: simForOdds ? simForOdds.odds : null,
+        width: simForOdds
+          ? +(((simForOdds.lumpsum['12M'].p90 - simForOdds.lumpsum['12M'].p10) / amountForOdds).toFixed(4))
+          : null,
+        band: simForOdds
+          ? { p10: simForOdds.lumpsum['12M'].p10, p90: simForOdds.lumpsum['12M'].p90 }
+          : null,
+        // ── the evidence, demoted ──
         modelScore: result.modelScore,
         gap,
         absGap: Math.abs(gap),

@@ -23,11 +23,15 @@ import { adaptCalibration } from '../lib/adapt.js';
 export default function Results({ run }) {
   const reduced = useReducedMotion();
   const [calibration, setCalibration] = useState(null);
+  const [probability, setProbability] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
     getCalibration().then((res) => {
-      if (!cancelled && res?.ok) setCalibration(adaptCalibration(res.calibration));
+      if (!cancelled && res?.ok) {
+        setCalibration(adaptCalibration(res.calibration));
+        setProbability(res.probability ?? null);
+      }
     });
     return () => {
       cancelled = true;
@@ -58,7 +62,13 @@ export default function Results({ run }) {
       )}
 
       <div className="pl-modules">
-        <GapModule conviction={conviction} score={model.score} animate={animate} />
+        <GapModule
+          conviction={conviction}
+          score={model.score}
+          model={model}
+          amount={amount}
+          animate={animate}
+        />
 
         <FanChart sim={sim} amount={amount} asOf={quote.asOf} animate={animate} />
 
@@ -76,7 +86,11 @@ export default function Results({ run }) {
 
         <SipModule sim={sim} amount={amount} animate={animate} />
 
-        <CalibrationModule calibration={calibration} animate={animate} />
+        <CalibrationModule
+          calibration={calibration}
+          probability={probability}
+          animate={animate}
+        />
 
         <VerdictModule
           quote={quote}

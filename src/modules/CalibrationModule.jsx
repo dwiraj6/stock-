@@ -12,7 +12,7 @@ import { useBreakpoint } from '../lib/hooks.js';
 
 const WAVE = 40; // 40ms stagger
 
-export default function CalibrationModule({ calibration, animate = true }) {
+export default function CalibrationModule({ calibration, probability, animate = true }) {
   /* Everything here is the committed point-in-time backtest served by
      /api/calibration. No number on this panel is computed at render
      time, and none of it is illustrative. */
@@ -54,11 +54,101 @@ export default function CalibrationModule({ calibration, animate = true }) {
 
       <h2
         className="font-display"
-        style={{ fontSize: 'var(--text-head)', marginTop: 18, maxWidth: '24ch' }}
+        style={{ fontSize: 'var(--text-head)', marginTop: 18, maxWidth: '26ch' }}
       >
-        Across <span className="font-data">{TOTAL}</span> NSE stocks, the real 12-month
-        outcome landed inside our 80% band <span className="font-data">{HITS}</span> times.
+        Across <span className="font-data">{TOTAL}</span> point-in-time forecasts, the real
+        outcome landed inside our 80% band <span className="font-data">{HITS}</span> times
+        {' \u2014 '}
+        <span className="font-data">{Math.round((HITS / TOTAL) * 100)}%</span>.
       </h2>
+
+      {/* The test it FAILS, stated first.
+          A tool that publishes only the test it passes has not shown
+          you a test. This is the more important exhibit, and it is
+          the one that says the model cannot do something. */}
+      {probability && (
+        <div
+          style={{
+            marginTop: 28,
+            background: 'var(--color-card)',
+            borderLeft: '2px solid var(--color-madder)',
+            borderTop: '1px solid var(--color-rule)',
+            borderRight: '1px solid var(--color-rule)',
+            borderBottom: '1px solid var(--color-rule)',
+            padding: 28,
+            maxWidth: 820,
+          }}
+        >
+          <p className="eyebrow" style={{ marginBottom: 14 }}>
+            And the test it fails
+          </p>
+          <p className="font-body" style={{ fontSize: '1.0625rem', lineHeight: 1.65 }}>
+            We also tested whether the simulation can predict <em>direction</em> — whether a
+            stock will be up or down in a year. Across{' '}
+            <span className="font-data">{probability.forecasts}</span> point-in-time
+            forecasts its Brier score was{' '}
+            <span className="font-data">{probability.brier}</span>, against{' '}
+            <span className="font-data">{probability.brierBaseline}</span> for ignoring the
+            stock entirely and predicting the base rate every time.
+          </p>
+          <p
+            className="font-body"
+            style={{ fontSize: '1.0625rem', lineHeight: 1.65, marginTop: 14 }}
+          >
+            <span style={{ fontWeight: 500 }}>
+              It has no more skill at direction than guessing.
+            </span>{' '}
+            That is why this page leads with the spread rather than a prediction, and why no
+            number here tells you which way a stock will go.
+          </p>
+
+          <table
+            className="font-data"
+            style={{
+              marginTop: 20,
+              fontSize: '0.75rem',
+              borderCollapse: 'collapse',
+              width: '100%',
+            }}
+          >
+            <thead>
+              <tr style={{ color: 'var(--color-graphite)' }}>
+                <th style={{ textAlign: 'left', padding: '6px 0', fontWeight: 400 }}>
+                  when it said
+                </th>
+                <th style={{ textAlign: 'right', padding: '6px 0', fontWeight: 400 }}>n</th>
+                <th style={{ textAlign: 'right', padding: '6px 0', fontWeight: 400 }}>
+                  it happened
+                </th>
+                <th style={{ textAlign: 'right', padding: '6px 0', fontWeight: 400 }}>gap</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(probability.reliability ?? []).map((r) => (
+                <tr key={r.bucket} style={{ borderTop: '1px solid var(--color-rule)' }}>
+                  <td style={{ padding: '7px 0' }}>{Math.round(r.meanPredicted * 100)}%</td>
+                  <td style={{ textAlign: 'right', color: 'var(--color-graphite)' }}>{r.n}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    {Math.round(r.observedFrequency * 100)}%
+                  </td>
+                  <td
+                    style={{
+                      textAlign: 'right',
+                      color:
+                        Math.abs(r.gap) < 0.05
+                          ? 'var(--color-graphite)'
+                          : 'var(--color-madder)',
+                    }}
+                  >
+                    {r.gap >= 0 ? '+' : ''}
+                    {Math.round(r.gap * 100)}pp
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div
         style={{
@@ -138,6 +228,27 @@ export default function CalibrationModule({ calibration, animate = true }) {
       </div>
 
       {/* the well — the failure mode, stated plainly */}
+      {/* per-window breakdown, so one lucky window cannot carry it */}
+      {calibration.byCutoff && calibration.byCutoff.length > 1 && (
+        <div
+          className="font-data"
+          style={{
+            marginTop: 24,
+            fontSize: '0.75rem',
+            color: 'var(--color-graphite)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 18,
+          }}
+        >
+          {calibration.byCutoff.map((c) => (
+            <span key={c.cutoff}>
+              {c.cutoff} · {c.hits}/{c.n}
+            </span>
+          ))}
+        </div>
+      )}
+
       <div
         style={{
           marginTop: 32,
@@ -146,6 +257,17 @@ export default function CalibrationModule({ calibration, animate = true }) {
         }}
       >
         <p className="font-body prose-measure" style={{ fontSize: '1rem', lineHeight: 1.65 }}>
+          {calibration.interpretation}
+        </p>
+        <p
+          className="font-body prose-measure"
+          style={{
+            fontSize: '0.9375rem',
+            lineHeight: 1.65,
+            marginTop: 14,
+            color: 'var(--color-graphite)',
+          }}
+        >
           {calibration.missNarrative}
         </p>
         <p

@@ -12,7 +12,23 @@ export async function GET() {
     try {
       const p = path.join(process.cwd(), 'data', 'calibration.json');
       const json = JSON.parse(fs.readFileSync(p, 'utf8'));
-      return ok({ calibration: json }, { ttlSeconds: 3600 });
+
+      /* Two separate claims, kept separate on purpose.
+         `calibration` validates the WIDTH of the band — that is the
+         claim the app leads with.
+         `probability` validates the DIRECTION forecast, and it says
+         plainly that the model has no directional skill. Publishing
+         the second alongside the first is the point: a tool that
+         only shows the test it passes is not showing you a test. */
+      let probability = null;
+      try {
+        const q = path.join(process.cwd(), 'data', 'probability-calibration.json');
+        probability = JSON.parse(fs.readFileSync(q, 'utf8'));
+      } catch {
+        probability = null;
+      }
+
+      return ok({ calibration: json, probability }, { ttlSeconds: 3600 });
     } catch {
       return fail(
         'UPSTREAM_UNAVAILABLE',

@@ -84,7 +84,7 @@ export type SessionDoc = {
    Every key is now namespaced by this version, so bumping it retires
    the entire cache at once instead of waiting out a TTL. It costs one
    cold fetch per symbol and removes a whole class of bug. */
-export const CACHE_SCHEMA = 'v3';
+export const CACHE_SCHEMA = 'v4'; // v4: simulate payload gained odds, width, driftSource
 
 export const TTL = {
   quotes: 300,

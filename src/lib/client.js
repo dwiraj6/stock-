@@ -41,6 +41,43 @@ export const getNews = (symbol) => call(`/api/news/${encodeURIComponent(symbol)}
 
 export const getCalibration = () => call('/api/calibration');
 
+/* An anonymous, browser-generated identity.
+   Not an account, not an email, nothing personal — it exists only so
+   your own decisions can be shown back to you. It lives in this
+   browser and nowhere else; clearing site data ends it. */
+const WHO_KEY = 'plumbline.who';
+export function whoAmI() {
+  if (typeof window === 'undefined') return '';
+  try {
+    let w = localStorage.getItem(WHO_KEY);
+    if (!w) {
+      w =
+        (crypto?.randomUUID?.() ??
+          `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 12)}`).replace(/-/g, '');
+      localStorage.setItem(WHO_KEY, w);
+    }
+    return w;
+  } catch {
+    // Private mode: the track record simply does not persist.
+    return '';
+  }
+}
+
+export const getTrackRecord = () => {
+  const who = whoAmI();
+  if (!who) return Promise.resolve({ ok: true, track: null });
+  return call(`/api/decisions?who=${encodeURIComponent(who)}`);
+};
+
+export function recordDecision({ symbol, amount, userProb, modelProb, priceAt }) {
+  const who = whoAmI();
+  if (!who || modelProb == null || !priceAt) return Promise.resolve({ ok: false });
+  return call('/api/decisions', {
+    method: 'POST',
+    body: JSON.stringify({ who, symbol, amount, userProb, modelProb, priceAt }),
+  });
+}
+
 export const simulate = (symbol, amount) =>
   call('/api/simulate', { method: 'POST', body: JSON.stringify({ symbol, amount }) });
 

@@ -1,0 +1,2209 @@
+{
+  "generatedAt": "2026-08-22T01:41:12.148Z",
+  "what": "Reliability of the simulation's probability-of-profit forecast, tested point-in-time.",
+  "method": "For each of 40 liquid NSE stocks at 6 cut-off dates, all data after the cut-off was removed, drift and volatility estimated from the preceding two years, and 4000 paths simulated 12 months forward. The share of paths finishing above the starting price is the forecast. It is then compared with what the stock actually did over that same 12 months.",
+  "forecasts": 240,
+  "cutoffs": [
+    "2023-12-22",
+    "2024-04-22",
+    "2024-08-22",
+    "2024-12-22",
+    "2025-04-22",
+    "2025-08-22"
+  ],
+  "baseRate": 0.629,
+  "brier": 0.2413,
+  "brierBaseline": 0.2333,
+  "skillScore": -0.0344,
+  "reliability": [
+    {
+      "bucket": "40-50%",
+      "n": 1,
+      "meanPredicted": 0.5,
+      "observedFrequency": 1,
+      "gap": 0.5
+    },
+    {
+      "bucket": "50-60%",
+      "n": 158,
+      "meanPredicted": 0.575,
+      "observedFrequency": 0.677,
+      "gap": 0.102
+    },
+    {
+      "bucket": "60-70%",
+      "n": 81,
+      "meanPredicted": 0.62,
+      "observedFrequency": 0.531,
+      "gap": -0.089
+    }
+  ],
+  "interpretation": "The forecast is WORSE than simply predicting the base rate of 63% every time. Read the reliability table before trusting any individual number.",
+  "caveats": [
+    "40 stocks over 6 overlapping 12-month windows. The windows overlap, so the forecasts are not independent and the effective sample is smaller than the count suggests.",
+    "The universe is large-cap names that still trade today. Anything delisted or collapsed never entered the test, which biases the result upward.",
+    "All cut-offs fall in one market regime. A crash inside the test window would change these numbers."
+  ],
+  "samples": [
+    {
+      "symbol": "RELIANCE",
+      "cutoff": "2025-08-22",
+      "predicted": 0.605,
+      "actual": 0,
+      "actualReturnPct": -7.21,
+      "sigma": 20.4,
+      "mu": 8
+    },
+    {
+      "symbol": "RELIANCE",
+      "cutoff": "2025-04-22",
+      "predicted": 0.606,
+      "actual": 1,
+      "actualReturnPct": 5.85,
+      "sigma": 21.2,
+      "mu": 8
+    },
+    {
+      "symbol": "RELIANCE",
+      "cutoff": "2024-12-22",
+      "predicted": 0.637,
+      "actual": 1,
+      "actualReturnPct": 29.88,
+      "sigma": 19.3,
+      "mu": 8
+    },
+    {
+      "symbol": "RELIANCE",
+      "cutoff": "2024-08-22",
+      "predicted": 0.59475,
+      "actual": 0,
+      "actualReturnPct": -5.37,
+      "sigma": 22.6,
+      "mu": 8
+    },
+    {
+      "symbol": "RELIANCE",
+      "cutoff": "2024-04-22",
+      "predicted": 0.59925,
+      "actual": 0,
+      "actualReturnPct": -6.58,
+      "sigma": 22.7,
+      "mu": 8
+    },
+    {
+      "symbol": "RELIANCE",
+      "cutoff": "2023-12-22",
+      "predicted": 0.588,
+      "actual": 0,
+      "actualReturnPct": -4.36,
+      "sigma": 23,
+      "mu": 8
+    },
+    {
+      "symbol": "TCS",
+      "cutoff": "2025-08-22",
+      "predicted": 0.6385,
+      "actual": 0,
+      "actualReturnPct": -22.72,
+      "sigma": 19.3,
+      "mu": 8
+    },
+    {
+      "symbol": "TCS",
+      "cutoff": "2025-04-22",
+      "predicted": 0.60925,
+      "actual": 0,
+      "actualReturnPct": -23.77,
+      "sigma": 20.2,
+      "mu": 8
+    },
+    {
+      "symbol": "TCS",
+      "cutoff": "2024-12-22",
+      "predicted": 0.63675,
+      "actual": 0,
+      "actualReturnPct": -18.61,
+      "sigma": 19.3,
+      "mu": 8
+    },
+    {
+      "symbol": "TCS",
+      "cutoff": "2024-08-22",
+      "predicted": 0.6045,
+      "actual": 0,
+      "actualReturnPct": -28.69,
+      "sigma": 20.4,
+      "mu": 8
+    },
+    {
+      "symbol": "TCS",
+      "cutoff": "2024-04-22",
+      "predicted": 0.608,
+      "actual": 0,
+      "actualReturnPct": -7.24,
+      "sigma": 20.5,
+      "mu": 8
+    },
+    {
+      "symbol": "TCS",
+      "cutoff": "2023-12-22",
+      "predicted": 0.61825,
+      "actual": 1,
+      "actualReturnPct": 10.66,
+      "sigma": 20.4,
+      "mu": 8
+    },
+    {
+      "symbol": "HDFCBANK",
+      "cutoff": "2025-08-22",
+      "predicted": 0.63925,
+      "actual": 0,
+      "actualReturnPct": -25.78,
+      "sigma": 17.3,
+      "mu": 8
+    },
+    {
+      "symbol": "HDFCBANK",
+      "cutoff": "2025-04-22",
+      "predicted": 0.64075,
+      "actual": 0,
+      "actualReturnPct": -16.92,
+      "sigma": 18.9,
+      "mu": 8
+    },
+    {
+      "symbol": "HDFCBANK",
+      "cutoff": "2024-12-22",
+      "predicted": 0.632,
+      "actual": 1,
+      "actualReturnPct": 13.52,
+      "sigma": 18.3,
+      "mu": 8
+    },
+    {
+      "symbol": "HDFCBANK",
+      "cutoff": "2024-08-22",
+      "predicted": 0.59125,
+      "actual": 1,
+      "actualReturnPct": 22.44,
+      "sigma": 21.3,
+      "mu": 8
+    },
+    {
+      "symbol": "HDFCBANK",
+      "cutoff": "2024-04-22",
+      "predicted": 0.598,
+      "actual": 1,
+      "actualReturnPct": 27.11,
+      "sigma": 21.2,
+      "mu": 8
+    },
+    {
+      "symbol": "HDFCBANK",
+      "cutoff": "2023-12-22",
+      "predicted": 0.59525,
+      "actual": 1,
+      "actualReturnPct": 7.14,
+      "sigma": 21.4,
+      "mu": 8
+    },
+    {
+      "symbol": "INFY",
+      "cutoff": "2025-08-22",
+      "predicted": 0.59575,
+      "actual": 0,
+      "actualReturnPct": -22.29,
+      "sigma": 23.5,
+      "mu": 8
+    },
+    {
+      "symbol": "INFY",
+      "cutoff": "2025-04-22",
+      "predicted": 0.572,
+      "actual": 0,
+      "actualReturnPct": -16.96,
+      "sigma": 25,
+      "mu": 8
+    },
+    {
+      "symbol": "INFY",
+      "cutoff": "2024-12-22",
+      "predicted": 0.6075,
+      "actual": 0,
+      "actualReturnPct": -11.29,
+      "sigma": 22.1,
+      "mu": 8
+    },
+    {
+      "symbol": "INFY",
+      "cutoff": "2024-08-22",
+      "predicted": 0.59575,
+      "actual": 0,
+      "actualReturnPct": -16.09,
+      "sigma": 22.5,
+      "mu": 8
+    },
+    {
+      "symbol": "INFY",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5875,
+      "actual": 1,
+      "actualReturnPct": 8.34,
+      "sigma": 22.6,
+      "mu": 8
+    },
+    {
+      "symbol": "INFY",
+      "cutoff": "2023-12-22",
+      "predicted": 0.5915,
+      "actual": 1,
+      "actualReturnPct": 26.43,
+      "sigma": 22.8,
+      "mu": 8
+    },
+    {
+      "symbol": "ICICIBANK",
+      "cutoff": "2025-08-22",
+      "predicted": 0.6415,
+      "actual": 0,
+      "actualReturnPct": -0.97,
+      "sigma": 17.6,
+      "mu": 8
+    },
+    {
+      "symbol": "ICICIBANK",
+      "cutoff": "2025-04-22",
+      "predicted": 0.6245,
+      "actual": 0,
+      "actualReturnPct": -6.07,
+      "sigma": 19.1,
+      "mu": 8
+    },
+    {
+      "symbol": "ICICIBANK",
+      "cutoff": "2024-12-22",
+      "predicted": 0.636,
+      "actual": 1,
+      "actualReturnPct": 5.62,
+      "sigma": 19.3,
+      "mu": 8
+    },
+    {
+      "symbol": "ICICIBANK",
+      "cutoff": "2024-08-22",
+      "predicted": 0.58475,
+      "actual": 1,
+      "actualReturnPct": 22.93,
+      "sigma": 23.4,
+      "mu": 8
+    },
+    {
+      "symbol": "ICICIBANK",
+      "cutoff": "2024-04-22",
+      "predicted": 0.58025,
+      "actual": 1,
+      "actualReturnPct": 35.03,
+      "sigma": 23.6,
+      "mu": 8
+    },
+    {
+      "symbol": "ICICIBANK",
+      "cutoff": "2023-12-22",
+      "predicted": 0.578,
+      "actual": 1,
+      "actualReturnPct": 28.9,
+      "sigma": 24.1,
+      "mu": 8
+    },
+    {
+      "symbol": "SBIN",
+      "cutoff": "2025-08-22",
+      "predicted": 0.609,
+      "actual": 1,
+      "actualReturnPct": 29.3,
+      "sigma": 20.5,
+      "mu": 8
+    },
+    {
+      "symbol": "SBIN",
+      "cutoff": "2025-04-22",
+      "predicted": 0.59625,
+      "actual": 1,
+      "actualReturnPct": 38.87,
+      "sigma": 23.2,
+      "mu": 8
+    },
+    {
+      "symbol": "SBIN",
+      "cutoff": "2024-12-22",
+      "predicted": 0.593,
+      "actual": 1,
+      "actualReturnPct": 21.39,
+      "sigma": 23.9,
+      "mu": 8
+    },
+    {
+      "symbol": "SBIN",
+      "cutoff": "2024-08-22",
+      "predicted": 0.55425,
+      "actual": 1,
+      "actualReturnPct": 2.12,
+      "sigma": 26.9,
+      "mu": 8
+    },
+    {
+      "symbol": "SBIN",
+      "cutoff": "2024-04-22",
+      "predicted": 0.558,
+      "actual": 1,
+      "actualReturnPct": 10.74,
+      "sigma": 27,
+      "mu": 8
+    },
+    {
+      "symbol": "SBIN",
+      "cutoff": "2023-12-22",
+      "predicted": 0.55175,
+      "actual": 1,
+      "actualReturnPct": 25.28,
+      "sigma": 27.3,
+      "mu": 8
+    },
+    {
+      "symbol": "ITC",
+      "cutoff": "2025-08-22",
+      "predicted": 0.67725,
+      "actual": 0,
+      "actualReturnPct": -30.33,
+      "sigma": 15.6,
+      "mu": 8
+    },
+    {
+      "symbol": "ITC",
+      "cutoff": "2025-04-22",
+      "predicted": 0.66025,
+      "actual": 0,
+      "actualReturnPct": -25.28,
+      "sigma": 16.6,
+      "mu": 8
+    },
+    {
+      "symbol": "ITC",
+      "cutoff": "2024-12-22",
+      "predicted": 0.66825,
+      "actual": 0,
+      "actualReturnPct": -6.55,
+      "sigma": 15.4,
+      "mu": 8
+    },
+    {
+      "symbol": "ITC",
+      "cutoff": "2024-08-22",
+      "predicted": 0.60475,
+      "actual": 0,
+      "actualReturnPct": -15.11,
+      "sigma": 20.4,
+      "mu": 8
+    },
+    {
+      "symbol": "ITC",
+      "cutoff": "2024-04-22",
+      "predicted": 0.615,
+      "actual": 1,
+      "actualReturnPct": 8.46,
+      "sigma": 20.5,
+      "mu": 8
+    },
+    {
+      "symbol": "ITC",
+      "cutoff": "2023-12-22",
+      "predicted": 0.61425,
+      "actual": 1,
+      "actualReturnPct": 10.84,
+      "sigma": 20.6,
+      "mu": 8
+    },
+    {
+      "symbol": "LT",
+      "cutoff": "2025-08-22",
+      "predicted": 0.59725,
+      "actual": 1,
+      "actualReturnPct": 14.4,
+      "sigma": 23.6,
+      "mu": 8
+    },
+    {
+      "symbol": "LT",
+      "cutoff": "2025-04-22",
+      "predicted": 0.56475,
+      "actual": 1,
+      "actualReturnPct": 24.72,
+      "sigma": 26.2,
+      "mu": 8
+    },
+    {
+      "symbol": "LT",
+      "cutoff": "2024-12-22",
+      "predicted": 0.592,
+      "actual": 1,
+      "actualReturnPct": 12.54,
+      "sigma": 23,
+      "mu": 8
+    },
+    {
+      "symbol": "LT",
+      "cutoff": "2024-08-22",
+      "predicted": 0.596,
+      "actual": 1,
+      "actualReturnPct": 1.13,
+      "sigma": 23.4,
+      "mu": 8
+    },
+    {
+      "symbol": "LT",
+      "cutoff": "2024-04-22",
+      "predicted": 0.581,
+      "actual": 0,
+      "actualReturnPct": -4.69,
+      "sigma": 23.2,
+      "mu": 8
+    },
+    {
+      "symbol": "LT",
+      "cutoff": "2023-12-22",
+      "predicted": 0.602,
+      "actual": 1,
+      "actualReturnPct": 7.95,
+      "sigma": 23.1,
+      "mu": 8
+    },
+    {
+      "symbol": "AXISBANK",
+      "cutoff": "2025-08-22",
+      "predicted": 0.6015,
+      "actual": 1,
+      "actualReturnPct": 15.56,
+      "sigma": 21.6,
+      "mu": 8
+    },
+    {
+      "symbol": "AXISBANK",
+      "cutoff": "2025-04-22",
+      "predicted": 0.59475,
+      "actual": 1,
+      "actualReturnPct": 8.37,
+      "sigma": 23,
+      "mu": 8
+    },
+    {
+      "symbol": "AXISBANK",
+      "cutoff": "2024-12-22",
+      "predicted": 0.59175,
+      "actual": 1,
+      "actualReturnPct": 14.68,
+      "sigma": 21,
+      "mu": 8
+    },
+    {
+      "symbol": "AXISBANK",
+      "cutoff": "2024-08-22",
+      "predicted": 0.578,
+      "actual": 0,
+      "actualReturnPct": -8.81,
+      "sigma": 26.3,
+      "mu": 8
+    },
+    {
+      "symbol": "AXISBANK",
+      "cutoff": "2024-04-22",
+      "predicted": 0.57,
+      "actual": 1,
+      "actualReturnPct": 16,
+      "sigma": 26,
+      "mu": 8
+    },
+    {
+      "symbol": "AXISBANK",
+      "cutoff": "2023-12-22",
+      "predicted": 0.576,
+      "actual": 0,
+      "actualReturnPct": -2.08,
+      "sigma": 26.8,
+      "mu": 8
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "cutoff": "2025-08-22",
+      "predicted": 0.608,
+      "actual": 0,
+      "actualReturnPct": -0.02,
+      "sigma": 20.9,
+      "mu": 8
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "cutoff": "2025-04-22",
+      "predicted": 0.6085,
+      "actual": 0,
+      "actualReturnPct": -15.85,
+      "sigma": 21.4,
+      "mu": 8
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "cutoff": "2024-12-22",
+      "predicted": 0.65,
+      "actual": 1,
+      "actualReturnPct": 24.27,
+      "sigma": 17.2,
+      "mu": 8
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "cutoff": "2024-08-22",
+      "predicted": 0.59625,
+      "actual": 1,
+      "actualReturnPct": 9.52,
+      "sigma": 22.8,
+      "mu": 8
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "cutoff": "2024-04-22",
+      "predicted": 0.6005,
+      "actual": 1,
+      "actualReturnPct": 24.29,
+      "sigma": 22.8,
+      "mu": 8
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "cutoff": "2023-12-22",
+      "predicted": 0.5855,
+      "actual": 0,
+      "actualReturnPct": -3.36,
+      "sigma": 23.2,
+      "mu": 8
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "cutoff": "2025-08-22",
+      "predicted": 0.61225,
+      "actual": 1,
+      "actualReturnPct": 2.1,
+      "sigma": 21.3,
+      "mu": 8
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "cutoff": "2025-04-22",
+      "predicted": 0.59175,
+      "actual": 0,
+      "actualReturnPct": -2.55,
+      "sigma": 22.4,
+      "mu": 8
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "cutoff": "2024-12-22",
+      "predicted": 0.59725,
+      "actual": 1,
+      "actualReturnPct": 34.53,
+      "sigma": 22.4,
+      "mu": 8
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "cutoff": "2024-08-22",
+      "predicted": 0.582,
+      "actual": 1,
+      "actualReturnPct": 33.03,
+      "sigma": 23.9,
+      "mu": 8
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5865,
+      "actual": 1,
+      "actualReturnPct": 42.12,
+      "sigma": 24,
+      "mu": 8
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "cutoff": "2023-12-22",
+      "predicted": 0.58475,
+      "actual": 1,
+      "actualReturnPct": 64.09,
+      "sigma": 24.2,
+      "mu": 8
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "cutoff": "2025-08-22",
+      "predicted": 0.63225,
+      "actual": 1,
+      "actualReturnPct": 3.91,
+      "sigma": 19,
+      "mu": 8
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "cutoff": "2025-04-22",
+      "predicted": 0.6265,
+      "actual": 1,
+      "actualReturnPct": 2.74,
+      "sigma": 19.8,
+      "mu": 8
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "cutoff": "2024-12-22",
+      "predicted": 0.609,
+      "actual": 1,
+      "actualReturnPct": 21.64,
+      "sigma": 20.1,
+      "mu": 8
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "cutoff": "2024-08-22",
+      "predicted": 0.59475,
+      "actual": 0,
+      "actualReturnPct": -20.03,
+      "sigma": 22.4,
+      "mu": 8
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "cutoff": "2024-04-22",
+      "predicted": 0.60325,
+      "actual": 0,
+      "actualReturnPct": -11.69,
+      "sigma": 22.5,
+      "mu": 8
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "cutoff": "2023-12-22",
+      "predicted": 0.596,
+      "actual": 0,
+      "actualReturnPct": -29.43,
+      "sigma": 23.1,
+      "mu": 8
+    },
+    {
+      "symbol": "MARUTI",
+      "cutoff": "2025-08-22",
+      "predicted": 0.6205,
+      "actual": 0,
+      "actualReturnPct": -4.05,
+      "sigma": 20.2,
+      "mu": 8
+    },
+    {
+      "symbol": "MARUTI",
+      "cutoff": "2025-04-22",
+      "predicted": 0.612,
+      "actual": 1,
+      "actualReturnPct": 13.79,
+      "sigma": 21.1,
+      "mu": 8
+    },
+    {
+      "symbol": "MARUTI",
+      "cutoff": "2024-12-22",
+      "predicted": 0.62475,
+      "actual": 1,
+      "actualReturnPct": 53.89,
+      "sigma": 19.6,
+      "mu": 8
+    },
+    {
+      "symbol": "MARUTI",
+      "cutoff": "2024-08-22",
+      "predicted": 0.5945,
+      "actual": 1,
+      "actualReturnPct": 19.54,
+      "sigma": 22.8,
+      "mu": 8
+    },
+    {
+      "symbol": "MARUTI",
+      "cutoff": "2024-04-22",
+      "predicted": 0.59825,
+      "actual": 0,
+      "actualReturnPct": -5.92,
+      "sigma": 22.9,
+      "mu": 8
+    },
+    {
+      "symbol": "MARUTI",
+      "cutoff": "2023-12-22",
+      "predicted": 0.59375,
+      "actual": 1,
+      "actualReturnPct": 13,
+      "sigma": 22.9,
+      "mu": 8
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "cutoff": "2025-08-22",
+      "predicted": 0.6165,
+      "actual": 1,
+      "actualReturnPct": 17.14,
+      "sigma": 19.9,
+      "mu": 8
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "cutoff": "2025-04-22",
+      "predicted": 0.6085,
+      "actual": 1,
+      "actualReturnPct": 0.32,
+      "sigma": 20.7,
+      "mu": 8
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "cutoff": "2024-12-22",
+      "predicted": 0.64475,
+      "actual": 0,
+      "actualReturnPct": -4.05,
+      "sigma": 16.9,
+      "mu": 8
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "cutoff": "2024-08-22",
+      "predicted": 0.60375,
+      "actual": 0,
+      "actualReturnPct": -5.24,
+      "sigma": 21.3,
+      "mu": 8
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "cutoff": "2024-04-22",
+      "predicted": 0.6045,
+      "actual": 1,
+      "actualReturnPct": 22.05,
+      "sigma": 21.4,
+      "mu": 8
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "cutoff": "2023-12-22",
+      "predicted": 0.60275,
+      "actual": 1,
+      "actualReturnPct": 54.58,
+      "sigma": 21.6,
+      "mu": 8
+    },
+    {
+      "symbol": "TITAN",
+      "cutoff": "2025-08-22",
+      "predicted": 0.60775,
+      "actual": 1,
+      "actualReturnPct": 41.11,
+      "sigma": 20.9,
+      "mu": 8
+    },
+    {
+      "symbol": "TITAN",
+      "cutoff": "2025-04-22",
+      "predicted": 0.593,
+      "actual": 1,
+      "actualReturnPct": 33.54,
+      "sigma": 22.6,
+      "mu": 8
+    },
+    {
+      "symbol": "TITAN",
+      "cutoff": "2024-12-22",
+      "predicted": 0.6165,
+      "actual": 1,
+      "actualReturnPct": 19.3,
+      "sigma": 20.5,
+      "mu": 8
+    },
+    {
+      "symbol": "TITAN",
+      "cutoff": "2024-08-22",
+      "predicted": 0.5855,
+      "actual": 1,
+      "actualReturnPct": 2.86,
+      "sigma": 24.3,
+      "mu": 8
+    },
+    {
+      "symbol": "TITAN",
+      "cutoff": "2024-04-22",
+      "predicted": 0.59925,
+      "actual": 0,
+      "actualReturnPct": -5.13,
+      "sigma": 24.3,
+      "mu": 8
+    },
+    {
+      "symbol": "TITAN",
+      "cutoff": "2023-12-22",
+      "predicted": 0.576,
+      "actual": 0,
+      "actualReturnPct": -8.81,
+      "sigma": 24.6,
+      "mu": 8
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "cutoff": "2025-08-22",
+      "predicted": 0.61275,
+      "actual": 0,
+      "actualReturnPct": -8.27,
+      "sigma": 21,
+      "mu": 8
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "cutoff": "2025-04-22",
+      "predicted": 0.6025,
+      "actual": 1,
+      "actualReturnPct": 1.27,
+      "sigma": 22.8,
+      "mu": 8
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "cutoff": "2024-12-22",
+      "predicted": 0.6175,
+      "actual": 1,
+      "actualReturnPct": 3.9,
+      "sigma": 20.8,
+      "mu": 8
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "cutoff": "2024-08-22",
+      "predicted": 0.601,
+      "actual": 1,
+      "actualReturnPct": 13.26,
+      "sigma": 23.3,
+      "mu": 8
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5965,
+      "actual": 1,
+      "actualReturnPct": 30.14,
+      "sigma": 23,
+      "mu": 8
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "cutoff": "2023-12-22",
+      "predicted": 0.589,
+      "actual": 1,
+      "actualReturnPct": 15.68,
+      "sigma": 23.2,
+      "mu": 8
+    },
+    {
+      "symbol": "NESTLEIND",
+      "cutoff": "2025-08-22",
+      "predicted": 0.63925,
+      "actual": 1,
+      "actualReturnPct": 26.52,
+      "sigma": 18.4,
+      "mu": 8
+    },
+    {
+      "symbol": "NESTLEIND",
+      "cutoff": "2025-04-22",
+      "predicted": 0.6365,
+      "actual": 1,
+      "actualReturnPct": 19.28,
+      "sigma": 18.2,
+      "mu": 8
+    },
+    {
+      "symbol": "NESTLEIND",
+      "cutoff": "2024-12-22",
+      "predicted": 0.64775,
+      "actual": 1,
+      "actualReturnPct": 18.89,
+      "sigma": 17.6,
+      "mu": 8
+    },
+    {
+      "symbol": "NESTLEIND",
+      "cutoff": "2024-08-22",
+      "predicted": 0.63525,
+      "actual": 0,
+      "actualReturnPct": -8.67,
+      "sigma": 18.6,
+      "mu": 8
+    },
+    {
+      "symbol": "NESTLEIND",
+      "cutoff": "2024-04-22",
+      "predicted": 0.641,
+      "actual": 0,
+      "actualReturnPct": -0.24,
+      "sigma": 18.6,
+      "mu": 8
+    },
+    {
+      "symbol": "NESTLEIND",
+      "cutoff": "2023-12-22",
+      "predicted": 0.6355,
+      "actual": 0,
+      "actualReturnPct": -13.01,
+      "sigma": 18.3,
+      "mu": 8
+    },
+    {
+      "symbol": "TATASTEEL",
+      "cutoff": "2025-08-22",
+      "predicted": 0.568,
+      "actual": 1,
+      "actualReturnPct": 15.64,
+      "sigma": 25.2,
+      "mu": 8
+    },
+    {
+      "symbol": "TATASTEEL",
+      "cutoff": "2025-04-22",
+      "predicted": 0.553,
+      "actual": 1,
+      "actualReturnPct": 56.81,
+      "sigma": 27.4,
+      "mu": 8
+    },
+    {
+      "symbol": "TATASTEEL",
+      "cutoff": "2024-12-22",
+      "predicted": 0.6005,
+      "actual": 1,
+      "actualReturnPct": 23.02,
+      "sigma": 21.6,
+      "mu": 8
+    },
+    {
+      "symbol": "TATASTEEL",
+      "cutoff": "2024-08-22",
+      "predicted": 0.52175,
+      "actual": 1,
+      "actualReturnPct": 7.53,
+      "sigma": 33.9,
+      "mu": 8
+    },
+    {
+      "symbol": "TATASTEEL",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5315,
+      "actual": 0,
+      "actualReturnPct": -10.59,
+      "sigma": 34.1,
+      "mu": 8
+    },
+    {
+      "symbol": "TATASTEEL",
+      "cutoff": "2023-12-22",
+      "predicted": 0.5155,
+      "actual": 1,
+      "actualReturnPct": 6.48,
+      "sigma": 34.3,
+      "mu": 8
+    },
+    {
+      "symbol": "WIPRO",
+      "cutoff": "2025-08-22",
+      "predicted": 0.57925,
+      "actual": 0,
+      "actualReturnPct": -24.94,
+      "sigma": 25.7,
+      "mu": 8
+    },
+    {
+      "symbol": "WIPRO",
+      "cutoff": "2025-04-22",
+      "predicted": 0.5665,
+      "actual": 0,
+      "actualReturnPct": -10.05,
+      "sigma": 28.4,
+      "mu": 8
+    },
+    {
+      "symbol": "WIPRO",
+      "cutoff": "2024-12-22",
+      "predicted": 0.58225,
+      "actual": 0,
+      "actualReturnPct": -9.26,
+      "sigma": 25,
+      "mu": 8
+    },
+    {
+      "symbol": "WIPRO",
+      "cutoff": "2024-08-22",
+      "predicted": 0.582,
+      "actual": 1,
+      "actualReturnPct": 0.3,
+      "sigma": 24.7,
+      "mu": 8
+    },
+    {
+      "symbol": "WIPRO",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5775,
+      "actual": 1,
+      "actualReturnPct": 8.35,
+      "sigma": 24.4,
+      "mu": 8
+    },
+    {
+      "symbol": "WIPRO",
+      "cutoff": "2023-12-22",
+      "predicted": 0.59625,
+      "actual": 1,
+      "actualReturnPct": 38.68,
+      "sigma": 24,
+      "mu": 8
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "cutoff": "2025-08-22",
+      "predicted": 0.577,
+      "actual": 1,
+      "actualReturnPct": 23.02,
+      "sigma": 25.6,
+      "mu": 8
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "cutoff": "2025-04-22",
+      "predicted": 0.559,
+      "actual": 1,
+      "actualReturnPct": 0.01,
+      "sigma": 25.7,
+      "mu": 8
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "cutoff": "2024-12-22",
+      "predicted": 0.57425,
+      "actual": 1,
+      "actualReturnPct": 46.92,
+      "sigma": 24.4,
+      "mu": 8
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "cutoff": "2024-08-22",
+      "predicted": 0.558,
+      "actual": 1,
+      "actualReturnPct": 34.57,
+      "sigma": 29.2,
+      "mu": 8
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5435,
+      "actual": 1,
+      "actualReturnPct": 28.36,
+      "sigma": 29.3,
+      "mu": 8
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "cutoff": "2023-12-22",
+      "predicted": 0.5485,
+      "actual": 0,
+      "actualReturnPct": -5.39,
+      "sigma": 29.8,
+      "mu": 8
+    },
+    {
+      "symbol": "HCLTECH",
+      "cutoff": "2025-08-22",
+      "predicted": 0.58975,
+      "actual": 0,
+      "actualReturnPct": -8.84,
+      "sigma": 22.7,
+      "mu": 8
+    },
+    {
+      "symbol": "HCLTECH",
+      "cutoff": "2025-04-22",
+      "predicted": 0.58325,
+      "actual": 0,
+      "actualReturnPct": -12.58,
+      "sigma": 24,
+      "mu": 8
+    },
+    {
+      "symbol": "HCLTECH",
+      "cutoff": "2024-12-22",
+      "predicted": 0.60375,
+      "actual": 0,
+      "actualReturnPct": -9.8,
+      "sigma": 20.3,
+      "mu": 8
+    },
+    {
+      "symbol": "HCLTECH",
+      "cutoff": "2024-08-22",
+      "predicted": 0.5805,
+      "actual": 0,
+      "actualReturnPct": -7.04,
+      "sigma": 23.5,
+      "mu": 8
+    },
+    {
+      "symbol": "HCLTECH",
+      "cutoff": "2024-04-22",
+      "predicted": 0.58025,
+      "actual": 1,
+      "actualReturnPct": 12.42,
+      "sigma": 23.8,
+      "mu": 8
+    },
+    {
+      "symbol": "HCLTECH",
+      "cutoff": "2023-12-22",
+      "predicted": 0.577,
+      "actual": 1,
+      "actualReturnPct": 39.27,
+      "sigma": 23.8,
+      "mu": 8
+    },
+    {
+      "symbol": "TECHM",
+      "cutoff": "2025-08-22",
+      "predicted": 0.581,
+      "actual": 1,
+      "actualReturnPct": 7.95,
+      "sigma": 25,
+      "mu": 8
+    },
+    {
+      "symbol": "TECHM",
+      "cutoff": "2025-04-22",
+      "predicted": 0.5775,
+      "actual": 1,
+      "actualReturnPct": 4.59,
+      "sigma": 26.5,
+      "mu": 8
+    },
+    {
+      "symbol": "TECHM",
+      "cutoff": "2024-12-22",
+      "predicted": 0.58625,
+      "actual": 0,
+      "actualReturnPct": -1.61,
+      "sigma": 24.4,
+      "mu": 8
+    },
+    {
+      "symbol": "TECHM",
+      "cutoff": "2024-08-22",
+      "predicted": 0.55125,
+      "actual": 0,
+      "actualReturnPct": -2.22,
+      "sigma": 27.3,
+      "mu": 8
+    },
+    {
+      "symbol": "TECHM",
+      "cutoff": "2024-04-22",
+      "predicted": 0.571,
+      "actual": 1,
+      "actualReturnPct": 25.83,
+      "sigma": 27.4,
+      "mu": 8
+    },
+    {
+      "symbol": "TECHM",
+      "cutoff": "2023-12-22",
+      "predicted": 0.5525,
+      "actual": 1,
+      "actualReturnPct": 40.07,
+      "sigma": 27.7,
+      "mu": 8
+    },
+    {
+      "symbol": "POWERGRID",
+      "cutoff": "2025-08-22",
+      "predicted": 0.581,
+      "actual": 0,
+      "actualReturnPct": -1.38,
+      "sigma": 23.6,
+      "mu": 8
+    },
+    {
+      "symbol": "POWERGRID",
+      "cutoff": "2025-04-22",
+      "predicted": 0.5785,
+      "actual": 1,
+      "actualReturnPct": 3.56,
+      "sigma": 25.4,
+      "mu": 8
+    },
+    {
+      "symbol": "POWERGRID",
+      "cutoff": "2024-12-22",
+      "predicted": 0.59475,
+      "actual": 0,
+      "actualReturnPct": -13.16,
+      "sigma": 22.3,
+      "mu": 8
+    },
+    {
+      "symbol": "POWERGRID",
+      "cutoff": "2024-08-22",
+      "predicted": 0.576,
+      "actual": 0,
+      "actualReturnPct": -13.01,
+      "sigma": 25.5,
+      "mu": 8
+    },
+    {
+      "symbol": "POWERGRID",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5895,
+      "actual": 1,
+      "actualReturnPct": 13.36,
+      "sigma": 25.1,
+      "mu": 8
+    },
+    {
+      "symbol": "POWERGRID",
+      "cutoff": "2023-12-22",
+      "predicted": 0.59275,
+      "actual": 1,
+      "actualReturnPct": 38.92,
+      "sigma": 24.6,
+      "mu": 8
+    },
+    {
+      "symbol": "NTPC",
+      "cutoff": "2025-08-22",
+      "predicted": 0.588,
+      "actual": 1,
+      "actualReturnPct": 3,
+      "sigma": 24,
+      "mu": 8
+    },
+    {
+      "symbol": "NTPC",
+      "cutoff": "2025-04-22",
+      "predicted": 0.55825,
+      "actual": 1,
+      "actualReturnPct": 15.49,
+      "sigma": 27.1,
+      "mu": 8
+    },
+    {
+      "symbol": "NTPC",
+      "cutoff": "2024-12-22",
+      "predicted": 0.58225,
+      "actual": 0,
+      "actualReturnPct": -0.15,
+      "sigma": 24.6,
+      "mu": 8
+    },
+    {
+      "symbol": "NTPC",
+      "cutoff": "2024-08-22",
+      "predicted": 0.587,
+      "actual": 0,
+      "actualReturnPct": -16.23,
+      "sigma": 25.2,
+      "mu": 8
+    },
+    {
+      "symbol": "NTPC",
+      "cutoff": "2024-04-22",
+      "predicted": 0.573,
+      "actual": 1,
+      "actualReturnPct": 5.39,
+      "sigma": 25.1,
+      "mu": 8
+    },
+    {
+      "symbol": "NTPC",
+      "cutoff": "2023-12-22",
+      "predicted": 0.5785,
+      "actual": 1,
+      "actualReturnPct": 13.15,
+      "sigma": 25,
+      "mu": 8
+    },
+    {
+      "symbol": "ONGC",
+      "cutoff": "2025-08-22",
+      "predicted": 0.5725,
+      "actual": 1,
+      "actualReturnPct": 4.58,
+      "sigma": 24.6,
+      "mu": 8
+    },
+    {
+      "symbol": "ONGC",
+      "cutoff": "2025-04-22",
+      "predicted": 0.5665,
+      "actual": 1,
+      "actualReturnPct": 20.66,
+      "sigma": 28,
+      "mu": 8
+    },
+    {
+      "symbol": "ONGC",
+      "cutoff": "2024-12-22",
+      "predicted": 0.59975,
+      "actual": 1,
+      "actualReturnPct": 3.9,
+      "sigma": 22.9,
+      "mu": 8
+    },
+    {
+      "symbol": "ONGC",
+      "cutoff": "2024-08-22",
+      "predicted": 0.538,
+      "actual": 0,
+      "actualReturnPct": -23.92,
+      "sigma": 31.2,
+      "mu": 8
+    },
+    {
+      "symbol": "ONGC",
+      "cutoff": "2024-04-22",
+      "predicted": 0.535,
+      "actual": 0,
+      "actualReturnPct": -4.13,
+      "sigma": 30.8,
+      "mu": 8
+    },
+    {
+      "symbol": "ONGC",
+      "cutoff": "2023-12-22",
+      "predicted": 0.5315,
+      "actual": 1,
+      "actualReturnPct": 22.49,
+      "sigma": 30.4,
+      "mu": 8
+    },
+    {
+      "symbol": "COALINDIA",
+      "cutoff": "2025-08-22",
+      "predicted": 0.60775,
+      "actual": 1,
+      "actualReturnPct": 13,
+      "sigma": 21.6,
+      "mu": 8
+    },
+    {
+      "symbol": "COALINDIA",
+      "cutoff": "2025-04-22",
+      "predicted": 0.5715,
+      "actual": 1,
+      "actualReturnPct": 20.93,
+      "sigma": 24.7,
+      "mu": 8
+    },
+    {
+      "symbol": "COALINDIA",
+      "cutoff": "2024-12-22",
+      "predicted": 0.59225,
+      "actual": 1,
+      "actualReturnPct": 12.85,
+      "sigma": 22.9,
+      "mu": 8
+    },
+    {
+      "symbol": "COALINDIA",
+      "cutoff": "2024-08-22",
+      "predicted": 0.54925,
+      "actual": 0,
+      "actualReturnPct": -22.74,
+      "sigma": 29.4,
+      "mu": 8
+    },
+    {
+      "symbol": "COALINDIA",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5585,
+      "actual": 0,
+      "actualReturnPct": -3.05,
+      "sigma": 29.1,
+      "mu": 8
+    },
+    {
+      "symbol": "COALINDIA",
+      "cutoff": "2023-12-22",
+      "predicted": 0.5415,
+      "actual": 1,
+      "actualReturnPct": 15.13,
+      "sigma": 28.9,
+      "mu": 8
+    },
+    {
+      "symbol": "GRASIM",
+      "cutoff": "2025-08-22",
+      "predicted": 0.60675,
+      "actual": 1,
+      "actualReturnPct": 15.17,
+      "sigma": 22.1,
+      "mu": 8
+    },
+    {
+      "symbol": "GRASIM",
+      "cutoff": "2025-04-22",
+      "predicted": 0.58425,
+      "actual": 1,
+      "actualReturnPct": 1.14,
+      "sigma": 23,
+      "mu": 8
+    },
+    {
+      "symbol": "GRASIM",
+      "cutoff": "2024-12-22",
+      "predicted": 0.6,
+      "actual": 1,
+      "actualReturnPct": 13.63,
+      "sigma": 22,
+      "mu": 8
+    },
+    {
+      "symbol": "GRASIM",
+      "cutoff": "2024-08-22",
+      "predicted": 0.58925,
+      "actual": 1,
+      "actualReturnPct": 5.09,
+      "sigma": 24.2,
+      "mu": 8
+    },
+    {
+      "symbol": "GRASIM",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5825,
+      "actual": 1,
+      "actualReturnPct": 21.59,
+      "sigma": 24.2,
+      "mu": 8
+    },
+    {
+      "symbol": "GRASIM",
+      "cutoff": "2023-12-22",
+      "predicted": 0.59375,
+      "actual": 1,
+      "actualReturnPct": 18.01,
+      "sigma": 24.2,
+      "mu": 8
+    },
+    {
+      "symbol": "CIPLA",
+      "cutoff": "2025-08-22",
+      "predicted": 0.61175,
+      "actual": 0,
+      "actualReturnPct": -9.24,
+      "sigma": 21.1,
+      "mu": 8
+    },
+    {
+      "symbol": "CIPLA",
+      "cutoff": "2025-04-22",
+      "predicted": 0.59625,
+      "actual": 0,
+      "actualReturnPct": -11.9,
+      "sigma": 22.6,
+      "mu": 8
+    },
+    {
+      "symbol": "CIPLA",
+      "cutoff": "2024-12-22",
+      "predicted": 0.59375,
+      "actual": 1,
+      "actualReturnPct": 3.4,
+      "sigma": 22.7,
+      "mu": 8
+    },
+    {
+      "symbol": "CIPLA",
+      "cutoff": "2024-08-22",
+      "predicted": 0.59,
+      "actual": 1,
+      "actualReturnPct": 1.49,
+      "sigma": 22.8,
+      "mu": 8
+    },
+    {
+      "symbol": "CIPLA",
+      "cutoff": "2024-04-22",
+      "predicted": 0.61025,
+      "actual": 1,
+      "actualReturnPct": 16.54,
+      "sigma": 22.5,
+      "mu": 8
+    },
+    {
+      "symbol": "CIPLA",
+      "cutoff": "2023-12-22",
+      "predicted": 0.60325,
+      "actual": 1,
+      "actualReturnPct": 26.21,
+      "sigma": 22.4,
+      "mu": 8
+    },
+    {
+      "symbol": "DRREDDY",
+      "cutoff": "2025-08-22",
+      "predicted": 0.62575,
+      "actual": 0,
+      "actualReturnPct": -7.4,
+      "sigma": 20.2,
+      "mu": 8
+    },
+    {
+      "symbol": "DRREDDY",
+      "cutoff": "2025-04-22",
+      "predicted": 0.60875,
+      "actual": 1,
+      "actualReturnPct": 14.06,
+      "sigma": 20.8,
+      "mu": 8
+    },
+    {
+      "symbol": "DRREDDY",
+      "cutoff": "2024-12-22",
+      "predicted": 0.6215,
+      "actual": 0,
+      "actualReturnPct": -4.93,
+      "sigma": 18.4,
+      "mu": 8
+    },
+    {
+      "symbol": "DRREDDY",
+      "cutoff": "2024-08-22",
+      "predicted": 0.60175,
+      "actual": 0,
+      "actualReturnPct": -8.53,
+      "sigma": 21.2,
+      "mu": 8
+    },
+    {
+      "symbol": "DRREDDY",
+      "cutoff": "2024-04-22",
+      "predicted": 0.61375,
+      "actual": 1,
+      "actualReturnPct": 1.45,
+      "sigma": 21.3,
+      "mu": 8
+    },
+    {
+      "symbol": "DRREDDY",
+      "cutoff": "2023-12-22",
+      "predicted": 0.611,
+      "actual": 1,
+      "actualReturnPct": 23.96,
+      "sigma": 21.3,
+      "mu": 8
+    },
+    {
+      "symbol": "BRITANNIA",
+      "cutoff": "2025-08-22",
+      "predicted": 0.615,
+      "actual": 1,
+      "actualReturnPct": 0.77,
+      "sigma": 20.1,
+      "mu": 8
+    },
+    {
+      "symbol": "BRITANNIA",
+      "cutoff": "2025-04-22",
+      "predicted": 0.61275,
+      "actual": 1,
+      "actualReturnPct": 7.4,
+      "sigma": 20.3,
+      "mu": 8
+    },
+    {
+      "symbol": "BRITANNIA",
+      "cutoff": "2024-12-22",
+      "predicted": 0.59625,
+      "actual": 1,
+      "actualReturnPct": 30.09,
+      "sigma": 23,
+      "mu": 8
+    },
+    {
+      "symbol": "BRITANNIA",
+      "cutoff": "2024-08-22",
+      "predicted": 0.63475,
+      "actual": 0,
+      "actualReturnPct": -3.67,
+      "sigma": 18.5,
+      "mu": 8
+    },
+    {
+      "symbol": "BRITANNIA",
+      "cutoff": "2024-04-22",
+      "predicted": 0.631,
+      "actual": 1,
+      "actualReturnPct": 17.8,
+      "sigma": 18.5,
+      "mu": 8
+    },
+    {
+      "symbol": "BRITANNIA",
+      "cutoff": "2023-12-22",
+      "predicted": 0.63675,
+      "actual": 0,
+      "actualReturnPct": -4,
+      "sigma": 18.5,
+      "mu": 8
+    },
+    {
+      "symbol": "EICHERMOT",
+      "cutoff": "2025-08-22",
+      "predicted": 0.59775,
+      "actual": 1,
+      "actualReturnPct": 36,
+      "sigma": 22,
+      "mu": 8
+    },
+    {
+      "symbol": "EICHERMOT",
+      "cutoff": "2025-04-22",
+      "predicted": 0.58125,
+      "actual": 1,
+      "actualReturnPct": 25.07,
+      "sigma": 24.9,
+      "mu": 8
+    },
+    {
+      "symbol": "EICHERMOT",
+      "cutoff": "2024-12-22",
+      "predicted": 0.589,
+      "actual": 1,
+      "actualReturnPct": 56.7,
+      "sigma": 22.3,
+      "mu": 8
+    },
+    {
+      "symbol": "EICHERMOT",
+      "cutoff": "2024-08-22",
+      "predicted": 0.57925,
+      "actual": 1,
+      "actualReturnPct": 23.5,
+      "sigma": 26,
+      "mu": 8
+    },
+    {
+      "symbol": "EICHERMOT",
+      "cutoff": "2024-04-22",
+      "predicted": 0.572,
+      "actual": 1,
+      "actualReturnPct": 30.85,
+      "sigma": 26.4,
+      "mu": 8
+    },
+    {
+      "symbol": "EICHERMOT",
+      "cutoff": "2023-12-22",
+      "predicted": 0.55775,
+      "actual": 1,
+      "actualReturnPct": 24.8,
+      "sigma": 26.5,
+      "mu": 8
+    },
+    {
+      "symbol": "HEROMOTOCO",
+      "cutoff": "2025-08-22",
+      "predicted": 0.57375,
+      "actual": 1,
+      "actualReturnPct": 16.51,
+      "sigma": 26,
+      "mu": 8
+    },
+    {
+      "symbol": "HEROMOTOCO",
+      "cutoff": "2025-04-22",
+      "predicted": 0.582,
+      "actual": 1,
+      "actualReturnPct": 33.24,
+      "sigma": 25.3,
+      "mu": 8
+    },
+    {
+      "symbol": "HEROMOTOCO",
+      "cutoff": "2024-12-22",
+      "predicted": 0.5715,
+      "actual": 1,
+      "actualReturnPct": 35.16,
+      "sigma": 24.8,
+      "mu": 8
+    },
+    {
+      "symbol": "HEROMOTOCO",
+      "cutoff": "2024-08-22",
+      "predicted": 0.592,
+      "actual": 0,
+      "actualReturnPct": -0.29,
+      "sigma": 24.5,
+      "mu": 8
+    },
+    {
+      "symbol": "HEROMOTOCO",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5875,
+      "actual": 0,
+      "actualReturnPct": -4.14,
+      "sigma": 24.7,
+      "mu": 8
+    },
+    {
+      "symbol": "HEROMOTOCO",
+      "cutoff": "2023-12-22",
+      "predicted": 0.5645,
+      "actual": 1,
+      "actualReturnPct": 11.88,
+      "sigma": 24.4,
+      "mu": 8
+    },
+    {
+      "symbol": "JSWSTEEL",
+      "cutoff": "2025-08-22",
+      "predicted": 0.5935,
+      "actual": 1,
+      "actualReturnPct": 21.4,
+      "sigma": 22.7,
+      "mu": 8
+    },
+    {
+      "symbol": "JSWSTEEL",
+      "cutoff": "2025-04-22",
+      "predicted": 0.59325,
+      "actual": 1,
+      "actualReturnPct": 24.39,
+      "sigma": 22.7,
+      "mu": 8
+    },
+    {
+      "symbol": "JSWSTEEL",
+      "cutoff": "2024-12-22",
+      "predicted": 0.60125,
+      "actual": 1,
+      "actualReturnPct": 19.62,
+      "sigma": 22.9,
+      "mu": 8
+    },
+    {
+      "symbol": "JSWSTEEL",
+      "cutoff": "2024-08-22",
+      "predicted": 0.55,
+      "actual": 1,
+      "actualReturnPct": 14.57,
+      "sigma": 29.3,
+      "mu": 8
+    },
+    {
+      "symbol": "JSWSTEEL",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5485,
+      "actual": 1,
+      "actualReturnPct": 22.88,
+      "sigma": 29.3,
+      "mu": 8
+    },
+    {
+      "symbol": "JSWSTEEL",
+      "cutoff": "2023-12-22",
+      "predicted": 0.54825,
+      "actual": 1,
+      "actualReturnPct": 8.39,
+      "sigma": 30,
+      "mu": 8
+    },
+    {
+      "symbol": "HINDALCO",
+      "cutoff": "2025-08-22",
+      "predicted": 0.562,
+      "actual": 1,
+      "actualReturnPct": 46.36,
+      "sigma": 26.5,
+      "mu": 8
+    },
+    {
+      "symbol": "HINDALCO",
+      "cutoff": "2025-04-22",
+      "predicted": 0.549,
+      "actual": 1,
+      "actualReturnPct": 71.96,
+      "sigma": 30.8,
+      "mu": 8
+    },
+    {
+      "symbol": "HINDALCO",
+      "cutoff": "2024-12-22",
+      "predicted": 0.567,
+      "actual": 1,
+      "actualReturnPct": 41.22,
+      "sigma": 27,
+      "mu": 8
+    },
+    {
+      "symbol": "HINDALCO",
+      "cutoff": "2024-08-22",
+      "predicted": 0.49975,
+      "actual": 1,
+      "actualReturnPct": 5.18,
+      "sigma": 35.8,
+      "mu": 8
+    },
+    {
+      "symbol": "HINDALCO",
+      "cutoff": "2024-04-22",
+      "predicted": 0.50375,
+      "actual": 1,
+      "actualReturnPct": 2.85,
+      "sigma": 36.1,
+      "mu": 8
+    },
+    {
+      "symbol": "HINDALCO",
+      "cutoff": "2023-12-22",
+      "predicted": 0.50825,
+      "actual": 1,
+      "actualReturnPct": 7.21,
+      "sigma": 36.8,
+      "mu": 8
+    },
+    {
+      "symbol": "BPCL",
+      "cutoff": "2025-08-22",
+      "predicted": 0.564,
+      "actual": 1,
+      "actualReturnPct": 2.02,
+      "sigma": 27.1,
+      "mu": 8
+    },
+    {
+      "symbol": "BPCL",
+      "cutoff": "2025-04-22",
+      "predicted": 0.565,
+      "actual": 1,
+      "actualReturnPct": 9.55,
+      "sigma": 27.5,
+      "mu": 8
+    },
+    {
+      "symbol": "BPCL",
+      "cutoff": "2024-12-22",
+      "predicted": 0.5725,
+      "actual": 1,
+      "actualReturnPct": 33.8,
+      "sigma": 26.8,
+      "mu": 8
+    },
+    {
+      "symbol": "BPCL",
+      "cutoff": "2024-08-22",
+      "predicted": 0.56575,
+      "actual": 0,
+      "actualReturnPct": -6.92,
+      "sigma": 26.9,
+      "mu": 8
+    },
+    {
+      "symbol": "BPCL",
+      "cutoff": "2024-04-22",
+      "predicted": 0.57675,
+      "actual": 1,
+      "actualReturnPct": 11.39,
+      "sigma": 26.3,
+      "mu": 8
+    },
+    {
+      "symbol": "BPCL",
+      "cutoff": "2023-12-22",
+      "predicted": 0.5885,
+      "actual": 1,
+      "actualReturnPct": 35.58,
+      "sigma": 25.1,
+      "mu": 8
+    },
+    {
+      "symbol": "IOC",
+      "cutoff": "2025-08-22",
+      "predicted": 0.56975,
+      "actual": 1,
+      "actualReturnPct": 1.17,
+      "sigma": 25.9,
+      "mu": 8
+    },
+    {
+      "symbol": "IOC",
+      "cutoff": "2025-04-22",
+      "predicted": 0.538,
+      "actual": 1,
+      "actualReturnPct": 12.45,
+      "sigma": 27.8,
+      "mu": 8
+    },
+    {
+      "symbol": "IOC",
+      "cutoff": "2024-12-22",
+      "predicted": 0.559,
+      "actual": 1,
+      "actualReturnPct": 23.13,
+      "sigma": 26.9,
+      "mu": 8
+    },
+    {
+      "symbol": "IOC",
+      "cutoff": "2024-08-22",
+      "predicted": 0.56125,
+      "actual": 0,
+      "actualReturnPct": -17.77,
+      "sigma": 26.3,
+      "mu": 8
+    },
+    {
+      "symbol": "IOC",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5715,
+      "actual": 0,
+      "actualReturnPct": -14.67,
+      "sigma": 26,
+      "mu": 8
+    },
+    {
+      "symbol": "IOC",
+      "cutoff": "2023-12-22",
+      "predicted": 0.577,
+      "actual": 1,
+      "actualReturnPct": 15,
+      "sigma": 23.9,
+      "mu": 8
+    },
+    {
+      "symbol": "DABUR",
+      "cutoff": "2025-08-22",
+      "predicted": 0.62825,
+      "actual": 0,
+      "actualReturnPct": -20.92,
+      "sigma": 20.3,
+      "mu": 8
+    },
+    {
+      "symbol": "DABUR",
+      "cutoff": "2025-04-22",
+      "predicted": 0.60825,
+      "actual": 0,
+      "actualReturnPct": -3.49,
+      "sigma": 21.2,
+      "mu": 8
+    },
+    {
+      "symbol": "DABUR",
+      "cutoff": "2024-12-22",
+      "predicted": 0.60075,
+      "actual": 0,
+      "actualReturnPct": -1.36,
+      "sigma": 21,
+      "mu": 8
+    },
+    {
+      "symbol": "DABUR",
+      "cutoff": "2024-08-22",
+      "predicted": 0.6245,
+      "actual": 0,
+      "actualReturnPct": -17,
+      "sigma": 19.6,
+      "mu": 8
+    },
+    {
+      "symbol": "DABUR",
+      "cutoff": "2024-04-22",
+      "predicted": 0.629,
+      "actual": 0,
+      "actualReturnPct": -3.46,
+      "sigma": 19.3,
+      "mu": 8
+    },
+    {
+      "symbol": "DABUR",
+      "cutoff": "2023-12-22",
+      "predicted": 0.61875,
+      "actual": 0,
+      "actualReturnPct": -2.73,
+      "sigma": 19.3,
+      "mu": 8
+    },
+    {
+      "symbol": "GODREJCP",
+      "cutoff": "2025-08-22",
+      "predicted": 0.573,
+      "actual": 0,
+      "actualReturnPct": -23.76,
+      "sigma": 23.4,
+      "mu": 8
+    },
+    {
+      "symbol": "GODREJCP",
+      "cutoff": "2025-04-22",
+      "predicted": 0.5655,
+      "actual": 0,
+      "actualReturnPct": -8.71,
+      "sigma": 24.8,
+      "mu": 8
+    },
+    {
+      "symbol": "GODREJCP",
+      "cutoff": "2024-12-22",
+      "predicted": 0.5905,
+      "actual": 1,
+      "actualReturnPct": 14.66,
+      "sigma": 22.5,
+      "mu": 8
+    },
+    {
+      "symbol": "GODREJCP",
+      "cutoff": "2024-08-22",
+      "predicted": 0.5835,
+      "actual": 0,
+      "actualReturnPct": -7.84,
+      "sigma": 25,
+      "mu": 8
+    },
+    {
+      "symbol": "GODREJCP",
+      "cutoff": "2024-04-22",
+      "predicted": 0.5715,
+      "actual": 1,
+      "actualReturnPct": 10.4,
+      "sigma": 24.7,
+      "mu": 8
+    },
+    {
+      "symbol": "GODREJCP",
+      "cutoff": "2023-12-22",
+      "predicted": 0.58375,
+      "actual": 1,
+      "actualReturnPct": 2.14,
+      "sigma": 24.6,
+      "mu": 8
+    },
+    {
+      "symbol": "SIEMENS",
+      "cutoff": "2025-08-22",
+      "predicted": 0.536,
+      "actual": 1,
+      "actualReturnPct": 23.21,
+      "sigma": 32.2,
+      "mu": 8
+    },
+    {
+      "symbol": "SIEMENS",
+      "cutoff": "2025-04-22",
+      "predicted": 0.50825,
+      "actual": 1,
+      "actualReturnPct": 35.38,
+      "sigma": 36.3,
+      "mu": 8
+    },
+    {
+      "symbol": "SIEMENS",
+      "cutoff": "2024-12-22",
+      "predicted": 0.542,
+      "actual": 0,
+      "actualReturnPct": -22.82,
+      "sigma": 31.4,
+      "mu": 8
+    },
+    {
+      "symbol": "SIEMENS",
+      "cutoff": "2024-08-22",
+      "predicted": 0.567,
+      "actual": 0,
+      "actualReturnPct": -23.62,
+      "sigma": 25.6,
+      "mu": 8
+    },
+    {
+      "symbol": "SIEMENS",
+      "cutoff": "2024-04-22",
+      "predicted": 0.57925,
+      "actual": 0,
+      "actualReturnPct": -10.8,
+      "sigma": 24.6,
+      "mu": 8
+    },
+    {
+      "symbol": "SIEMENS",
+      "cutoff": "2023-12-22",
+      "predicted": 0.57025,
+      "actual": 1,
+      "actualReturnPct": 67.93,
+      "sigma": 24.6,
+      "mu": 8
+    },
+    {
+      "symbol": "HAVELLS",
+      "cutoff": "2025-08-22",
+      "predicted": 0.587,
+      "actual": 0,
+      "actualReturnPct": -17.73,
+      "sigma": 23.8,
+      "mu": 8
+    },
+    {
+      "symbol": "HAVELLS",
+      "cutoff": "2025-04-22",
+      "predicted": 0.56525,
+      "actual": 0,
+      "actualReturnPct": -22.12,
+      "sigma": 26.2,
+      "mu": 8
+    },
+    {
+      "symbol": "HAVELLS",
+      "cutoff": "2024-12-22",
+      "predicted": 0.599,
+      "actual": 0,
+      "actualReturnPct": -13.88,
+      "sigma": 20.6,
+      "mu": 8
+    },
+    {
+      "symbol": "HAVELLS",
+      "cutoff": "2024-08-22",
+      "predicted": 0.57475,
+      "actual": 0,
+      "actualReturnPct": -18.15,
+      "sigma": 26.2,
+      "mu": 8
+    },
+    {
+      "symbol": "HAVELLS",
+      "cutoff": "2024-04-22",
+      "predicted": 0.571,
+      "actual": 1,
+      "actualReturnPct": 7.81,
+      "sigma": 26.2,
+      "mu": 8
+    },
+    {
+      "symbol": "HAVELLS",
+      "cutoff": "2023-12-22",
+      "predicted": 0.57975,
+      "actual": 1,
+      "actualReturnPct": 25.98,
+      "sigma": 26.4,
+      "mu": 8
+    }
+  ]
+}

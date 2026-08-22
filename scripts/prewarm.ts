@@ -11,7 +11,8 @@
 import { getSymbol } from '../lib/symbols';
 import { fetchQuote, fetchHistory, fetchFundamentals } from '../lib/market-data';
 import { getNews } from '../lib/news';
-import { estimateParams, simulate } from '../lib/simulate';
+import { estimateParams } from '../lib/simulate';
+import { buildSimPayload } from '../lib/sim-payload';
 import { cacheSet, ensureIndexes, mongoHealthy } from '../lib/mongo';
 import { istDateKey } from '../lib/market-hours';
 
@@ -49,44 +50,22 @@ async function main() {
     out.push(`news=${n ? `${n.items.length}` : 'FAILED'}`);
 
     if (h) {
-      const p = estimateParams(h.data, rec.symbol, 2);
-      if (p) {
-        for (const amt of AMOUNTS) {
-          const sim = simulate(p, amt);
-          // Must match the key /api/simulate reads.
-          const key = `${rec.symbol}_${amt}_${istDateKey()}`;
-          await cacheSet(
-            'simulations',
-            key,
-            {
-              symbol: rec.symbol,
-              name: rec.name,
-              amount: amt,
-              lumpsum: sim.lumpsum,
-              sip: sim.sip,
-              paths: sim.paths,
-              pathPoints: sim.pathPoints,
-              band: sim.band,
-              density: sim.density,
-              params: {
-                mu: p.muAnnual,
-                sigma: p.sigmaAnnual,
-                muDaily: p.muDaily,
-                sigmaDaily: p.sigmaDaily,
-                dataPoints: p.dataPoints,
-                winsorized: p.winsorized,
-                seed: p.seed,
-              },
-              warning: p.warning,
-              limitation: sim.limitation,
-              meta: h.meta,
-            },
-            'computed'
-          );
-          out.push(`sim=sigma ${(p.sigmaAnnual * 100).toFixed(1)}%`);
-        }
+      for (const amt of AMOUNTS) {
+        // The SAME builder the route uses. Never hand-roll this shape.
+        const payload = buildSimPayload({
+          symbol: rec.symbol,
+          name: rec.name,
+          amount: amt,
+          bars: h.data,
+          meta: h.meta,
+        });
+        if (!payload) continue;
+        const key = `${rec.symbol}_${amt}_${istDateKey()}`;
+        await cacheSet('simulations', key, payload, 'computed');
+        out.push(`sim=sigma ${(payload.params.sigma * 100).toFixed(1)}%`);
       }
     }
+
     console.log(`  ${sym.padEnd(12)} ${out.join('  ')}`);
   }
 

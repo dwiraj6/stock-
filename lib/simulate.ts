@@ -23,6 +23,37 @@ import type { Bar } from './types';
 import { istDateKey } from './market-hours';
 
 export const TRADING_DAYS = 252;
+
+/* DRIFT: measured, not assumed.
+   ────────────────────────────────────────────────────────────────
+   This model used to estimate each stock's own drift from its last
+   two years and project it forward. That was tested — 240 forecasts,
+   40 stocks, 6 point-in-time cut-offs — and it was actively harmful:
+
+     full estimated drift    Brier 0.3524   skill  -51.0%
+     shrink to 50%                 0.3040          -30.3%
+     shrink to 25%                 0.2801          -20.1%
+     zero drift                    0.2658          -13.9%
+     flat +8%/yr (this)            0.2412           -3.4%
+
+   Monotonic. Every step away from the stock-specific estimate
+   improved the forecast, and the reliability curve under the old
+   scheme was inverted — when it said 0-10% the stock rose 72% of
+   the time, when it said 90-100% it rose 44% of the time. It was
+   betting on momentum over a horizon where these names mean-revert.
+
+   The cause is not a bug, it is statistics: two years of daily data
+   pins down volatility well and expected return barely at all
+   (Merton 1980). So drift is no longer estimated per stock. It is a
+   flat nominal rate, the same for every symbol, and it earns its
+   keep only by stopping the median from sitting at a mechanical
+   -sigma^2/2 drag.
+
+   Note what the best row still says: -3.4% skill. Even at its best
+   this model does NOT predict direction better than guessing the
+   base rate. It predicts WIDTH, and the band backtest is what
+   validates that. The app says so on the page. */
+export const FLAT_DRIFT_ANNUAL = 0.08;
 export const N_PATHS = 10_000;
 const REC_STEP = 3; // record every 3rd day: 21 (a month) divides by 3
 const N_REC = TRADING_DAYS / REC_STEP + 1; // 85 recorded points
@@ -50,15 +81,44 @@ export type Percentiles = {
 };
 
 export type SimParams = {
+  /** The drift the simulation RUNS on — flat, not stock-specific. */
   muDaily: number;
   sigmaDaily: number;
   muAnnual: number;
   sigmaAnnual: number;
+  /** What this stock's own history implied. Display only; using it
+      was measured to make the forecast worse. */
+  observedMuAnnual: number;
+  driftSource: 'flat';
   dataPoints: number;
   winsorized: number;
   seed: number;
   /** Non-null when the series is too short to be confident. */
   warning: string | null;
+};
+
+/* The honest headline number.
+   ────────────────────────────────────────────────────────────────
+   "How confident are you?" on a 0-100 slider is not falsifiable — 72
+   of what? So the app now asks a question with a real answer: what
+   are the odds you make money on this? The model answers the SAME
+   question by counting how many of its 10,000 simulated futures
+   finished above the amount deployed.
+
+   Both numbers are then probabilities of the same event, directly
+   comparable, and — unlike a weighted composite score — the model's
+   half is a straight readout of the distribution the backtest
+   actually tests. */
+export type Odds = {
+  /** P(final value > amount deployed). The headline. */
+  profit: number;
+  /** P(down more than 10% / 20%) — the losses, stated first. */
+  lose10: number;
+  lose20: number;
+  /** P(up more than 20%). */
+  gain20: number;
+  /** P(beating a 7% fixed deposit over the same period). */
+  beatFd: number;
 };
 
 export type SimResult = {
@@ -73,6 +133,9 @@ export type SimResult = {
       median line has to be the real median, not the median of a
       sample of it. ~1KB. */
   band: { p10: number[]; p50: number[]; p90: number[] };
+  /** Outcome odds at every horizon, for lumpsum and SIP. */
+  odds: Record<HorizonKey, Odds>;
+  sipOdds: Record<HorizonKey, Odds>;
   /** Outcome density for both modes over ONE shared domain, computed
       from all 10,000 terminal values. Sending the 10,000 samples
       themselves would add ~160KB to every response for a curve the
@@ -225,11 +288,19 @@ export function estimateParams(bars: Bar[], symbol: string, years = 2): SimParam
         `read as wider than shown.`
       : null;
 
+  /* The measured drift is kept for display — the momentum component
+     reads it, and the methodology page shows it — but it is NOT what
+     the simulation runs on. See FLAT_DRIFT_ANNUAL. */
+  const flatDaily = FLAT_DRIFT_ANNUAL / TRADING_DAYS;
+
   return {
-    muDaily,
+    muDaily: flatDaily,
     sigmaDaily,
-    muAnnual: muDaily * TRADING_DAYS,
+    muAnnual: FLAT_DRIFT_ANNUAL,
     sigmaAnnual: sigmaDaily * Math.sqrt(TRADING_DAYS),
+    /** What the stock's own history implied, for display only. */
+    observedMuAnnual: muDaily * TRADING_DAYS,
+    driftSource: 'flat' as const,
     dataPoints,
     winsorized: clipped,
     seed: hashSeed(`${symbol}|${istDateKey()}`),
@@ -287,8 +358,29 @@ export function simulate(params: SimParams, amount: number): SimResult {
     }
   }
 
-  // ── lumpsum percentiles at each horizon ──
+  /* Odds are counted, not derived from percentiles: the fraction of
+     the 10,000 paths that cleared each threshold. A count is exactly
+     the thing a calibration test can check against reality. */
+  const FD_ANNUAL = 0.07;
+  const oddsFrom = (values: Float64Array, deployed: number, years: number): Odds => {
+    let profit = 0, lose10 = 0, lose20 = 0, gain20 = 0, beatFd = 0;
+    const fdTarget = deployed * Math.pow(1 + FD_ANNUAL, years);
+    for (let i = 0; i < values.length; i++) {
+      const v = values[i];
+      if (v > deployed) profit++;
+      if (v < deployed * 0.9) lose10++;
+      if (v < deployed * 0.8) lose20++;
+      if (v > deployed * 1.2) gain20++;
+      if (v > fdTarget) beatFd++;
+    }
+    const n = values.length;
+    const r = (x: number) => Math.round((x / n) * 1000) / 1000;
+    return { profit: r(profit), lose10: r(lose10), lose20: r(lose20), gain20: r(gain20), beatFd: r(beatFd) };
+  };
+
+  // ── lumpsum percentiles + odds at each horizon ──
   const lumpsum = {} as Record<HorizonKey, Percentiles>;
+  const odds = {} as Record<HorizonKey, Odds>;
   const col = new Float64Array(N_PATHS);
   let lumpSorted = new Float64Array(N_PATHS);
   for (const h of HORIZONS) {
@@ -296,6 +388,7 @@ export function simulate(params: SimParams, amount: number): SimResult {
     const sorted = col.slice().sort();
     if (h.key === '12M') lumpSorted = sorted;
     lumpsum[h.key] = pack(sorted, amount);
+    odds[h.key] = oddsFrom(col, amount, h.days / TRADING_DAYS);
   }
 
   /* ── SIP ──
@@ -311,6 +404,7 @@ export function simulate(params: SimParams, amount: number): SimResult {
   const entryRecs: number[] = [];
   for (let k = 0; k < SIP_MONTHS; k++) entryRecs.push((k * DAYS_PER_MONTH) / REC_STEP);
 
+  const sipOdds = {} as Record<HorizonKey, Odds>;
   let sipSorted = new Float64Array(N_PATHS);
   for (const h of HORIZONS) {
     const active = entryRecs.filter((r) => r <= h.rec);
@@ -325,6 +419,7 @@ export function simulate(params: SimParams, amount: number): SimResult {
     const sorted = col.slice().sort();
     if (h.key === '12M') sipSorted = sorted;
     sip[h.key] = pack(sorted, deployed);
+    sipOdds[h.key] = oddsFrom(col, deployed, h.days / TRADING_DAYS);
   }
 
   // ── the drawn bundle ──
@@ -416,5 +511,5 @@ export function simulate(params: SimParams, amount: number): SimResult {
   density.lumpsum = densify(lumpTerminal);
   density.sip = densify(sipTerminal);
 
-  return { params, lumpsum, sip, paths, pathPoints, band, density, limitation: LIMITATION };
+  return { params, lumpsum, sip, odds, sipOdds, paths, pathPoints, band, density, limitation: LIMITATION };
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { rupees2, pctSigned } from '../lib/format.js';
 import { useBreakpoint } from '../lib/hooks.js';
 
-export function Masthead({ quote, onMethodology, onAsk, onHome }) {
+export function Masthead({ quote, onMethodology, onAsk, onHome, onRecord }) {
   const [compact, setCompact] = useState(false);
   const bp = useBreakpoint();
 
@@ -98,6 +98,25 @@ export function Masthead({ quote, onMethodology, onAsk, onHome }) {
 
         {/* right */}
         <div className="flex items-center" style={{ gap: 20, flexShrink: 0 }}>
+          {!small && onRecord && (
+            <button
+              onClick={onRecord}
+              className="font-body"
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                fontSize: '0.9375rem',
+                color: 'var(--color-ink)',
+                textDecoration: 'underline',
+                textUnderlineOffset: 3,
+                textDecorationColor: 'var(--color-rule)',
+              }}
+            >
+              Your record
+            </button>
+          )}
           {!small && (
             <button
               onClick={onMethodology}

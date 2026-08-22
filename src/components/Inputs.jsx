@@ -353,8 +353,17 @@ export function ConvictionSlider({ value, onChange }) {
 
   return (
     <div>
-      <span id={`${id}-label`} className="eyebrow block" style={{ marginBottom: 18 }}>
-        How confident are you?
+      {/* "How confident are you?" is not falsifiable — 72 of what?
+          This asks for a probability of a specific event, which can
+          be scored against reality later. */}
+      <span id={`${id}-label`} className="eyebrow block" style={{ marginBottom: 4 }}>
+        What are the odds you make money on this?
+      </span>
+      <span
+        className="font-body block"
+        style={{ fontSize: '0.875rem', color: 'var(--color-graphite)', marginBottom: 16 }}
+      >
+        Out of 100 times, how many would you end up ahead a year from now?
       </span>
 
       <div className="flex items-start" style={{ gap: 24 }}>
@@ -400,13 +409,13 @@ export function ConvictionSlider({ value, onChange }) {
               className="font-body"
               style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--color-graphite)' }}
             >
-              no idea
+              certain to lose
             </span>
             <span
               className="font-body"
               style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--color-graphite)' }}
             >
-              certain
+              certain to gain
             </span>
           </div>
         </div>
@@ -424,7 +433,7 @@ export function ConvictionSlider({ value, onChange }) {
             fontVariantNumeric: 'tabular-nums',
           }}
         >
-          {value}
+          {value}%
         </div>
       </div>
     </div>

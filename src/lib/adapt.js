@@ -132,6 +132,15 @@ export function adaptSim(sim) {
 /** /api/score → the shape ScoreModule and VerdictModule consume. */
 export function adaptScore(score) {
   return {
+    // ── the headline: two probabilities of the same event ──
+    userProb: score.userProb,
+    modelProb: score.modelProb,
+    oddsGapPp: score.oddsGapPp,
+    absOddsGapPp: score.absOddsGapPp,
+    odds: score.odds,
+    width: score.width,
+    band: score.band,
+    // ── the evidence, demoted ──
     score: score.modelScore,
     gap: score.gap,
     absGap: score.absGap,
@@ -162,13 +171,18 @@ export function adaptCalibration(cal) {
   return {
     generatedAt: cal.generatedAt,
     cutoffDate: cal.cutoffDate,
+    byCutoff: cal.byCutoff ?? [],
+    hitRateCI: cal.hitRateCI ?? null,
     total: cal.universe,
     hits: cal.hits,
     expectedHits: cal.expectedHits,
     interpretation: cal.interpretation,
     missNarrative: cal.missNarrative,
     method: cal.method,
-    entries: (cal.results ?? []).map((r) => {
+    // Only the primary window carries path data for the panels.
+    entries: (cal.results ?? [])
+      .filter((r) => (r.predictedPath ?? []).length > 0)
+      .map((r) => {
       // Normalise both series to the cutoff price so a 140px panel
       // can draw them on one scale.
       const base = r.cutoffPrice || 1;

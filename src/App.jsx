@@ -6,6 +6,7 @@ import Entry from './screens/Entry.jsx';
 import Computing from './screens/Computing.jsx';
 import Results from './screens/Results.jsx';
 import Methodology from './screens/Methodology.jsx';
+import TrackRecord from './screens/TrackRecord.jsx';
 import ConversationPanel from './components/ConversationPanel.jsx';
 import PlumbCompanion from './components/PlumbCompanion.jsx';
 import { StaleCacheStrip, FailedState, EmptyState } from './components/States.jsx';
@@ -76,6 +77,21 @@ export default function App() {
           }
         : p
     );
+    /* Log the decision the moment the measurement exists — before
+       the user has seen the answer and long before the outcome does.
+       Fire-and-forget: a failure here must never block the results. */
+    const priceAt = stockRes.quote?.price ?? null;
+    const modelProb = scoreRes.modelProb ?? null;
+    if (priceAt && modelProb != null) {
+      void api.recordDecision({
+        symbol: symbol.symbol,
+        amount,
+        userProb: conviction / 100,
+        modelProb,
+        priceAt,
+      });
+    }
+
     setMarket({
       marketState: stockRes.marketState,
       isLive: stockRes.isLive,
@@ -135,6 +151,38 @@ export default function App() {
     });
   }, [pending, start]);
 
+  /* REAL TIME.
+     While the market is open the server says pollMs=30000 and the
+     masthead price follows the live (15-min delayed) quote. When it
+     is shut the server says pollMs=0 and this stops entirely rather
+     than hammering a feed that cannot change. The client never picks
+     the interval — it does what the server's market clock tells it. */
+  useEffect(() => {
+    if (phase !== 'results' || !run) return;
+    const stop = api.pollQuote(run.quote.ticker, (body) => {
+      if (!body?.ok) return;
+      setRun((r) =>
+        r
+          ? {
+              ...r,
+              quote: {
+                ...r.quote,
+                price: body.quote.price ?? r.quote.price,
+                dayChange: body.quote.changePercent ?? r.quote.dayChange,
+              },
+            }
+          : r
+      );
+      setMarket({
+        marketState: body.marketState,
+        isLive: body.isLive,
+        asOfLabel: body.asOfLabel,
+        meta: body.meta,
+      });
+    });
+    return stop;
+  }, [phase, run?.quote.ticker]);
+
   useEffect(() => {
     if (!askOpen) return;
     const onKey = (e) => {
@@ -155,6 +203,22 @@ export default function App() {
     !staleDismissed &&
     (run.quote.meta?.isStale || run.quote.meta?.degraded);
 
+  if (route === 'record') {
+    return (
+      <>
+        <Masthead
+          quote={quoteForChrome}
+          onMethodology={onMethodology}
+          onAsk={() => setAskOpen(true)}
+          onHome={home}
+          onRecord={() => navigate('record')}
+        />
+        <TrackRecord onBack={() => navigate('')} />
+        <Footer market={market} />
+      </>
+    );
+  }
+
   if (route === 'method') {
     return (
       <>
@@ -163,6 +227,7 @@ export default function App() {
           onMethodology={onMethodology}
           onAsk={() => setAskOpen(true)}
           onHome={home}
+          onRecord={() => navigate('record')}
         />
         <Methodology onBack={() => navigate('')} />
         <Footer market={market} />
@@ -177,6 +242,7 @@ export default function App() {
         onMethodology={onMethodology}
         onAsk={() => setAskOpen(true)}
         onHome={home}
+        onRecord={() => navigate('record')}
       />
 
       {showStale && (

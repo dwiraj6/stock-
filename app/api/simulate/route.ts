@@ -6,7 +6,8 @@ import { z } from 'zod';
 import { ok, fail, guard, logTier } from '@/lib/api';
 import { resolveSymbol } from '@/lib/symbols';
 import { fetchHistory } from '@/lib/market-data';
-import { estimateParams, simulate, LIMITATION } from '@/lib/simulate';
+import { estimateParams } from '@/lib/simulate';
+import { buildSimPayload } from '@/lib/sim-payload';
 import { cacheGet, cacheSet } from '@/lib/mongo';
 import { istDateKey } from '@/lib/market-hours';
 
@@ -62,31 +63,20 @@ export async function POST(req: NextRequest) {
     }
 
     logTier('simulate', rec.symbol, hist.meta);
-    const sim = simulate(params, parsed.amount);
 
-    const payload = {
+    const payload = buildSimPayload({
       symbol: rec.symbol,
       name: rec.name,
       amount: parsed.amount,
-      lumpsum: sim.lumpsum,
-      sip: sim.sip,
-      paths: sim.paths,
-      pathPoints: sim.pathPoints,
-      band: sim.band,
-      density: sim.density,
-      params: {
-        mu: params.muAnnual,
-        sigma: params.sigmaAnnual,
-        muDaily: params.muDaily,
-        sigmaDaily: params.sigmaDaily,
-        dataPoints: params.dataPoints,
-        winsorized: params.winsorized,
-        seed: params.seed,
-      },
-      warning: params.warning,
-      limitation: LIMITATION,
+      bars: hist.data,
       meta: hist.meta,
-    };
+    });
+    if (!payload) {
+      return fail('INSUFFICIENT_DATA',
+        `${rec.symbol} has too little history to simulate.`,
+        'Try a stock with at least a few months of trading history.',
+        { daysAvailable: hist.data.length });
+    }
 
     await cacheSet('simulations', key, payload, 'computed');
     return ok(payload, { ttlSeconds: 3600 });

@@ -31,10 +31,48 @@ anywhere in the tree — including in development.
 | Backtest | Point-in-time, 20 NSE equities, `/data/calibration.json`. |
 | Simulation | 10,000-path GBM on parameters estimated from adjusted closes. |
 
-**The only accuracy claim the app makes** is the backtest hit rate:
-**16 of 20** twelve-month outcomes landed inside the predicted 80%
-band, against an expectation of ~16. The four misses (HDFCBANK, ITC,
-TITAN, NESTLEIND) are named on the page and in the payload.
+## What it claims, and what it refuses to
+
+The app makes exactly one predictive claim, and publishes the test it
+fails alongside the one it passes.
+
+**WIDTH — validated.** Across **120 point-in-time forecasts** (20
+stocks × 6 windows), the real outcome landed inside the 80% band
+**104 times = 87%**, 95% CI 81–93%. Slightly wider than it needs to
+be, which the page says.
+
+**DIRECTION — no skill, and it says so.** Across **240 point-in-time
+forecasts**, the probability-of-profit forecast scored Brier
+**0.2413** against **0.2333** for ignoring the stock entirely and
+predicting the base rate. **Skill −3.4%.** That table is on the
+results page under *"and the test it fails"*.
+
+A tool that publishes only the test it passes has not shown you a
+test.
+
+### The finding that reshaped the model
+
+The original model estimated each stock's own drift from its last two
+years and projected it forward. Tested properly, that was **actively
+harmful**:
+
+```
+full estimated drift    Brier 0.3524   skill  -51.0%
+shrink to 50%                 0.3040          -30.3%
+shrink to 25%                 0.2801          -20.1%
+zero drift                    0.2658          -13.9%
+flat +8%/yr  (shipped)        0.2412           -3.4%
+```
+
+Monotonic — every step away from the stock-specific estimate helped.
+The old reliability curve was **inverted**: when it said 0–10% the
+stock rose 72% of the time; when it said 90–100% it rose 44%. It was
+betting on momentum over a horizon where these names mean-revert.
+
+The cause is statistics, not a bug: two years of daily data pins down
+volatility well and expected return barely at all. Drift is now a flat
+nominal rate for every symbol. The stock's own drift is still shown —
+it just no longer drives the simulation.
 
 ## Verification
 
@@ -86,6 +124,24 @@ HDFCBANK   kept=8  fetched=110  tooOld=81  offTopic=10  dupes=1  trimmed=10
 
 Age, not relevance, is the dominant filter. A rolled-up figure would
 have implied 102 headlines were rejected as off-topic when 10 were.
+
+## Your track record
+
+Every measurement is logged the moment it is made — the stock, the
+price then, your stated odds, the simulation's odds — and none of it
+can be revised, because it is written before the outcome exists. When
+you come back, the current price decides.
+
+Scored with **Brier, the same statistic the app uses on itself**. That
+symmetry is the point: it holds its user to exactly the standard it
+holds itself to, and publishes both.
+
+An open position is shown as open. It is not right or wrong yet, and
+scoring it early would be the dishonesty the rest of the app spends
+its time avoiding.
+
+Identity is an anonymous browser-generated id in `localStorage`. No
+accounts, no email, nothing personal.
 
 ## Performance and the chat's failure modes
 

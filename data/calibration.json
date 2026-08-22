@@ -1,31 +1,87 @@
 {
-  "generatedAt": "2026-08-21T19:41:03.008Z",
-  "cutoffDate": "2025-08-21",
-  "method": "Point-in-time. For each symbol, all data after the cutoff was removed before estimating mu and sigma from the preceding two years. 10,000 GBM paths were then simulated 252 trading days forward from the cutoff close, and the resulting 80% band compared to the real adjusted close twelve months later.",
-  "universe": 20,
-  "requested": 20,
+  "generatedAt": "2026-08-22T01:40:43.154Z",
+  "what": "Does the 80% band actually contain the outcome 80% of the time?",
+  "method": "20 liquid NSE stocks at 6 point-in-time cut-offs. At each cut-off all later data was removed, volatility estimated from the preceding two years, and 10,000 paths simulated 12 months forward. The resulting 10th-90th percentile band was then compared with the real adjusted close twelve months on.",
+  "universe": 120,
+  "stocks": 20,
+  "windows": 6,
   "band": 0.8,
-  "hits": 16,
-  "misses": 4,
-  "expectedHits": 16,
-  "hitRate": 0.8,
-  "interpretation": "16 of 20 landed inside the 80% band. On a well-calibrated 80% band you would expect about 16. 20 stocks is a small sample — read this as a sanity check that the bands are roughly the right width, not as proof of anything stronger.",
-  "missNarrative": "The misses were HDFCBANK, ITC, TITAN and NESTLEIND — they moved further than price history alone implied. The model reads price history and fundamentals. It does not read the future, and it does not see news.",
+  "hits": 104,
+  "misses": 16,
+  "expectedHits": 96,
+  "hitRate": 0.867,
+  "hitRateCI": [
+    0.806,
+    0.927
+  ],
+  "cutoffDate": "2025-08-22",
+  "byCutoff": [
+    {
+      "cutoff": "2023-12-22",
+      "n": 20,
+      "hits": 17,
+      "rate": 0.85
+    },
+    {
+      "cutoff": "2024-04-22",
+      "n": 20,
+      "hits": 20,
+      "rate": 1
+    },
+    {
+      "cutoff": "2024-08-22",
+      "n": 20,
+      "hits": 19,
+      "rate": 0.95
+    },
+    {
+      "cutoff": "2024-12-22",
+      "n": 20,
+      "hits": 17,
+      "rate": 0.85
+    },
+    {
+      "cutoff": "2025-04-22",
+      "n": 20,
+      "hits": 16,
+      "rate": 0.8
+    },
+    {
+      "cutoff": "2025-08-22",
+      "n": 20,
+      "hits": 15,
+      "rate": 0.75
+    }
+  ],
+  "primaryWindow": {
+    "cutoff": "2025-08-22",
+    "n": 20,
+    "hits": 15
+  },
+  "interpretation": "104 of 120 outcomes landed inside the 80% band — 87%, against the 80% a well-calibrated band should deliver. The 95% interval on that rate is 81-93%. The band is wider than it needs to be, which makes it safe but less informative.",
+  "missNarrative": "In the most recent window the misses were TCS, HDFCBANK, ITC, TITAN and WIPRO — they moved further than volatility alone implied. The model reads price history. It does not read the future, and it does not see news.",
+  "caveats": [
+    "The six windows overlap, so these forecasts are not independent and the effective sample is smaller than the count.",
+    "The universe is large-cap names that still trade today; anything delisted never entered the test, which biases the result upward.",
+    "All windows fall in one market regime."
+  ],
   "skipped": [],
   "results": [
     {
       "symbol": "RELIANCE",
       "name": "Reliance Industries Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
       "cutoffPrice": 1418.24,
-      "predictedP10": 1002.88,
-      "predictedP50": 1301.23,
-      "predictedP90": 1685.87,
-      "actual": 1313.2,
+      "predictedP10": 1163.11,
+      "predictedP50": 1509.21,
+      "predictedP90": 1938.46,
+      "actual": 1316,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": -7.41,
+      "actualReturnPct": -7.21,
       "sigmaAtCutoff": 20.43,
-      "muAtCutoff": -6.39,
+      "observedMuAtCutoff": -6.39,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -36,69 +92,69 @@
         },
         {
           "t": 21,
-          "p10": 1305.76,
-          "p50": 1408.26,
-          "p90": 1518.8
+          "p10": 1321.51,
+          "p50": 1425.25,
+          "p90": 1537.13
         },
         {
           "t": 42,
-          "p10": 1256.61,
-          "p50": 1398.34,
-          "p90": 1556.06
+          "p10": 1287.12,
+          "p50": 1432.29,
+          "p90": 1593.84
         },
         {
           "t": 63,
-          "p10": 1218.14,
-          "p50": 1388.49,
-          "p90": 1582.66
+          "p10": 1262.78,
+          "p50": 1439.37,
+          "p90": 1640.65
         },
         {
           "t": 84,
-          "p10": 1185.32,
-          "p50": 1378.72,
-          "p90": 1603.66
+          "p10": 1243.58,
+          "p50": 1446.48,
+          "p90": 1682.48
         },
         {
           "t": 108,
-          "p10": 1152.23,
-          "p50": 1367.63,
-          "p90": 1623.28
+          "p10": 1225.55,
+          "p50": 1454.65,
+          "p90": 1726.57
         },
         {
           "t": 129,
-          "p10": 1126.05,
-          "p50": 1358,
-          "p90": 1637.72
+          "p10": 1212.15,
+          "p50": 1461.83,
+          "p90": 1762.95
         },
         {
           "t": 150,
-          "p10": 1101.83,
-          "p50": 1348.43,
-          "p90": 1650.22
+          "p10": 1200.4,
+          "p50": 1469.06,
+          "p90": 1797.84
         },
         {
           "t": 171,
-          "p10": 1079.21,
-          "p50": 1338.94,
-          "p90": 1661.16
+          "p10": 1189.94,
+          "p50": 1476.31,
+          "p90": 1831.6
         },
         {
           "t": 192,
-          "p10": 1057.92,
-          "p50": 1329.51,
-          "p90": 1670.81
+          "p10": 1180.54,
+          "p50": 1483.61,
+          "p90": 1864.47
         },
         {
           "t": 213,
-          "p10": 1037.77,
-          "p50": 1320.15,
-          "p90": 1679.37
+          "p10": 1172.02,
+          "p50": 1490.94,
+          "p90": 1896.63
         },
         {
           "t": 234,
-          "p10": 1018.59,
-          "p50": 1310.85,
-          "p90": 1686.97
+          "p10": 1164.25,
+          "p50": 1498.3,
+          "p90": 1928.21
         }
       ],
       "actualPath": [
@@ -111,8 +167,8 @@
           "value": 1444.92
         },
         {
-          "t": 62,
-          "value": 1528.83
+          "t": 63,
+          "value": 1532.61
         },
         {
           "t": 83,
@@ -127,15 +183,15 @@
           "value": 1421.43
         },
         {
-          "t": 145,
-          "value": 1405.3
+          "t": 146,
+          "value": 1406.6
         },
         {
-          "t": 166,
-          "value": 1382.51
+          "t": 167,
+          "value": 1418.84
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 1344.28
         },
         {
@@ -143,28 +199,125 @@
           "value": 1318.1
         },
         {
-          "t": 228,
-          "value": 1272.2
+          "t": 229,
+          "value": 1278
         },
         {
-          "t": 248,
-          "value": 1313.2
+          "t": 249,
+          "value": 1316
         }
       ]
     },
     {
-      "symbol": "TCS",
-      "name": "Tata Consultancy Services Limited",
-      "cutoffPrice": 2978.94,
-      "predictedP10": 1597.99,
-      "predictedP50": 2041.35,
-      "predictedP90": 2608.34,
-      "actual": 2298,
+      "symbol": "RELIANCE",
+      "name": "Reliance Industries Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 1284.41,
+      "predictedP10": 1027.7,
+      "predictedP50": 1359.73,
+      "predictedP90": 1792.36,
+      "actual": 1359.51,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": -22.86,
+      "actualReturnPct": 5.85,
+      "sigmaAtCutoff": 21.22,
+      "observedMuAtCutoff": -21.77,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "RELIANCE",
+      "name": "Reliance Industries Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 1194.98,
+      "predictedP10": 989.87,
+      "predictedP50": 1266.09,
+      "predictedP90": 1627.92,
+      "actual": 1552.02,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 29.88,
+      "sigmaAtCutoff": 19.26,
+      "observedMuAtCutoff": -67.9,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "RELIANCE",
+      "name": "Reliance Industries Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 1485.84,
+      "predictedP10": 1176.69,
+      "predictedP50": 1572.38,
+      "predictedP90": 2100.79,
+      "actual": 1406.1,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -5.37,
+      "sigmaAtCutoff": 22.63,
+      "observedMuAtCutoff": 12.46,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "RELIANCE",
+      "name": "Reliance Industries Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 1452.61,
+      "predictedP10": 1140.63,
+      "predictedP50": 1530.68,
+      "predictedP90": 2042.65,
+      "actual": 1357.08,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -6.58,
+      "sigmaAtCutoff": 22.7,
+      "observedMuAtCutoff": 12.3,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "RELIANCE",
+      "name": "Reliance Industries Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 1266.01,
+      "predictedP10": 997.44,
+      "predictedP50": 1338.13,
+      "predictedP90": 1793.62,
+      "actual": 1210.79,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -4.36,
+      "sigmaAtCutoff": 22.99,
+      "observedMuAtCutoff": 9.72,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TCS",
+      "name": "Tata Consultancy Services Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 2978.94,
+      "predictedP10": 2479.66,
+      "predictedP50": 3163.59,
+      "predictedP90": 4044.43,
+      "actual": 2302,
+      "hit": false,
+      "missMagnitude": 0.0716,
+      "actualReturnPct": -22.72,
       "sigmaAtCutoff": 19.33,
-      "muAtCutoff": -36.01,
+      "observedMuAtCutoff": -36.01,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -175,69 +328,69 @@
         },
         {
           "t": 21,
-          "p10": 2687.21,
-          "p50": 2886.39,
-          "p90": 3100.33
+          "p10": 2787.58,
+          "p50": 2994.2,
+          "p90": 3216.14
         },
         {
           "t": 42,
-          "p10": 2527.73,
-          "p50": 2796.71,
-          "p90": 3094.31
+          "p10": 2720.09,
+          "p50": 3009.54,
+          "p90": 3329.79
         },
         {
           "t": 63,
-          "p10": 2394.17,
-          "p50": 2709.83,
-          "p90": 3067.1
+          "p10": 2672.59,
+          "p50": 3024.96,
+          "p90": 3423.78
         },
         {
           "t": 84,
-          "p10": 2275.76,
-          "p50": 2625.64,
-          "p90": 3029.3
+          "p10": 2635.31,
+          "p50": 3040.46,
+          "p90": 3507.89
         },
         {
           "t": 108,
-          "p10": 2153.51,
-          "p50": 2532.62,
-          "p90": 2978.47
+          "p10": 2600.47,
+          "p50": 3058.26,
+          "p90": 3596.65
         },
         {
           "t": 129,
-          "p10": 2055.4,
-          "p50": 2453.94,
-          "p90": 2929.74
+          "p10": 2574.71,
+          "p50": 3073.93,
+          "p90": 3669.95
         },
         {
           "t": 150,
-          "p10": 1964.09,
-          "p50": 2377.7,
-          "p90": 2878.4
+          "p10": 2552.23,
+          "p50": 3089.68,
+          "p90": 3740.32
         },
         {
           "t": 171,
-          "p10": 1878.61,
-          "p50": 2303.83,
-          "p90": 2825.3
+          "p10": 2532.32,
+          "p50": 3105.51,
+          "p90": 3808.44
         },
         {
           "t": 192,
-          "p10": 1798.23,
-          "p50": 2232.25,
-          "p90": 2771.03
+          "p10": 2514.52,
+          "p50": 3121.42,
+          "p90": 3874.81
         },
         {
           "t": 213,
-          "p10": 1722.41,
-          "p50": 2162.9,
-          "p90": 2716.04
+          "p10": 2498.46,
+          "p50": 3137.41,
+          "p90": 3939.77
         },
         {
           "t": 234,
-          "p10": 1650.71,
-          "p50": 2095.7,
-          "p90": 2660.66
+          "p10": 2483.88,
+          "p50": 3153.49,
+          "p90": 4003.61
         }
       ],
       "actualPath": [
@@ -250,8 +403,8 @@
           "value": 2952.08
         },
         {
-          "t": 62,
-          "value": 3027.25
+          "t": 63,
+          "value": 3006.04
         },
         {
           "t": 83,
@@ -266,15 +419,15 @@
           "value": 2626.1
         },
         {
-          "t": 145,
-          "value": 2353.8
+          "t": 146,
+          "value": 2332.81
         },
         {
-          "t": 166,
-          "value": 2398.84
+          "t": 167,
+          "value": 2428.28
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 2271.74
         },
         {
@@ -282,28 +435,125 @@
           "value": 2083.28
         },
         {
-          "t": 228,
-          "value": 2242.9
+          "t": 229,
+          "value": 2254.3
         },
         {
-          "t": 248,
-          "value": 2298
+          "t": 249,
+          "value": 2302
         }
       ]
     },
     {
+      "symbol": "TCS",
+      "name": "Tata Consultancy Services Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 3150.42,
+      "predictedP10": 2593.17,
+      "predictedP50": 3377.22,
+      "predictedP90": 4347.39,
+      "actual": 2401.69,
+      "hit": false,
+      "missMagnitude": 0.0738,
+      "actualReturnPct": -23.77,
+      "sigmaAtCutoff": 20.2,
+      "observedMuAtCutoff": -45.17,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TCS",
+      "name": "Tata Consultancy Services Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 3883.91,
+      "predictedP10": 3206.51,
+      "predictedP50": 4117.63,
+      "predictedP90": 5267.89,
+      "actual": 3161.01,
+      "hit": false,
+      "missMagnitude": 0.0142,
+      "actualReturnPct": -18.61,
+      "sigmaAtCutoff": 19.29,
+      "observedMuAtCutoff": -21.28,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TCS",
+      "name": "Tata Consultancy Services Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 4228.62,
+      "predictedP10": 3447.93,
+      "predictedP50": 4480.57,
+      "predictedP90": 5829.95,
+      "actual": 3015.42,
+      "hit": false,
+      "missMagnitude": 0.1254,
+      "actualReturnPct": -28.69,
+      "sigmaAtCutoff": 20.38,
+      "observedMuAtCutoff": 19.78,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TCS",
+      "name": "Tata Consultancy Services Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 3520.94,
+      "predictedP10": 2868.47,
+      "predictedP50": 3722.92,
+      "predictedP90": 4836.29,
+      "actual": 3266.04,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -7.24,
+      "sigmaAtCutoff": 20.46,
+      "observedMuAtCutoff": 17.05,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TCS",
+      "name": "Tata Consultancy Services Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 3461.22,
+      "predictedP10": 2843.05,
+      "predictedP50": 3684,
+      "predictedP90": 4760.97,
+      "actual": 3830.04,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 10.66,
+      "sigmaAtCutoff": 20.4,
+      "observedMuAtCutoff": 18.15,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
       "symbol": "HDFCBANK",
       "name": "HDFC Bank Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
       "cutoffPrice": 979.4,
-      "predictedP10": 954.65,
-      "predictedP50": 1195.92,
-      "predictedP90": 1493.5,
-      "actual": 725.05,
+      "predictedP10": 840.23,
+      "predictedP50": 1050.2,
+      "predictedP90": 1309.68,
+      "actual": 726.95,
       "hit": false,
-      "missMagnitude": 0.2405,
-      "actualReturnPct": -25.97,
+      "missMagnitude": 0.1348,
+      "actualReturnPct": -25.78,
       "sigmaAtCutoff": 17.29,
-      "muAtCutoff": 21.44,
+      "observedMuAtCutoff": 21.44,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -314,69 +564,69 @@
         },
         {
           "t": 21,
-          "p10": 934.1,
-          "p50": 995.82,
-          "p90": 1061.61
+          "p10": 923.69,
+          "p50": 984.72,
+          "p90": 1049.79
         },
         {
           "t": 42,
-          "p10": 924.91,
-          "p50": 1012.51,
-          "p90": 1108.39
+          "p10": 904.42,
+          "p50": 990.08,
+          "p90": 1083.84
         },
         {
           "t": 63,
-          "p10": 921.48,
-          "p50": 1029.47,
-          "p90": 1150.12
+          "p10": 891.03,
+          "p50": 995.46,
+          "p90": 1112.12
         },
         {
           "t": 84,
-          "p10": 921,
-          "p50": 1046.73,
-          "p90": 1189.62
+          "p10": 880.65,
+          "p50": 1000.87,
+          "p90": 1137.5
         },
         {
           "t": 108,
-          "p10": 922.72,
-          "p50": 1066.8,
-          "p90": 1233.38
+          "p10": 871.07,
+          "p50": 1007.09,
+          "p90": 1164.35
         },
         {
           "t": 129,
-          "p10": 925.62,
-          "p50": 1084.68,
-          "p90": 1271.07
+          "p10": 864.08,
+          "p50": 1012.56,
+          "p90": 1186.56
         },
         {
           "t": 150,
-          "p10": 929.52,
-          "p50": 1102.86,
-          "p90": 1308.53
+          "p10": 858.05,
+          "p50": 1018.07,
+          "p90": 1207.92
         },
         {
           "t": 171,
-          "p10": 934.21,
-          "p50": 1121.34,
-          "p90": 1345.95
+          "p10": 852.78,
+          "p50": 1023.6,
+          "p90": 1228.63
         },
         {
           "t": 192,
-          "p10": 939.59,
-          "p50": 1140.14,
-          "p90": 1383.49
+          "p10": 848.13,
+          "p50": 1029.16,
+          "p90": 1248.83
         },
         {
           "t": 213,
-          "p10": 945.54,
-          "p50": 1159.24,
-          "p90": 1421.25
+          "p10": 844,
+          "p50": 1034.76,
+          "p90": 1268.62
         },
         {
           "t": 234,
-          "p10": 952,
-          "p50": 1178.67,
-          "p90": 1459.31
+          "p10": 840.3,
+          "p50": 1040.38,
+          "p90": 1288.09
         }
       ],
       "actualPath": [
@@ -389,8 +639,8 @@
           "value": 978.57
         },
         {
-          "t": 62,
-          "value": 982.89
+          "t": 63,
+          "value": 973.7
         },
         {
           "t": 83,
@@ -405,15 +655,15 @@
           "value": 908.57
         },
         {
-          "t": 145,
-          "value": 752.45
+          "t": 146,
+          "value": 769.57
         },
         {
-          "t": 166,
-          "value": 769.82
+          "t": 167,
+          "value": 766.33
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 746.31
         },
         {
@@ -421,28 +671,125 @@
           "value": 796.3
         },
         {
-          "t": 228,
-          "value": 747.25
+          "t": 229,
+          "value": 742.8
         },
         {
-          "t": 248,
-          "value": 725.05
+          "t": 249,
+          "value": 726.95
         }
       ]
     },
     {
-      "symbol": "INFY",
-      "name": "Infosys Limited",
-      "cutoffPrice": 1442.62,
-      "predictedP10": 829.87,
-      "predictedP50": 1120.64,
-      "predictedP90": 1514.03,
-      "actual": 1130,
+      "symbol": "HDFCBANK",
+      "name": "HDFC Bank Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 935.23,
+      "predictedP10": 784.84,
+      "predictedP50": 994.05,
+      "predictedP90": 1268.37,
+      "actual": 776.95,
+      "hit": false,
+      "missMagnitude": 0.01,
+      "actualReturnPct": -16.92,
+      "sigmaAtCutoff": 18.87,
+      "observedMuAtCutoff": 25.82,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "HDFCBANK",
+      "name": "HDFC Bank Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 859.72,
+      "predictedP10": 724.21,
+      "predictedP50": 914.54,
+      "predictedP90": 1156.27,
+      "actual": 975.96,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": -21.67,
+      "actualReturnPct": 13.52,
+      "sigmaAtCutoff": 18.35,
+      "observedMuAtCutoff": 24.88,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "HDFCBANK",
+      "name": "HDFC Bank Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 789.01,
+      "predictedP10": 634.15,
+      "predictedP50": 833.52,
+      "predictedP90": 1104.61,
+      "actual": 966.07,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 22.44,
+      "sigmaAtCutoff": 21.34,
+      "observedMuAtCutoff": 9.63,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "HDFCBANK",
+      "name": "HDFC Bank Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 733.14,
+      "predictedP10": 595.27,
+      "predictedP50": 774.6,
+      "predictedP90": 1019.42,
+      "actual": 931.88,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 27.11,
+      "sigmaAtCutoff": 21.25,
+      "observedMuAtCutoff": 7.99,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "HDFCBANK",
+      "name": "HDFC Bank Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 807.54,
+      "predictedP10": 649.11,
+      "predictedP50": 859.2,
+      "predictedP90": 1130.69,
+      "actual": 865.18,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 7.14,
+      "sigmaAtCutoff": 21.44,
+      "observedMuAtCutoff": 10.98,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "INFY",
+      "name": "Infosys Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 1442.62,
+      "predictedP10": 1120.9,
+      "predictedP50": 1512.72,
+      "predictedP90": 2052.78,
+      "actual": 1121,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -22.29,
       "sigmaAtCutoff": 23.5,
-      "muAtCutoff": -22.54,
+      "observedMuAtCutoff": -22.54,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -453,69 +800,69 @@
         },
         {
           "t": 21,
-          "p10": 1294.91,
-          "p50": 1412.53,
-          "p90": 1540.83
+          "p10": 1328.28,
+          "p50": 1448.93,
+          "p90": 1580.54
         },
         {
           "t": 42,
-          "p10": 1223.05,
-          "p50": 1383.06,
-          "p90": 1564.01
+          "p10": 1286.9,
+          "p50": 1455.27,
+          "p90": 1645.67
         },
         {
           "t": 63,
-          "p10": 1164.89,
-          "p50": 1354.21,
-          "p90": 1574.29
+          "p10": 1257.31,
+          "p50": 1461.64,
+          "p90": 1699.18
         },
         {
           "t": 84,
-          "p10": 1114.33,
-          "p50": 1325.96,
-          "p90": 1577.78
+          "p10": 1233.73,
+          "p50": 1468.03,
+          "p90": 1746.84
         },
         {
           "t": 108,
-          "p10": 1062.77,
-          "p50": 1294.39,
-          "p90": 1576.5
+          "p10": 1211.37,
+          "p50": 1475.38,
+          "p90": 1796.93
         },
         {
           "t": 129,
-          "p10": 1021.71,
-          "p50": 1267.39,
-          "p90": 1572.15
+          "p10": 1194.58,
+          "p50": 1481.83,
+          "p90": 1838.15
         },
         {
           "t": 150,
-          "p10": 983.65,
-          "p50": 1240.95,
-          "p90": 1565.55
+          "p10": 1179.73,
+          "p50": 1488.31,
+          "p90": 1877.62
         },
         {
           "t": 171,
-          "p10": 948.1,
-          "p50": 1215.06,
-          "p90": 1557.2
+          "p10": 1166.39,
+          "p50": 1494.83,
+          "p90": 1915.74
         },
         {
           "t": 192,
-          "p10": 914.69,
-          "p50": 1189.72,
-          "p90": 1547.44
+          "p10": 1154.3,
+          "p50": 1501.37,
+          "p90": 1952.79
         },
         {
           "t": 213,
-          "p10": 883.15,
-          "p50": 1164.9,
-          "p90": 1536.52
+          "p10": 1143.22,
+          "p50": 1507.93,
+          "p90": 1989
         },
         {
           "t": 234,
-          "p10": 853.28,
-          "p50": 1140.6,
-          "p90": 1524.66
+          "p10": 1133.02,
+          "p50": 1514.53,
+          "p90": 2024.5
         }
       ],
       "actualPath": [
@@ -528,8 +875,8 @@
           "value": 1470.58
         },
         {
-          "t": 62,
-          "value": 1515.21
+          "t": 63,
+          "value": 1498.18
         },
         {
           "t": 83,
@@ -544,15 +891,15 @@
           "value": 1299.38
         },
         {
-          "t": 145,
-          "value": 1251.22
+          "t": 146,
+          "value": 1252.01
         },
         {
-          "t": 166,
-          "value": 1127.7
+          "t": 167,
+          "value": 1142.77
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 1135.33
         },
         {
@@ -560,28 +907,125 @@
           "value": 1041.2
         },
         {
-          "t": 228,
-          "value": 1047.4
+          "t": 229,
+          "value": 1040.9
         },
         {
-          "t": 248,
-          "value": 1130
+          "t": 249,
+          "value": 1121
         }
       ]
     },
     {
-      "symbol": "ICICIBANK",
-      "name": "ICICI Bank Limited",
-      "cutoffPrice": 1433.91,
-      "predictedP10": 1385.39,
-      "predictedP50": 1746.65,
-      "predictedP90": 2180.6,
-      "actual": 1411.9,
+      "symbol": "INFY",
+      "name": "Infosys Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 1379.44,
+      "predictedP10": 1055.82,
+      "predictedP50": 1452.78,
+      "predictedP90": 2002.09,
+      "actual": 1145.51,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": -1.54,
+      "actualReturnPct": -16.96,
+      "sigmaAtCutoff": 24.98,
+      "observedMuAtCutoff": -36.29,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "INFY",
+      "name": "Infosys Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 1827.36,
+      "predictedP10": 1451.06,
+      "predictedP50": 1930.95,
+      "predictedP90": 2549.65,
+      "actual": 1621.02,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -11.29,
+      "sigmaAtCutoff": 22.14,
+      "observedMuAtCutoff": 12.06,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "INFY",
+      "name": "Infosys Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 1760.3,
+      "predictedP10": 1394.18,
+      "predictedP50": 1859.27,
+      "predictedP90": 2478.04,
+      "actual": 1477.04,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -16.09,
+      "sigmaAtCutoff": 22.54,
+      "observedMuAtCutoff": 22.27,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "INFY",
+      "name": "Infosys Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 1300.53,
+      "predictedP10": 1025.64,
+      "predictedP50": 1373.72,
+      "predictedP90": 1837.89,
+      "actual": 1409.01,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 8.34,
+      "sigmaAtCutoff": 22.64,
+      "observedMuAtCutoff": 15.93,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "INFY",
+      "name": "Infosys Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 1415.49,
+      "predictedP10": 1109.23,
+      "predictedP50": 1487.24,
+      "predictedP90": 2007.56,
+      "actual": 1789.66,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 26.43,
+      "sigmaAtCutoff": 22.79,
+      "observedMuAtCutoff": 20.78,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ICICIBANK",
+      "name": "ICICI Bank Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 1433.91,
+      "predictedP10": 1217.09,
+      "predictedP50": 1532.74,
+      "predictedP90": 1922.12,
+      "actual": 1420,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -0.97,
       "sigmaAtCutoff": 17.59,
-      "muAtCutoff": 20.96,
+      "observedMuAtCutoff": 20.96,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -592,69 +1036,69 @@
         },
         {
           "t": 21,
-          "p10": 1365.49,
-          "p50": 1457.3,
-          "p90": 1555.27
+          "p10": 1350.82,
+          "p50": 1441.64,
+          "p90": 1538.57
         },
         {
           "t": 42,
-          "p10": 1350.85,
-          "p50": 1481.06,
-          "p90": 1623.82
+          "p10": 1321.99,
+          "p50": 1449.42,
+          "p90": 1589.12
         },
         {
           "t": 63,
-          "p10": 1344.78,
-          "p50": 1505.21,
-          "p90": 1684.78
+          "p10": 1301.92,
+          "p50": 1457.23,
+          "p90": 1631.08
         },
         {
           "t": 84,
-          "p10": 1343.09,
-          "p50": 1529.76,
-          "p90": 1742.37
+          "p10": 1286.31,
+          "p50": 1465.09,
+          "p90": 1668.72
         },
         {
           "t": 108,
-          "p10": 1344.52,
-          "p50": 1558.3,
-          "p90": 1806.08
+          "p10": 1271.89,
+          "p50": 1474.12,
+          "p90": 1708.52
         },
         {
           "t": 129,
-          "p10": 1347.84,
-          "p50": 1583.72,
-          "p90": 1860.87
+          "p10": 1261.33,
+          "p50": 1482.07,
+          "p90": 1741.44
         },
         {
           "t": 150,
-          "p10": 1352.62,
-          "p50": 1609.54,
-          "p90": 1915.26
+          "p10": 1252.22,
+          "p50": 1490.06,
+          "p90": 1773.09
         },
         {
           "t": 171,
-          "p10": 1358.59,
-          "p50": 1635.79,
-          "p90": 1969.55
+          "p10": 1244.23,
+          "p50": 1498.1,
+          "p90": 1803.76
         },
         {
           "t": 192,
-          "p10": 1365.54,
-          "p50": 1662.47,
-          "p90": 2023.95
+          "p10": 1237.17,
+          "p50": 1506.18,
+          "p90": 1833.68
         },
         {
           "t": 213,
-          "p10": 1373.34,
-          "p50": 1689.58,
-          "p90": 2078.63
+          "p10": 1230.87,
+          "p50": 1514.3,
+          "p90": 1862.99
         },
         {
           "t": 234,
-          "p10": 1381.89,
-          "p50": 1717.13,
-          "p90": 2133.71
+          "p10": 1225.23,
+          "p50": 1522.46,
+          "p90": 1891.81
         }
       ],
       "actualPath": [
@@ -667,8 +1111,8 @@
           "value": 1366.18
         },
         {
-          "t": 62,
-          "value": 1356.96
+          "t": 63,
+          "value": 1346.45
         },
         {
           "t": 83,
@@ -683,15 +1127,15 @@
           "value": 1387.7
         },
         {
-          "t": 145,
-          "value": 1240.74
+          "t": 146,
+          "value": 1249.17
         },
         {
-          "t": 166,
-          "value": 1281.2
+          "t": 167,
+          "value": 1270.29
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 1262.06
         },
         {
@@ -699,28 +1143,125 @@
           "value": 1375.9
         },
         {
-          "t": 228,
-          "value": 1422.61
+          "t": 229,
+          "value": 1420.92
         },
         {
-          "t": 248,
-          "value": 1411.9
+          "t": 249,
+          "value": 1420
         }
       ]
     },
     {
-      "symbol": "SBIN",
-      "name": "State Bank of India",
-      "cutoffPrice": 811.08,
-      "predictedP10": 620.47,
-      "predictedP50": 810.1,
-      "predictedP90": 1060.67,
-      "actual": 1048,
+      "symbol": "ICICIBANK",
+      "name": "ICICI Bank Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 1387.31,
+      "predictedP10": 1153.38,
+      "predictedP50": 1478.14,
+      "predictedP90": 1886.94,
+      "actual": 1303.11,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": 29.21,
+      "actualReturnPct": -6.07,
+      "sigmaAtCutoff": 19.09,
+      "observedMuAtCutoff": 27.43,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ICICIBANK",
+      "name": "ICICI Bank Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 1267.85,
+      "predictedP10": 1057.13,
+      "predictedP50": 1345.63,
+      "predictedP90": 1724.04,
+      "actual": 1339.11,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 5.62,
+      "sigmaAtCutoff": 19.27,
+      "observedMuAtCutoff": 23.27,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ICICIBANK",
+      "name": "ICICI Bank Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 1156.11,
+      "predictedP10": 906.05,
+      "predictedP50": 1223.12,
+      "predictedP90": 1634.68,
+      "actual": 1421.22,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 22.93,
+      "sigmaAtCutoff": 23.39,
+      "observedMuAtCutoff": 26.48,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ICICIBANK",
+      "name": "ICICI Bank Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 1041.26,
+      "predictedP10": 812.42,
+      "predictedP50": 1091.83,
+      "predictedP90": 1480.45,
+      "actual": 1406.01,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 35.03,
+      "sigmaAtCutoff": 23.6,
+      "observedMuAtCutoff": 25.1,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ICICIBANK",
+      "name": "ICICI Bank Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 979.94,
+      "predictedP10": 756.15,
+      "predictedP50": 1030.11,
+      "predictedP90": 1399.78,
+      "actual": 1263.17,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 28.9,
+      "sigmaAtCutoff": 24.08,
+      "observedMuAtCutoff": 25.61,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "SBIN",
+      "name": "State Bank of India",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 811.08,
+      "predictedP10": 658.64,
+      "predictedP50": 861.64,
+      "predictedP90": 1117.44,
+      "actual": 1048.7,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 29.3,
       "sigmaAtCutoff": 20.52,
-      "muAtCutoff": 2.05,
+      "observedMuAtCutoff": 2.05,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -731,69 +1272,69 @@
         },
         {
           "t": 21,
-          "p10": 751.74,
-          "p50": 811.04,
-          "p90": 875.02
+          "p10": 755.48,
+          "p50": 815.07,
+          "p90": 879.37
         },
         {
           "t": 42,
-          "p10": 728.43,
-          "p50": 811,
-          "p90": 902.94
+          "p10": 735.69,
+          "p50": 819.09,
+          "p90": 911.94
         },
         {
           "t": 63,
-          "p10": 711.03,
-          "p50": 810.97,
-          "p90": 924.95
+          "p10": 721.68,
+          "p50": 823.12,
+          "p90": 938.81
         },
         {
           "t": 84,
-          "p10": 696.67,
-          "p50": 810.93,
-          "p90": 943.92
+          "p10": 710.63,
+          "p50": 827.17,
+          "p90": 962.83
         },
         {
           "t": 108,
-          "p10": 682.61,
-          "p50": 810.88,
-          "p90": 963.26
+          "p10": 700.25,
+          "p50": 831.83,
+          "p90": 988.14
         },
         {
           "t": 129,
-          "p10": 671.75,
-          "p50": 810.85,
-          "p90": 978.75
+          "p10": 692.53,
+          "p50": 835.92,
+          "p90": 1009.02
         },
         {
           "t": 150,
-          "p10": 661.89,
-          "p50": 810.81,
-          "p90": 993.23
+          "p10": 685.75,
+          "p50": 840.04,
+          "p90": 1029.04
         },
         {
           "t": 171,
-          "p10": 652.82,
-          "p50": 810.77,
-          "p90": 1006.93
+          "p10": 679.72,
+          "p50": 844.18,
+          "p90": 1048.42
         },
         {
           "t": 192,
-          "p10": 644.41,
-          "p50": 810.73,
-          "p90": 1019.97
+          "p10": 674.3,
+          "p50": 848.33,
+          "p90": 1067.28
         },
         {
           "t": 213,
-          "p10": 636.55,
-          "p50": 810.69,
-          "p90": 1032.47
+          "p10": 669.39,
+          "p50": 852.51,
+          "p90": 1085.73
         },
         {
           "t": 234,
-          "p10": 629.15,
-          "p50": 810.65,
-          "p90": 1044.51
+          "p10": 664.9,
+          "p50": 856.71,
+          "p90": 1103.85
         }
       ],
       "actualPath": [
@@ -806,8 +1347,8 @@
           "value": 888.48
         },
         {
-          "t": 62,
-          "value": 953.41
+          "t": 63,
+          "value": 966.18
         },
         {
           "t": 83,
@@ -822,15 +1363,15 @@
           "value": 1206.06
         },
         {
-          "t": 145,
-          "value": 1012.55
+          "t": 146,
+          "value": 1041.82
         },
         {
-          "t": 166,
-          "value": 1071.98
+          "t": 167,
+          "value": 1067.66
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 967.8
         },
         {
@@ -838,28 +1379,125 @@
           "value": 1045.4
         },
         {
-          "t": 228,
-          "value": 1012.6
+          "t": 229,
+          "value": 1015
         },
         {
-          "t": 248,
-          "value": 1048
+          "t": 249,
+          "value": 1048.7
         }
       ]
     },
     {
+      "symbol": "SBIN",
+      "name": "State Bank of India",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 786.45,
+      "predictedP10": 615.34,
+      "predictedP50": 828.25,
+      "predictedP90": 1116.74,
+      "actual": 1092.16,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 38.87,
+      "sigmaAtCutoff": 23.24,
+      "observedMuAtCutoff": -1.22,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "SBIN",
+      "name": "State Bank of India",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 781.92,
+      "predictedP10": 605.24,
+      "predictedP50": 823.84,
+      "predictedP90": 1117.97,
+      "actual": 949.19,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 21.39,
+      "sigmaAtCutoff": 23.85,
+      "observedMuAtCutoff": -1.53,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "SBIN",
+      "name": "State Bank of India",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 785.34,
+      "predictedP10": 581.42,
+      "predictedP50": 818.25,
+      "predictedP90": 1148.41,
+      "actual": 801.99,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 2.12,
+      "sigmaAtCutoff": 26.88,
+      "observedMuAtCutoff": 36.85,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "SBIN",
+      "name": "State Bank of India",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 710.73,
+      "predictedP10": 524.98,
+      "predictedP50": 741.85,
+      "predictedP90": 1048.76,
+      "actual": 787.07,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 10.74,
+      "sigmaAtCutoff": 27.02,
+      "observedMuAtCutoff": 35.46,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "SBIN",
+      "name": "State Bank of India",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 609.68,
+      "predictedP10": 445.33,
+      "predictedP50": 636.41,
+      "predictedP90": 900.78,
+      "actual": 763.82,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 25.28,
+      "sigmaAtCutoff": 27.34,
+      "observedMuAtCutoff": 34.02,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
       "symbol": "ITC",
       "name": "ITC Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
       "cutoffPrice": 386.69,
-      "predictedP10": 273.33,
-      "predictedP50": 334.9,
-      "predictedP90": 407.54,
-      "actual": 271.65,
+      "predictedP10": 339.64,
+      "predictedP50": 413.88,
+      "predictedP90": 504.6,
+      "actual": 269.4,
       "hit": false,
-      "missMagnitude": 0.0062,
-      "actualReturnPct": -29.75,
+      "missMagnitude": 0.2068,
+      "actualReturnPct": -30.33,
       "sigmaAtCutoff": 15.58,
-      "muAtCutoff": -13.24,
+      "observedMuAtCutoff": -13.24,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -870,69 +1508,69 @@
         },
         {
           "t": 21,
-          "p10": 360.66,
-          "p50": 382.06,
-          "p90": 404.73
+          "p10": 367.1,
+          "p50": 388.88,
+          "p90": 411.96
         },
         {
           "t": 42,
-          "p10": 347.93,
-          "p50": 377.49,
-          "p90": 409.55
+          "p10": 360.47,
+          "p50": 391.09,
+          "p90": 424.31
         },
         {
           "t": 63,
-          "p10": 337.52,
-          "p50": 372.97,
-          "p90": 412.13
+          "p10": 355.93,
+          "p50": 393.31,
+          "p90": 434.61
         },
         {
           "t": 84,
-          "p10": 328.37,
-          "p50": 368.5,
-          "p90": 413.54
+          "p10": 352.46,
+          "p50": 395.54,
+          "p90": 443.88
         },
         {
           "t": 108,
-          "p10": 318.92,
-          "p50": 363.46,
-          "p90": 414.23
+          "p10": 349.31,
+          "p50": 398.1,
+          "p90": 453.71
         },
         {
           "t": 129,
-          "p10": 311.29,
-          "p50": 359.11,
-          "p90": 414.27
+          "p10": 347.05,
+          "p50": 400.36,
+          "p90": 461.86
         },
         {
           "t": 150,
-          "p10": 304.14,
-          "p50": 354.81,
-          "p90": 413.92
+          "p10": 345.13,
+          "p50": 402.63,
+          "p90": 469.7
         },
         {
           "t": 171,
-          "p10": 297.38,
-          "p50": 350.56,
-          "p90": 413.25
+          "p10": 343.49,
+          "p50": 404.91,
+          "p90": 477.32
         },
         {
           "t": 192,
-          "p10": 290.95,
-          "p50": 346.36,
-          "p90": 412.33
+          "p10": 342.06,
+          "p50": 407.21,
+          "p90": 484.76
         },
         {
           "t": 213,
-          "p10": 284.81,
-          "p50": 342.22,
-          "p90": 411.19
+          "p10": 340.82,
+          "p50": 409.52,
+          "p90": 492.06
         },
         {
           "t": 234,
-          "p10": 278.93,
-          "p50": 338.12,
-          "p90": 409.88
+          "p10": 339.74,
+          "p50": 411.84,
+          "p90": 499.24
         }
       ],
       "actualPath": [
@@ -945,8 +1583,8 @@
           "value": 397.42
         },
         {
-          "t": 62,
-          "value": 384.78
+          "t": 63,
+          "value": 382.16
         },
         {
           "t": 83,
@@ -961,15 +1599,15 @@
           "value": 316.77
         },
         {
-          "t": 145,
-          "value": 283.53
+          "t": 146,
+          "value": 287.86
         },
         {
-          "t": 166,
-          "value": 296.38
+          "t": 167,
+          "value": 307.86
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 291.95
         },
         {
@@ -977,28 +1615,125 @@
           "value": 290
         },
         {
-          "t": 228,
-          "value": 281.3
+          "t": 229,
+          "value": 283.45
         },
         {
-          "t": 248,
-          "value": 271.65
+          "t": 249,
+          "value": 269.4
         }
       ]
     },
     {
-      "symbol": "LT",
-      "name": "Larsen & Toubro Limited",
-      "cutoffPrice": 3577.66,
-      "predictedP10": 2616.07,
-      "predictedP50": 3527.13,
-      "predictedP90": 4765.47,
-      "actual": 4081,
+      "symbol": "ITC",
+      "name": "ITC Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 395.89,
+      "predictedP10": 342.91,
+      "predictedP50": 422.75,
+      "predictedP90": 523.39,
+      "actual": 295.79,
+      "hit": false,
+      "missMagnitude": 0.1374,
+      "actualReturnPct": -25.28,
+      "sigmaAtCutoff": 16.63,
+      "observedMuAtCutoff": -17.28,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ITC",
+      "name": "ITC Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 412.38,
+      "predictedP10": 361.37,
+      "predictedP50": 442.13,
+      "predictedP90": 538.13,
+      "actual": 385.36,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": 14.07,
+      "actualReturnPct": -6.55,
+      "sigmaAtCutoff": 15.43,
+      "observedMuAtCutoff": -26.23,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ITC",
+      "name": "ITC Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 448.55,
+      "predictedP10": 366.69,
+      "predictedP50": 475.71,
+      "predictedP90": 620.67,
+      "actual": 380.78,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -15.11,
+      "sigmaAtCutoff": 20.4,
+      "observedMuAtCutoff": 28.15,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ITC",
+      "name": "ITC Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 370.15,
+      "predictedP10": 301.18,
+      "predictedP50": 391.87,
+      "predictedP90": 508.39,
+      "actual": 401.46,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 8.46,
+      "sigmaAtCutoff": 20.54,
+      "observedMuAtCutoff": 25.67,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ITC",
+      "name": "ITC Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 387.5,
+      "predictedP10": 315.79,
+      "predictedP50": 411.21,
+      "predictedP90": 532.88,
+      "actual": 429.51,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 10.84,
+      "sigmaAtCutoff": 20.65,
+      "observedMuAtCutoff": 29.5,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "LT",
+      "name": "Larsen & Toubro Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 3577.66,
+      "predictedP10": 2770.39,
+      "predictedP50": 3774.66,
+      "predictedP90": 5066.6,
+      "actual": 4093,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 14.4,
       "sigmaAtCutoff": 23.57,
-      "muAtCutoff": 1.17,
+      "observedMuAtCutoff": 1.17,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -1009,69 +1744,69 @@
         },
         {
           "t": 21,
-          "p10": 3274.47,
-          "p50": 3572.86,
-          "p90": 3898.44
+          "p10": 3293.17,
+          "p50": 3593.26,
+          "p90": 3920.7
         },
         {
           "t": 42,
-          "p10": 3154.06,
-          "p50": 3568.07,
-          "p90": 4036.42
+          "p10": 3190.18,
+          "p50": 3608.93,
+          "p90": 4082.64
         },
         {
           "t": 63,
-          "p10": 3063.72,
-          "p50": 3563.28,
-          "p90": 4144.3
+          "p10": 3116.5,
+          "p50": 3624.67,
+          "p90": 4215.69
         },
         {
           "t": 84,
-          "p10": 2988.94,
-          "p50": 3558.5,
-          "p90": 4236.59
+          "p10": 3057.79,
+          "p50": 3640.47,
+          "p90": 4334.18
         },
         {
           "t": 108,
-          "p10": 2915.47,
-          "p50": 3553.05,
-          "p90": 4330.05
+          "p10": 3002.1,
+          "p50": 3658.62,
+          "p90": 4458.71
         },
         {
           "t": 129,
-          "p10": 2858.55,
-          "p50": 3548.28,
-          "p90": 4404.43
+          "p10": 2960.3,
+          "p50": 3674.58,
+          "p90": 4561.2
         },
         {
           "t": 150,
-          "p10": 2806.79,
-          "p50": 3543.52,
-          "p90": 4473.63
+          "p10": 2923.29,
+          "p50": 3690.6,
+          "p90": 4659.31
         },
         {
           "t": 171,
-          "p10": 2759.14,
-          "p50": 3538.77,
-          "p90": 4538.69
+          "p10": 2890.07,
+          "p50": 3706.7,
+          "p90": 4754.07
         },
         {
           "t": 192,
-          "p10": 2714.86,
-          "p50": 3534.03,
-          "p90": 4600.37
+          "p10": 2859.92,
+          "p50": 3722.86,
+          "p90": 4846.18
         },
         {
           "t": 213,
-          "p10": 2673.4,
-          "p50": 3529.29,
-          "p90": 4659.19
+          "p10": 2832.33,
+          "p50": 3739.09,
+          "p90": 4936.16
         },
         {
           "t": 234,
-          "p10": 2634.36,
-          "p50": 3524.55,
-          "p90": 4715.56
+          "p10": 2806.9,
+          "p50": 3755.4,
+          "p90": 5024.42
         }
       ],
       "actualPath": [
@@ -1084,8 +1819,8 @@
           "value": 3867.13
         },
         {
-          "t": 62,
-          "value": 3974.48
+          "t": 63,
+          "value": 3958.04
         },
         {
           "t": 83,
@@ -1100,15 +1835,15 @@
           "value": 4375.36
         },
         {
-          "t": 145,
-          "value": 3482.78
+          "t": 146,
+          "value": 3614
         },
         {
-          "t": 166,
-          "value": 3998.64
+          "t": 167,
+          "value": 4056.48
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 4047.5
         },
         {
@@ -1116,28 +1851,125 @@
           "value": 4216.4
         },
         {
-          "t": 228,
-          "value": 3792.4
+          "t": 229,
+          "value": 3785.6
         },
         {
-          "t": 248,
-          "value": 4081
+          "t": 249,
+          "value": 4093
         }
       ]
     },
     {
-      "symbol": "AXISBANK",
-      "name": "Axis Bank Limited",
-      "cutoffPrice": 1078.07,
-      "predictedP10": 735.89,
-      "predictedP50": 966.01,
-      "predictedP90": 1275.62,
-      "actual": 1251,
+      "symbol": "LT",
+      "name": "Larsen & Toubro Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 3218.75,
+      "predictedP10": 2389.24,
+      "predictedP50": 3355.98,
+      "predictedP90": 4735.28,
+      "actual": 4014.39,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": 16.04,
+      "actualReturnPct": 24.72,
+      "sigmaAtCutoff": 26.24,
+      "observedMuAtCutoff": -15.05,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "LT",
+      "name": "Larsen & Toubro Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 3561.52,
+      "predictedP10": 2796.55,
+      "predictedP50": 3767.68,
+      "predictedP90": 5065.87,
+      "actual": 4008.15,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 12.54,
+      "sigmaAtCutoff": 23.01,
+      "observedMuAtCutoff": -0.78,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "LT",
+      "name": "Larsen & Toubro Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 3528.36,
+      "predictedP10": 2765.69,
+      "predictedP50": 3719.37,
+      "predictedP90": 4971.11,
+      "actual": 3568.25,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 1.13,
+      "sigmaAtCutoff": 23.36,
+      "observedMuAtCutoff": 35.73,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "LT",
+      "name": "Larsen & Toubro Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 3425.2,
+      "predictedP10": 2692.21,
+      "predictedP50": 3611.13,
+      "predictedP90": 4865.69,
+      "actual": 3264.67,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -4.69,
+      "sigmaAtCutoff": 23.18,
+      "observedMuAtCutoff": 35.37,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "LT",
+      "name": "Larsen & Toubro Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 3333.49,
+      "predictedP10": 2602.19,
+      "predictedP50": 3494.66,
+      "predictedP90": 4703.55,
+      "actual": 3598.46,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 7.95,
+      "sigmaAtCutoff": 23.09,
+      "observedMuAtCutoff": 37.86,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "AXISBANK",
+      "name": "Axis Bank Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 1078.07,
+      "predictedP10": 868.46,
+      "predictedP50": 1146.43,
+      "predictedP90": 1512.87,
+      "actual": 1245.8,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 15.56,
       "sigmaAtCutoff": 21.63,
-      "muAtCutoff": -8.16,
+      "observedMuAtCutoff": -8.16,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -1148,69 +1980,69 @@
         },
         {
           "t": 21,
-          "p10": 986.51,
-          "p50": 1068.68,
-          "p90": 1157.7
+          "p10": 999.88,
+          "p50": 1083.17,
+          "p90": 1173.39
         },
         {
           "t": 42,
-          "p10": 946.04,
-          "p50": 1059.38,
-          "p90": 1186.29
+          "p10": 971.86,
+          "p50": 1088.29,
+          "p90": 1218.67
         },
         {
           "t": 63,
-          "p10": 914.26,
-          "p50": 1050.15,
-          "p90": 1206.25
+          "p10": 951.94,
+          "p50": 1093.44,
+          "p90": 1255.97
         },
         {
           "t": 84,
-          "p10": 887.07,
-          "p50": 1041.01,
-          "p90": 1221.66
+          "p10": 936.15,
+          "p50": 1098.61,
+          "p90": 1289.25
         },
         {
           "t": 108,
-          "p10": 859.63,
-          "p50": 1030.66,
-          "p90": 1235.7
+          "p10": 921.26,
+          "p50": 1104.55,
+          "p90": 1324.29
         },
         {
           "t": 129,
-          "p10": 837.91,
-          "p50": 1021.68,
-          "p90": 1245.77
+          "p10": 910.15,
+          "p50": 1109.77,
+          "p90": 1353.17
         },
         {
           "t": 150,
-          "p10": 817.81,
-          "p50": 1012.79,
-          "p90": 1254.25
+          "p10": 900.36,
+          "p50": 1115.02,
+          "p90": 1380.86
         },
         {
           "t": 171,
-          "p10": 799.03,
-          "p50": 1003.97,
-          "p90": 1261.46
+          "p10": 891.61,
+          "p50": 1120.29,
+          "p90": 1407.62
         },
         {
           "t": 192,
-          "p10": 781.37,
-          "p50": 995.23,
-          "p90": 1267.62
+          "p10": 883.72,
+          "p50": 1125.59,
+          "p90": 1433.66
         },
         {
           "t": 213,
-          "p10": 764.65,
-          "p50": 986.56,
-          "p90": 1272.88
+          "p10": 876.53,
+          "p50": 1130.91,
+          "p90": 1459.12
         },
         {
           "t": 234,
-          "p10": 748.75,
-          "p50": 977.97,
-          "p90": 1277.37
+          "p10": 869.94,
+          "p50": 1136.26,
+          "p90": 1484.12
         }
       ],
       "actualPath": [
@@ -1223,8 +2055,8 @@
           "value": 1240.94
         },
         {
-          "t": 62,
-          "value": 1268.02
+          "t": 63,
+          "value": 1265.32
         },
         {
           "t": 83,
@@ -1239,15 +2071,15 @@
           "value": 1385.63
         },
         {
-          "t": 145,
-          "value": 1191.78
+          "t": 146,
+          "value": 1221.16
         },
         {
-          "t": 166,
-          "value": 1288.01
+          "t": 167,
+          "value": 1295.4
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 1303.09
         },
         {
@@ -1255,28 +2087,125 @@
           "value": 1376.14
         },
         {
-          "t": 228,
-          "value": 1223
+          "t": 229,
+          "value": 1227.3
         },
         {
-          "t": 248,
-          "value": 1251
+          "t": 249,
+          "value": 1245.8
         }
       ]
     },
     {
-      "symbol": "KOTAKBANK",
-      "name": "Kotak Mahindra Bank Limited",
-      "cutoffPrice": 402.86,
-      "predictedP10": 324.82,
-      "predictedP50": 425.79,
-      "predictedP90": 553.03,
-      "actual": 397.35,
+      "symbol": "AXISBANK",
+      "name": "Axis Bank Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 1221.01,
+      "predictedP10": 954.7,
+      "predictedP50": 1284.71,
+      "predictedP90": 1722.98,
+      "actual": 1323.18,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": -1.37,
+      "actualReturnPct": 8.37,
+      "sigmaAtCutoff": 23,
+      "observedMuAtCutoff": 5.31,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "AXISBANK",
+      "name": "Axis Bank Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 1070.11,
+      "predictedP10": 867.58,
+      "predictedP50": 1128.4,
+      "predictedP90": 1475.99,
+      "actual": 1227.25,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 14.68,
+      "sigmaAtCutoff": 20.98,
+      "observedMuAtCutoff": -31.4,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "AXISBANK",
+      "name": "Axis Bank Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 1172.49,
+      "predictedP10": 868.95,
+      "predictedP50": 1220.24,
+      "predictedP90": 1708.37,
+      "actual": 1069.18,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -8.81,
+      "sigmaAtCutoff": 26.31,
+      "observedMuAtCutoff": 25.5,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "AXISBANK",
+      "name": "Axis Bank Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 1026.64,
+      "predictedP10": 775.42,
+      "predictedP50": 1081.95,
+      "predictedP90": 1508.77,
+      "actual": 1190.86,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 16,
+      "sigmaAtCutoff": 25.98,
+      "observedMuAtCutoff": 21.67,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "AXISBANK",
+      "name": "Axis Bank Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 1092.78,
+      "predictedP10": 814.66,
+      "predictedP50": 1142.78,
+      "predictedP90": 1606.47,
+      "actual": 1070.06,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -2.08,
+      "sigmaAtCutoff": 26.77,
+      "observedMuAtCutoff": 27.71,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "name": "Kotak Mahindra Bank Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 402.86,
+      "predictedP10": 327.6,
+      "predictedP50": 425.95,
+      "predictedP90": 554.52,
+      "actual": 402.8,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -0.02,
       "sigmaAtCutoff": 20.93,
-      "muAtCutoff": 7.58,
+      "observedMuAtCutoff": 7.58,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -1287,69 +2216,69 @@
         },
         {
           "t": 21,
-          "p10": 374.53,
-          "p50": 404.68,
-          "p90": 437.25
+          "p10": 374.66,
+          "p50": 404.82,
+          "p90": 437.41
         },
         {
           "t": 42,
-          "p10": 364.34,
-          "p50": 406.5,
-          "p90": 453.53
+          "p10": 364.6,
+          "p50": 406.78,
+          "p90": 453.85
         },
         {
           "t": 63,
-          "p10": 357.08,
-          "p50": 408.33,
-          "p90": 466.92
+          "p10": 357.46,
+          "p50": 408.76,
+          "p90": 467.42
         },
         {
           "t": 84,
-          "p10": 351.32,
-          "p50": 410.16,
-          "p90": 478.86
+          "p10": 351.82,
+          "p50": 410.74,
+          "p90": 479.53
         },
         {
           "t": 108,
-          "p10": 345.88,
-          "p50": 412.27,
-          "p90": 491.4
+          "p10": 346.51,
+          "p50": 413.02,
+          "p90": 492.3
         },
         {
           "t": 129,
-          "p10": 341.82,
-          "p50": 414.13,
-          "p90": 501.73
+          "p10": 342.56,
+          "p50": 415.03,
+          "p90": 502.82
         },
         {
           "t": 150,
-          "p10": 338.23,
-          "p50": 415.99,
-          "p90": 511.62
+          "p10": 339.09,
+          "p50": 417.04,
+          "p90": 512.91
         },
         {
           "t": 171,
-          "p10": 335.03,
-          "p50": 417.86,
-          "p90": 521.17
+          "p10": 335.99,
+          "p50": 419.07,
+          "p90": 522.68
         },
         {
           "t": 192,
-          "p10": 332.13,
-          "p50": 419.74,
-          "p90": 530.46
+          "p10": 333.21,
+          "p50": 421.1,
+          "p90": 532.18
         },
         {
           "t": 213,
-          "p10": 329.49,
-          "p50": 421.63,
-          "p90": 539.53
+          "p10": 330.67,
+          "p50": 423.14,
+          "p90": 541.47
         },
         {
           "t": 234,
-          "p10": 327.07,
-          "p50": 423.53,
-          "p90": 548.43
+          "p10": 328.36,
+          "p50": 425.2,
+          "p90": 550.6
         }
       ],
       "actualPath": [
@@ -1362,8 +2291,8 @@
           "value": 436.65
         },
         {
-          "t": 62,
-          "value": 416.74
+          "t": 63,
+          "value": 413.27
         },
         {
           "t": 83,
@@ -1378,15 +2307,15 @@
           "value": 429.96
         },
         {
-          "t": 145,
-          "value": 366.22
+          "t": 146,
+          "value": 370.46
         },
         {
-          "t": 166,
-          "value": 377.3
+          "t": 167,
+          "value": 381.34
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 388.03
         },
         {
@@ -1394,28 +2323,125 @@
           "value": 408.3
         },
         {
-          "t": 228,
-          "value": 383.35
+          "t": 229,
+          "value": 384.75
         },
         {
-          "t": 248,
-          "value": 397.35
+          "t": 249,
+          "value": 402.8
         }
       ]
     },
     {
-      "symbol": "BHARTIARTL",
-      "name": "Bharti Airtel Limited",
-      "cutoffPrice": 1905.91,
-      "predictedP10": 1895.93,
-      "predictedP50": 2493.7,
-      "predictedP90": 3299.08,
-      "actual": 1941.7,
+      "symbol": "KOTAKBANK",
+      "name": "Kotak Mahindra Bank Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 446.99,
+      "predictedP10": 360.39,
+      "predictedP50": 472.31,
+      "predictedP90": 617.7,
+      "actual": 376.15,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": 1.88,
+      "actualReturnPct": -15.85,
+      "sigmaAtCutoff": 21.36,
+      "observedMuAtCutoff": 27,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "name": "Kotak Mahindra Bank Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 347.71,
+      "predictedP10": 298.34,
+      "predictedP50": 370.87,
+      "predictedP90": 462.09,
+      "actual": 432.09,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 24.27,
+      "sigmaAtCutoff": 17.25,
+      "observedMuAtCutoff": -14.7,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "name": "Kotak Mahindra Bank Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 361.55,
+      "predictedP10": 286.47,
+      "predictedP50": 382.61,
+      "predictedP90": 517.13,
+      "actual": 395.98,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 9.52,
+      "sigmaAtCutoff": 22.85,
+      "observedMuAtCutoff": 6.49,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "name": "Kotak Mahindra Bank Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 357.11,
+      "predictedP10": 280.15,
+      "predictedP50": 377.43,
+      "predictedP90": 504.26,
+      "actual": 443.84,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 24.29,
+      "sigmaAtCutoff": 22.85,
+      "observedMuAtCutoff": 5.01,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "name": "Kotak Mahindra Bank Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 369.07,
+      "predictedP10": 289.12,
+      "predictedP50": 389.02,
+      "predictedP90": 523.25,
+      "actual": 356.65,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -3.36,
+      "sigmaAtCutoff": 23.18,
+      "observedMuAtCutoff": 6.56,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "name": "Bharti Airtel Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 1905.91,
+      "predictedP10": 1534.71,
+      "predictedP50": 2030.44,
+      "predictedP90": 2664.39,
+      "actual": 1946,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 2.1,
       "sigmaAtCutoff": 21.27,
-      "muAtCutoff": 29.26,
+      "observedMuAtCutoff": 29.26,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -1426,69 +2452,69 @@
         },
         {
           "t": 21,
-          "p10": 1801.74,
-          "p50": 1949.27,
-          "p90": 2108.88
+          "p10": 1770.11,
+          "p50": 1915.05,
+          "p90": 2071.86
         },
         {
           "t": 42,
-          "p10": 1783.63,
-          "p50": 1993.62,
-          "p90": 2228.33
+          "p10": 1721.54,
+          "p50": 1924.23,
+          "p90": 2150.77
         },
         {
           "t": 63,
-          "p10": 1779.14,
-          "p50": 2038.97,
-          "p90": 2336.75
+          "p10": 1687.06,
+          "p50": 1933.45,
+          "p90": 2215.82
         },
         {
           "t": 84,
-          "p10": 1781.64,
-          "p50": 2085.36,
-          "p90": 2440.85
+          "p10": 1659.77,
+          "p50": 1942.71,
+          "p90": 2273.89
         },
         {
           "t": 108,
-          "p10": 1789.92,
-          "p50": 2139.66,
-          "p90": 2557.75
+          "p10": 1634.06,
+          "p50": 1953.36,
+          "p90": 2335.04
         },
         {
           "t": 129,
-          "p10": 1800.53,
-          "p50": 2188.34,
-          "p90": 2659.68
+          "p10": 1614.89,
+          "p50": 1962.72,
+          "p90": 2385.46
         },
         {
           "t": 150,
-          "p10": 1813.57,
-          "p50": 2238.12,
-          "p90": 2762.07
+          "p10": 1598.03,
+          "p50": 1972.13,
+          "p90": 2433.8
         },
         {
           "t": 171,
-          "p10": 1828.6,
-          "p50": 2289.04,
-          "p90": 2865.42
+          "p10": 1582.98,
+          "p50": 1981.58,
+          "p90": 2480.54
         },
         {
           "t": 192,
-          "p10": 1845.32,
-          "p50": 2341.12,
-          "p90": 2970.12
+          "p10": 1569.41,
+          "p50": 1991.07,
+          "p90": 2526.03
         },
         {
           "t": 213,
-          "p10": 1863.53,
-          "p50": 2394.37,
-          "p90": 3076.44
+          "p10": 1557.07,
+          "p50": 2000.62,
+          "p90": 2570.51
         },
         {
           "t": 234,
-          "p10": 1883.07,
-          "p50": 2448.85,
-          "p90": 3184.62
+          "p10": 1545.77,
+          "p50": 2010.21,
+          "p90": 2614.18
         }
       ],
       "actualPath": [
@@ -1501,8 +2527,8 @@
           "value": 2004.08
         },
         {
-          "t": 62,
-          "value": 2125.35
+          "t": 63,
+          "value": 2134.73
         },
         {
           "t": 83,
@@ -1517,15 +2543,15 @@
           "value": 1972.48
         },
         {
-          "t": 145,
-          "value": 1779.7
+          "t": 146,
+          "value": 1812.09
         },
         {
-          "t": 166,
-          "value": 1820.88
+          "t": 167,
+          "value": 1864.63
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 1829.18
         },
         {
@@ -1533,28 +2559,125 @@
           "value": 1827.7
         },
         {
-          "t": 228,
-          "value": 1907
+          "t": 229,
+          "value": 1898.2
         },
         {
-          "t": 248,
-          "value": 1941.7
+          "t": 249,
+          "value": 1946
         }
       ]
     },
     {
-      "symbol": "ASIANPAINT",
-      "name": "Asian Paints Limited",
-      "cutoffPrice": 2540.56,
-      "predictedP10": 1647.27,
-      "predictedP50": 2096.15,
-      "predictedP90": 2672.87,
-      "actual": 2625.2,
+      "symbol": "BHARTIARTL",
+      "name": "Bharti Airtel Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 1844.57,
+      "predictedP10": 1479.08,
+      "predictedP50": 1967.92,
+      "predictedP90": 2603.95,
+      "actual": 1797.48,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": 3.33,
+      "actualReturnPct": -2.55,
+      "sigmaAtCutoff": 22.35,
+      "observedMuAtCutoff": 39.76,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "name": "Bharti Airtel Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 1545.57,
+      "predictedP10": 1217.45,
+      "predictedP50": 1636.68,
+      "predictedP90": 2175.88,
+      "actual": 2079.23,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 34.53,
+      "sigmaAtCutoff": 22.44,
+      "observedMuAtCutoff": 19.58,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "name": "Bharti Airtel Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 1433.28,
+      "predictedP10": 1105.04,
+      "predictedP50": 1504.3,
+      "predictedP90": 2051.29,
+      "actual": 1906.7,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 33.03,
+      "sigmaAtCutoff": 23.93,
+      "observedMuAtCutoff": 27.86,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "name": "Bharti Airtel Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 1255.43,
+      "predictedP10": 971.34,
+      "predictedP50": 1327.05,
+      "predictedP90": 1800.22,
+      "actual": 1784.24,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 42.12,
+      "sigmaAtCutoff": 23.99,
+      "observedMuAtCutoff": 25.95,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "name": "Bharti Airtel Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 952.43,
+      "predictedP10": 736.41,
+      "predictedP50": 1002.78,
+      "predictedP90": 1362.04,
+      "actual": 1562.8,
+      "hit": false,
+      "missMagnitude": 0.1474,
+      "actualReturnPct": 64.09,
+      "sigmaAtCutoff": 24.2,
+      "observedMuAtCutoff": 20.27,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "name": "Asian Paints Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 2540.56,
+      "predictedP10": 2110.53,
+      "predictedP50": 2688.57,
+      "predictedP90": 3445.91,
+      "actual": 2640,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 3.91,
       "sigmaAtCutoff": 18.99,
-      "muAtCutoff": -17.41,
+      "observedMuAtCutoff": -17.41,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -1565,69 +2688,69 @@
         },
         {
           "t": 21,
-          "p10": 2330.61,
-          "p50": 2500.2,
-          "p90": 2682.13
+          "p10": 2380.5,
+          "p50": 2553.71,
+          "p90": 2739.54
         },
         {
           "t": 42,
-          "p10": 2227.82,
-          "p50": 2460.49,
-          "p90": 2717.45
+          "p10": 2324.21,
+          "p50": 2566.94,
+          "p90": 2835.02
         },
         {
           "t": 63,
-          "p10": 2144.03,
-          "p50": 2421.41,
-          "p90": 2734.66
+          "p10": 2284.66,
+          "p50": 2580.23,
+          "p90": 2914.03
         },
         {
           "t": 84,
-          "p10": 2070.64,
-          "p50": 2382.94,
-          "p90": 2742.35
+          "p10": 2253.68,
+          "p50": 2593.59,
+          "p90": 2984.77
         },
         {
           "t": 108,
-          "p10": 1995.2,
-          "p50": 2339.73,
-          "p90": 2743.75
+          "p10": 2224.77,
+          "p50": 2608.94,
+          "p90": 3059.45
         },
         {
           "t": 129,
-          "p10": 1934.67,
-          "p50": 2302.57,
-          "p90": 2740.43
+          "p10": 2203.44,
+          "p50": 2622.45,
+          "p90": 3121.14
         },
         {
           "t": 150,
-          "p10": 1878.15,
-          "p50": 2265.99,
-          "p90": 2733.92
+          "p10": 2184.86,
+          "p50": 2636.03,
+          "p90": 3180.38
         },
         {
           "t": 171,
-          "p10": 1824.97,
-          "p50": 2230,
-          "p90": 2724.91
+          "p10": 2168.43,
+          "p50": 2649.68,
+          "p90": 3237.74
         },
         {
           "t": 192,
-          "p10": 1774.65,
-          "p50": 2194.58,
-          "p90": 2713.87
+          "p10": 2153.77,
+          "p50": 2663.4,
+          "p90": 3293.64
         },
         {
           "t": 213,
-          "p10": 1726.81,
-          "p50": 2159.72,
-          "p90": 2701.15
+          "p10": 2140.56,
+          "p50": 2677.2,
+          "p90": 3348.36
         },
         {
           "t": 234,
-          "p10": 1681.18,
-          "p50": 2125.41,
-          "p90": 2687.02
+          "p10": 2128.6,
+          "p50": 2691.06,
+          "p90": 3402.14
         }
       ],
       "actualPath": [
@@ -1640,8 +2763,8 @@
           "value": 2476.22
         },
         {
-          "t": 62,
-          "value": 2854.43
+          "t": 63,
+          "value": 2851.06
         },
         {
           "t": 83,
@@ -1656,15 +2779,15 @@
           "value": 2408.8
         },
         {
-          "t": 145,
-          "value": 2198.23
+          "t": 146,
+          "value": 2250.67
         },
         {
-          "t": 166,
-          "value": 2441.42
+          "t": 167,
+          "value": 2426.25
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 2648.92
         },
         {
@@ -1672,28 +2795,125 @@
           "value": 2645.2
         },
         {
-          "t": 228,
-          "value": 2668.8
+          "t": 229,
+          "value": 2637.9
         },
         {
-          "t": 248,
-          "value": 2625.2
+          "t": 249,
+          "value": 2640
         }
       ]
     },
     {
-      "symbol": "MARUTI",
-      "name": "Maruti Suzuki India Limited",
-      "cutoffPrice": 14138.01,
-      "predictedP10": 12236.55,
-      "predictedP50": 15910.42,
-      "predictedP90": 20751.49,
-      "actual": 13809,
+      "symbol": "ASIANPAINT",
+      "name": "Asian Paints Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 2398.07,
+      "predictedP10": 1969.05,
+      "predictedP50": 2538.31,
+      "predictedP90": 3282.67,
+      "actual": 2463.82,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": -2.33,
+      "actualReturnPct": 2.74,
+      "sigmaAtCutoff": 19.79,
+      "observedMuAtCutoff": -35.7,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "name": "Asian Paints Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 2238.54,
+      "predictedP10": 1843.89,
+      "predictedP50": 2380.56,
+      "predictedP90": 3066.46,
+      "actual": 2722.88,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 21.64,
+      "sigmaAtCutoff": 20.12,
+      "observedMuAtCutoff": -90.08,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "name": "Asian Paints Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 3085.77,
+      "predictedP10": 2435.09,
+      "predictedP50": 3263.76,
+      "predictedP90": 4335.81,
+      "actual": 2467.61,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -20.03,
+      "sigmaAtCutoff": 22.41,
+      "observedMuAtCutoff": 12.87,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "name": "Asian Paints Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 2723.57,
+      "predictedP10": 2153.17,
+      "predictedP50": 2874.1,
+      "predictedP90": 3828.11,
+      "actual": 2405.13,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -11.69,
+      "sigmaAtCutoff": 22.55,
+      "observedMuAtCutoff": 10.77,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "name": "Asian Paints Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 3203.01,
+      "predictedP10": 2517.29,
+      "predictedP50": 3377.99,
+      "predictedP90": 4545.21,
+      "actual": 2260.41,
+      "hit": false,
+      "missMagnitude": 0.102,
+      "actualReturnPct": -29.43,
+      "sigmaAtCutoff": 23.14,
+      "observedMuAtCutoff": 16.22,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "MARUTI",
+      "name": "Maruti Suzuki India Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 14138.01,
+      "predictedP10": 11598.07,
+      "predictedP50": 14975.09,
+      "predictedP90": 19429.89,
+      "actual": 13565,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -4.05,
       "sigmaAtCutoff": 20.22,
-      "muAtCutoff": 13.71,
+      "observedMuAtCutoff": 13.71,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -1704,69 +2924,69 @@
         },
         {
           "t": 21,
-          "p10": 13246.92,
-          "p50": 14276.09,
-          "p90": 15385.22
+          "p10": 13184.06,
+          "p50": 14208.35,
+          "p90": 15312.21
         },
         {
           "t": 42,
-          "p10": 12968.1,
-          "p50": 14415.52,
-          "p90": 16024.5
+          "p10": 12845.31,
+          "p50": 14279.03,
+          "p90": 15872.77
         },
         {
           "t": 63,
-          "p10": 12787.02,
-          "p50": 14556.31,
-          "p90": 16570.42
+          "p10": 12605.84,
+          "p50": 14350.07,
+          "p90": 16335.63
         },
         {
           "t": 84,
-          "p10": 12655.62,
-          "p50": 14698.48,
-          "p90": 17071.09
+          "p10": 12417.1,
+          "p50": 14421.45,
+          "p90": 16749.35
         },
         {
           "t": 108,
-          "p10": 12543.13,
-          "p50": 14862.66,
-          "p90": 17611.12
+          "p10": 12240.01,
+          "p50": 14503.48,
+          "p90": 17185.52
         },
         {
           "t": 129,
-          "p10": 12467.53,
-          "p50": 15007.81,
-          "p90": 18065.68
+          "p10": 12108.5,
+          "p50": 14575.63,
+          "p90": 17545.44
         },
         {
           "t": 150,
-          "p10": 12407.76,
-          "p50": 15154.39,
-          "p90": 18509.03
+          "p10": 11993.26,
+          "p50": 14648.14,
+          "p90": 17890.71
         },
         {
           "t": 171,
-          "p10": 12360.45,
-          "p50": 15302.4,
-          "p90": 18944.57
+          "p10": 11890.84,
+          "p50": 14721.01,
+          "p90": 18224.8
         },
         {
           "t": 192,
-          "p10": 12323.28,
-          "p50": 15451.85,
-          "p90": 19374.68
+          "p10": 11798.83,
+          "p50": 14794.25,
+          "p90": 18550.13
         },
         {
           "t": 213,
-          "p10": 12294.58,
-          "p50": 15602.76,
-          "p90": 19801.11
+          "p10": 11715.48,
+          "p50": 14867.85,
+          "p90": 18868.44
         },
         {
           "t": 234,
-          "p10": 12273.06,
-          "p50": 15755.15,
-          "p90": 20225.17
+          "p10": 11639.48,
+          "p50": 14941.81,
+          "p90": 19181.06
         }
       ],
       "actualPath": [
@@ -1779,8 +2999,8 @@
           "value": 16112.18
         },
         {
-          "t": 62,
-          "value": 15799.33
+          "t": 63,
+          "value": 15731.01
         },
         {
           "t": 83,
@@ -1795,15 +3015,15 @@
           "value": 14922.14
         },
         {
-          "t": 145,
-          "value": 12340.07
+          "t": 146,
+          "value": 12584.61
         },
         {
-          "t": 166,
-          "value": 12763.81
+          "t": 167,
+          "value": 13125.18
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 13231.12
         },
         {
@@ -1811,28 +3031,125 @@
           "value": 13608.33
         },
         {
-          "t": 228,
-          "value": 13269.73
+          "t": 229,
+          "value": 13308.34
         },
         {
-          "t": 248,
-          "value": 13809
+          "t": 249,
+          "value": 13565
         }
       ]
     },
     {
+      "symbol": "MARUTI",
+      "name": "Maruti Suzuki India Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 11503.71,
+      "predictedP10": 9288.26,
+      "predictedP50": 12210.1,
+      "predictedP90": 15929.86,
+      "actual": 13090.53,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 13.79,
+      "sigmaAtCutoff": 21.15,
+      "observedMuAtCutoff": -7.55,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "MARUTI",
+      "name": "Maruti Suzuki India Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 10677.1,
+      "predictedP10": 8771.58,
+      "predictedP50": 11317.48,
+      "predictedP90": 14587.12,
+      "actual": 16430.98,
+      "hit": false,
+      "missMagnitude": 0.1264,
+      "actualReturnPct": 53.89,
+      "sigmaAtCutoff": 19.62,
+      "observedMuAtCutoff": -41.88,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "MARUTI",
+      "name": "Maruti Suzuki India Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 11969.88,
+      "predictedP10": 9455.6,
+      "predictedP50": 12657.41,
+      "predictedP90": 16895.45,
+      "actual": 14308.3,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 19.54,
+      "sigmaAtCutoff": 22.76,
+      "observedMuAtCutoff": 13.18,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "MARUTI",
+      "name": "Maruti Suzuki India Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 12333.32,
+      "predictedP10": 9786.82,
+      "predictedP50": 13048.73,
+      "predictedP90": 17419.43,
+      "actual": 11602.63,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -5.92,
+      "sigmaAtCutoff": 22.87,
+      "observedMuAtCutoff": 15.76,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "MARUTI",
+      "name": "Maruti Suzuki India Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 9715.38,
+      "predictedP10": 7624.06,
+      "predictedP50": 10186.5,
+      "predictedP90": 13783.9,
+      "actual": 10978.03,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 13,
+      "sigmaAtCutoff": 22.89,
+      "observedMuAtCutoff": 9.56,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
       "symbol": "SUNPHARMA",
       "name": "Sun Pharmaceutical Industries Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
       "cutoffPrice": 1625.35,
-      "predictedP10": 1191.35,
-      "predictedP50": 1533.59,
-      "predictedP90": 1980.04,
+      "predictedP10": 1340.49,
+      "predictedP50": 1728.09,
+      "predictedP90": 2244.33,
       "actual": 1904,
       "hit": true,
       "missMagnitude": 0,
       "actualReturnPct": 17.14,
       "sigmaAtCutoff": 19.86,
-      "muAtCutoff": -3.84,
+      "observedMuAtCutoff": -3.84,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -1843,69 +3160,69 @@
         },
         {
           "t": 21,
-          "p10": 1502.94,
-          "p50": 1617.5,
-          "p90": 1740.79
+          "p10": 1517.85,
+          "p50": 1633.54,
+          "p90": 1758.06
         },
         {
           "t": 42,
-          "p10": 1450.85,
-          "p50": 1609.68,
-          "p90": 1785.89
+          "p10": 1479.77,
+          "p50": 1641.77,
+          "p90": 1821.5
         },
         {
           "t": 63,
-          "p10": 1410.51,
-          "p50": 1601.89,
-          "p90": 1819.24
+          "p10": 1452.9,
+          "p50": 1650.04,
+          "p90": 1873.92
         },
         {
           "t": 84,
-          "p10": 1376.33,
-          "p50": 1594.15,
-          "p90": 1846.44
+          "p10": 1431.76,
+          "p50": 1658.35,
+          "p90": 1920.79
         },
         {
           "t": 108,
-          "p10": 1342.07,
-          "p50": 1585.34,
-          "p90": 1872.72
+          "p10": 1411.96,
+          "p50": 1667.9,
+          "p90": 1970.23
         },
         {
           "t": 129,
-          "p10": 1315.07,
-          "p50": 1577.68,
-          "p90": 1892.73
+          "p10": 1397.27,
+          "p50": 1676.3,
+          "p90": 2011.04
         },
         {
           "t": 150,
-          "p10": 1290.18,
-          "p50": 1570.05,
-          "p90": 1910.63
+          "p10": 1384.43,
+          "p50": 1684.74,
+          "p90": 2050.2
         },
         {
           "t": 171,
-          "p10": 1266.99,
-          "p50": 1562.46,
-          "p90": 1926.84
+          "p10": 1373.03,
+          "p50": 1693.23,
+          "p90": 2088.1
         },
         {
           "t": 192,
-          "p10": 1245.2,
-          "p50": 1554.91,
-          "p90": 1941.64
+          "p10": 1362.8,
+          "p50": 1701.75,
+          "p90": 2125.01
         },
         {
           "t": 213,
-          "p10": 1224.61,
-          "p50": 1547.39,
-          "p90": 1955.25
+          "p10": 1353.56,
+          "p50": 1710.33,
+          "p90": 2161.13
         },
         {
           "t": 234,
-          "p10": 1205.04,
-          "p50": 1539.91,
-          "p90": 1967.84
+          "p10": 1345.14,
+          "p50": 1718.94,
+          "p90": 2196.62
         }
       ],
       "actualPath": [
@@ -1960,18 +3277,115 @@
       ]
     },
     {
+      "symbol": "SUNPHARMA",
+      "name": "Sun Pharmaceutical Industries Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 1723.43,
+      "predictedP10": 1396.6,
+      "predictedP50": 1821.87,
+      "predictedP90": 2397.37,
+      "actual": 1728.97,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 0.32,
+      "sigmaAtCutoff": 20.73,
+      "observedMuAtCutoff": 1.91,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "name": "Sun Pharmaceutical Industries Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 1775.89,
+      "predictedP10": 1528.33,
+      "predictedP50": 1897.41,
+      "predictedP90": 2360.65,
+      "actual": 1703.94,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -4.05,
+      "sigmaAtCutoff": 16.93,
+      "observedMuAtCutoff": 10.11,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "name": "Sun Pharmaceutical Industries Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 1732.5,
+      "predictedP10": 1390.22,
+      "predictedP50": 1832.78,
+      "predictedP90": 2414.56,
+      "actual": 1641.71,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -5.24,
+      "sigmaAtCutoff": 21.29,
+      "observedMuAtCutoff": 29.62,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "name": "Sun Pharmaceutical Industries Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 1490.33,
+      "predictedP10": 1197.9,
+      "predictedP50": 1580.17,
+      "predictedP90": 2079.23,
+      "actual": 1818.94,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 22.05,
+      "sigmaAtCutoff": 21.44,
+      "observedMuAtCutoff": 28.1,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "name": "Sun Pharmaceutical Industries Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 1200.36,
+      "predictedP10": 962.48,
+      "predictedP50": 1271.6,
+      "predictedP90": 1677.31,
+      "actual": 1855.52,
+      "hit": false,
+      "missMagnitude": 0.1062,
+      "actualReturnPct": 54.58,
+      "sigmaAtCutoff": 21.6,
+      "observedMuAtCutoff": 24.59,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
       "symbol": "TITAN",
       "name": "Titan Company Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
       "cutoffPrice": 3604.47,
-      "predictedP10": 2828.42,
-      "predictedP50": 3735.44,
-      "predictedP90": 4870.1,
-      "actual": 5068,
+      "predictedP10": 2938.12,
+      "predictedP50": 3824.06,
+      "predictedP90": 5027,
+      "actual": 5086.1,
       "hit": false,
-      "missMagnitude": 0.0406,
-      "actualReturnPct": 40.6,
+      "missMagnitude": 0.0118,
+      "actualReturnPct": 41.11,
       "sigmaAtCutoff": 20.87,
-      "muAtCutoff": 4.95,
+      "observedMuAtCutoff": 4.95,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -1982,69 +3396,69 @@
         },
         {
           "t": 21,
-          "p10": 3344.41,
-          "p50": 3612.83,
-          "p90": 3902.78
+          "p10": 3352.91,
+          "p50": 3622.01,
+          "p90": 3912.69
         },
         {
           "t": 42,
-          "p10": 3246.67,
-          "p50": 3621.2,
-          "p90": 4038.93
+          "p10": 3263.19,
+          "p50": 3639.62,
+          "p90": 4059.48
         },
         {
           "t": 63,
-          "p10": 3175.32,
-          "p50": 3629.59,
-          "p90": 4148.85
+          "p10": 3199.59,
+          "p50": 3657.33,
+          "p90": 4180.56
         },
         {
           "t": 84,
-          "p10": 3117.52,
-          "p50": 3638,
-          "p90": 4245.38
+          "p10": 3149.33,
+          "p50": 3675.12,
+          "p90": 4288.69
         },
         {
           "t": 108,
-          "p10": 3061.82,
-          "p50": 3647.64,
-          "p90": 4345.53
+          "p10": 3102.05,
+          "p50": 3695.56,
+          "p90": 4402.62
         },
         {
           "t": 129,
-          "p10": 3019.4,
-          "p50": 3656.09,
-          "p90": 4427.03
+          "p10": 3066.84,
+          "p50": 3713.53,
+          "p90": 4496.58
         },
         {
           "t": 150,
-          "p10": 2981.38,
-          "p50": 3664.56,
-          "p90": 4504.29
+          "p10": 3035.92,
+          "p50": 3731.6,
+          "p90": 4586.68
         },
         {
           "t": 171,
-          "p10": 2946.84,
-          "p50": 3673.05,
-          "p90": 4578.24
+          "p10": 3008.37,
+          "p50": 3749.75,
+          "p90": 4673.83
         },
         {
           "t": 192,
-          "p10": 2915.12,
-          "p50": 3681.56,
-          "p90": 4649.52
+          "p10": 2983.55,
+          "p50": 3767.99,
+          "p90": 4758.66
         },
         {
           "t": 213,
-          "p10": 2885.77,
-          "p50": 3690.09,
-          "p90": 4718.6
+          "p10": 2961.02,
+          "p50": 3786.32,
+          "p90": 4841.64
         },
         {
           "t": 234,
-          "p10": 2858.43,
-          "p50": 3698.65,
-          "p90": 4785.84
+          "p10": 2940.42,
+          "p50": 3804.73,
+          "p90": 4923.11
         }
       ],
       "actualPath": [
@@ -2057,8 +3471,8 @@
           "value": 3702.75
         },
         {
-          "t": 62,
-          "value": 3861.63
+          "t": 63,
+          "value": 3842.49
         },
         {
           "t": 83,
@@ -2073,15 +3487,15 @@
           "value": 4258.73
         },
         {
-          "t": 145,
-          "value": 3886.75
+          "t": 146,
+          "value": 4026.09
         },
         {
-          "t": 166,
-          "value": 4402.55
+          "t": 167,
+          "value": 4425.28
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 4124.37
         },
         {
@@ -2089,28 +3503,125 @@
           "value": 4277.26
         },
         {
-          "t": 228,
-          "value": 4697.3
+          "t": 229,
+          "value": 4677
         },
         {
-          "t": 248,
-          "value": 5068
+          "t": 249,
+          "value": 5086.1
         }
       ]
     },
     {
-      "symbol": "ULTRACEMCO",
-      "name": "UltraTech Cement Limited",
-      "cutoffPrice": 12612.56,
-      "predictedP10": 10669.13,
-      "predictedP50": 14066.38,
-      "predictedP90": 18442.38,
-      "actual": 11575,
+      "symbol": "TITAN",
+      "name": "Titan Company Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 3315.21,
+      "predictedP10": 2627.58,
+      "predictedP50": 3514.86,
+      "predictedP90": 4681.13,
+      "actual": 4427.27,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": -8.23,
+      "actualReturnPct": 33.54,
+      "sigmaAtCutoff": 22.57,
+      "observedMuAtCutoff": -9.85,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TITAN",
+      "name": "Titan Company Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 3335.24,
+      "predictedP10": 2720.1,
+      "predictedP50": 3521.33,
+      "predictedP90": 4588.71,
+      "actual": 3978.94,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 19.3,
+      "sigmaAtCutoff": 20.53,
+      "observedMuAtCutoff": -23.83,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TITAN",
+      "name": "Titan Company Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 3538.11,
+      "predictedP10": 2717.99,
+      "predictedP50": 3716.24,
+      "predictedP90": 5078.2,
+      "actual": 3639.46,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 2.86,
+      "sigmaAtCutoff": 24.28,
+      "observedMuAtCutoff": 29.78,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TITAN",
+      "name": "Titan Company Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 3529.19,
+      "predictedP10": 2703.09,
+      "predictedP50": 3708.3,
+      "predictedP90": 5083.5,
+      "actual": 3348.01,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -5.13,
+      "sigmaAtCutoff": 24.26,
+      "observedMuAtCutoff": 31.76,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TITAN",
+      "name": "Titan Company Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 3545.98,
+      "predictedP10": 2708.94,
+      "predictedP50": 3727.75,
+      "predictedP90": 5104.1,
+      "actual": 3233.48,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -8.81,
+      "sigmaAtCutoff": 24.61,
+      "observedMuAtCutoff": 35.16,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "name": "UltraTech Cement Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 12612.56,
+      "predictedP10": 10242.19,
+      "predictedP50": 13388.87,
+      "predictedP90": 17612.48,
+      "actual": 11570,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -8.27,
       "sigmaAtCutoff": 20.99,
-      "muAtCutoff": 12.88,
+      "observedMuAtCutoff": 12.88,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -2121,69 +3632,69 @@
         },
         {
           "t": 21,
-          "p10": 11774.37,
-          "p50": 12725.24,
-          "p90": 13752.89
+          "p10": 11726.62,
+          "p50": 12673.63,
+          "p90": 13697.12
         },
         {
           "t": 42,
-          "p10": 11503.5,
-          "p50": 12838.92,
-          "p90": 14329.38
+          "p10": 11410.39,
+          "p50": 12735,
+          "p90": 14213.39
         },
         {
           "t": 63,
-          "p10": 11323.29,
-          "p50": 12953.63,
-          "p90": 14818.7
+          "p10": 11186.09,
+          "p50": 12796.67,
+          "p90": 14639.14
         },
         {
           "t": 84,
-          "p10": 11189.17,
-          "p50": 13069.35,
-          "p90": 15265.47
+          "p10": 11008.77,
+          "p50": 12858.63,
+          "p90": 15019.34
         },
         {
           "t": 108,
-          "p10": 11070.84,
-          "p50": 13202.88,
-          "p90": 15745.51
+          "p10": 10841.88,
+          "p50": 12929.82,
+          "p90": 15419.86
         },
         {
           "t": 129,
-          "p10": 10988.47,
-          "p50": 13320.83,
-          "p90": 16148.26
+          "p10": 10717.56,
+          "p50": 12992.43,
+          "p90": 15750.15
         },
         {
           "t": 150,
-          "p10": 10920.74,
-          "p50": 13439.84,
-          "p90": 16540.03
+          "p10": 10608.31,
+          "p50": 13055.34,
+          "p90": 16066.83
         },
         {
           "t": 171,
-          "p10": 10864.54,
-          "p50": 13559.91,
-          "p90": 16923.97
+          "p10": 10510.92,
+          "p50": 13118.56,
+          "p90": 16373.12
         },
         {
           "t": 192,
-          "p10": 10817.71,
-          "p50": 13681.06,
-          "p90": 17302.29
+          "p10": 10423.18,
+          "p50": 13182.09,
+          "p90": 16671.25
         },
         {
           "t": 213,
-          "p10": 10778.68,
-          "p50": 13803.28,
-          "p90": 17676.61
+          "p10": 10343.45,
+          "p50": 13245.92,
+          "p90": 16962.84
         },
         {
           "t": 234,
-          "p10": 10746.27,
-          "p50": 13926.6,
-          "p90": 18048.14
+          "p10": 10270.52,
+          "p50": 13310.06,
+          "p90": 17249.14
         }
       ],
       "actualPath": [
@@ -2196,8 +3707,8 @@
           "value": 11679.6
         },
         {
-          "t": 62,
-          "value": 11352.28
+          "t": 63,
+          "value": 11348.36
         },
         {
           "t": 83,
@@ -2212,15 +3723,15 @@
           "value": 12716.44
         },
         {
-          "t": 145,
-          "value": 10548.68
+          "t": 146,
+          "value": 10979.88
         },
         {
-          "t": 166,
-          "value": 11580.62
+          "t": 167,
+          "value": 11596.3
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 11455.18
         },
         {
@@ -2228,28 +3739,125 @@
           "value": 11259.18
         },
         {
-          "t": 228,
-          "value": 11669.8
+          "t": 229,
+          "value": 11609.04
         },
         {
-          "t": 248,
-          "value": 11575
+          "t": 249,
+          "value": 11570
         }
       ]
     },
     {
+      "symbol": "ULTRACEMCO",
+      "name": "UltraTech Cement Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 11621.61,
+      "predictedP10": 9165.59,
+      "predictedP50": 12264.4,
+      "predictedP90": 16452.52,
+      "actual": 11769.76,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 1.27,
+      "sigmaAtCutoff": 22.8,
+      "observedMuAtCutoff": 6.75,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "name": "UltraTech Cement Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 11123.79,
+      "predictedP10": 8992.34,
+      "predictedP50": 11759.08,
+      "predictedP90": 15286.74,
+      "actual": 11558.08,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 3.9,
+      "sigmaAtCutoff": 20.77,
+      "observedMuAtCutoff": 3.3,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "name": "UltraTech Cement Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 10907.71,
+      "predictedP10": 8534.58,
+      "predictedP50": 11468.32,
+      "predictedP90": 15428.04,
+      "actual": 12353.84,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 13.26,
+      "sigmaAtCutoff": 23.27,
+      "observedMuAtCutoff": 26.04,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "name": "UltraTech Cement Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 9065.08,
+      "predictedP10": 7122.59,
+      "predictedP50": 9570.14,
+      "predictedP90": 12881.83,
+      "actual": 11796.9,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 30.14,
+      "sigmaAtCutoff": 23.01,
+      "observedMuAtCutoff": 23.6,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "name": "UltraTech Cement Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 9636.73,
+      "predictedP10": 7561.35,
+      "predictedP50": 10134.48,
+      "predictedP90": 13722.72,
+      "actual": 11147.36,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 15.68,
+      "sigmaAtCutoff": 23.22,
+      "observedMuAtCutoff": 27.2,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
       "symbol": "NESTLEIND",
       "name": "Nestle India Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
       "cutoffPrice": 1167.45,
-      "predictedP10": 837.73,
-      "predictedP50": 1063.59,
-      "predictedP90": 1343.44,
-      "actual": 1458,
-      "hit": false,
-      "missMagnitude": 0.0853,
-      "actualReturnPct": 24.89,
+      "predictedP10": 976.98,
+      "predictedP50": 1239.2,
+      "predictedP90": 1569.15,
+      "actual": 1477.1,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 26.52,
       "sigmaAtCutoff": 18.42,
-      "muAtCutoff": -7.55,
+      "observedMuAtCutoff": -7.55,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -2260,69 +3868,69 @@
         },
         {
           "t": 21,
-          "p10": 1082.18,
-          "p50": 1158.5,
-          "p90": 1240.19
+          "p10": 1096.29,
+          "p50": 1173.6,
+          "p90": 1256.37
         },
         {
           "t": 42,
-          "p10": 1043.99,
-          "p50": 1149.6,
-          "p90": 1265.91
+          "p10": 1071.39,
+          "p50": 1179.78,
+          "p90": 1299.14
         },
         {
           "t": 63,
-          "p10": 1013.78,
-          "p50": 1140.78,
-          "p90": 1283.7
+          "p10": 1053.96,
+          "p50": 1186,
+          "p90": 1334.58
         },
         {
           "t": 84,
-          "p10": 987.8,
-          "p50": 1132.03,
-          "p90": 1297.32
+          "p10": 1040.34,
+          "p50": 1192.24,
+          "p90": 1366.33
         },
         {
           "t": 108,
-          "p10": 961.43,
-          "p50": 1122.1,
-          "p90": 1309.63
+          "p10": 1027.68,
+          "p50": 1199.42,
+          "p90": 1399.87
         },
         {
           "t": 129,
-          "p10": 940.45,
-          "p50": 1113.49,
-          "p90": 1318.37
+          "p10": 1018.37,
+          "p50": 1205.74,
+          "p90": 1427.59
         },
         {
           "t": 150,
-          "p10": 920.97,
-          "p50": 1104.95,
-          "p90": 1325.68
+          "p10": 1010.27,
+          "p50": 1212.09,
+          "p90": 1454.22
         },
         {
           "t": 171,
-          "p10": 902.7,
-          "p50": 1096.47,
-          "p90": 1331.83
+          "p10": 1003.15,
+          "p50": 1218.48,
+          "p90": 1480.02
         },
         {
           "t": 192,
-          "p10": 885.45,
-          "p50": 1088.05,
-          "p90": 1337.02
+          "p10": 996.81,
+          "p50": 1224.89,
+          "p90": 1505.17
         },
         {
           "t": 213,
-          "p10": 869.06,
-          "p50": 1079.7,
-          "p90": 1341.4
+          "p10": 991.12,
+          "p50": 1231.34,
+          "p90": 1529.79
         },
         {
           "t": 234,
-          "p10": 853.43,
-          "p50": 1071.42,
-          "p90": 1345.08
+          "p10": 985.98,
+          "p50": 1237.83,
+          "p90": 1554
         }
       ],
       "actualPath": [
@@ -2335,8 +3943,8 @@
           "value": 1269.02
         },
         {
-          "t": 62,
-          "value": 1256.34
+          "t": 63,
+          "value": 1250.41
         },
         {
           "t": 83,
@@ -2351,15 +3959,15 @@
           "value": 1308.81
         },
         {
-          "t": 145,
-          "value": 1177.54
+          "t": 146,
+          "value": 1198.34
         },
         {
-          "t": 166,
-          "value": 1433.11
+          "t": 167,
+          "value": 1458.59
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 1420.67
         },
         {
@@ -2367,28 +3975,125 @@
           "value": 1395.89
         },
         {
-          "t": 228,
-          "value": 1447.9
+          "t": 229,
+          "value": 1443.5
         },
         {
-          "t": 248,
-          "value": 1458
+          "t": 249,
+          "value": 1477.1
         }
       ]
     },
     {
-      "symbol": "TATASTEEL",
-      "name": "Tata Steel Limited",
-      "cutoffPrice": 158.25,
-      "predictedP10": 128.59,
-      "predictedP50": 177.38,
-      "predictedP90": 244.73,
-      "actual": 183.5,
+      "symbol": "NESTLEIND",
+      "name": "Nestle India Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 1182.58,
+      "predictedP10": 993.28,
+      "predictedP50": 1258.78,
+      "predictedP90": 1591.94,
+      "actual": 1410.52,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": 15.96,
+      "actualReturnPct": 19.28,
+      "sigmaAtCutoff": 18.2,
+      "observedMuAtCutoff": -9.76,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "NESTLEIND",
+      "name": "Nestle India Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 1059.53,
+      "predictedP10": 901.74,
+      "predictedP50": 1131.18,
+      "predictedP90": 1414.26,
+      "actual": 1259.71,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 18.89,
+      "sigmaAtCutoff": 17.63,
+      "observedMuAtCutoff": -49.66,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "NESTLEIND",
+      "name": "Nestle India Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 1249.66,
+      "predictedP10": 1048.01,
+      "predictedP50": 1326.69,
+      "predictedP90": 1687.71,
+      "actual": 1141.32,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -8.67,
+      "sigmaAtCutoff": 18.62,
+      "observedMuAtCutoff": 11.34,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "NESTLEIND",
+      "name": "Nestle India Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 1188.65,
+      "predictedP10": 998.56,
+      "predictedP50": 1267.71,
+      "predictedP90": 1611.11,
+      "actual": 1185.83,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -0.24,
+      "sigmaAtCutoff": 18.6,
+      "observedMuAtCutoff": 11.04,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "NESTLEIND",
+      "name": "Nestle India Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 1221.23,
+      "predictedP10": 1024.94,
+      "predictedP50": 1301.38,
+      "predictedP90": 1646.21,
+      "actual": 1062.34,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -13.01,
+      "sigmaAtCutoff": 18.34,
+      "observedMuAtCutoff": 13.35,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TATASTEEL",
+      "name": "Tata Steel Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 158.25,
+      "predictedP10": 119.78,
+      "predictedP50": 166.08,
+      "predictedP90": 229.92,
+      "actual": 183,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 15.64,
       "sigmaAtCutoff": 25.24,
-      "muAtCutoff": 14.66,
+      "observedMuAtCutoff": 14.66,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -2399,69 +4104,69 @@
         },
         {
           "t": 21,
-          "p10": 145.53,
-          "p50": 159.77,
-          "p90": 175.4
+          "p10": 144.72,
+          "p50": 158.88,
+          "p90": 174.43
         },
         {
           "t": 42,
-          "p10": 141.35,
-          "p50": 161.3,
-          "p90": 184.07
+          "p10": 139.79,
+          "p50": 159.52,
+          "p90": 182.04
         },
         {
           "t": 63,
-          "p10": 138.54,
-          "p50": 162.85,
-          "p90": 191.44
+          "p10": 136.25,
+          "p50": 160.16,
+          "p90": 188.28
         },
         {
           "t": 84,
-          "p10": 136.41,
-          "p50": 164.42,
-          "p90": 198.17
+          "p10": 133.42,
+          "p50": 160.81,
+          "p90": 193.82
         },
         {
           "t": 108,
-          "p10": 134.51,
-          "p50": 166.22,
-          "p90": 205.42
+          "p10": 130.72,
+          "p50": 161.55,
+          "p90": 199.64
         },
         {
           "t": 129,
-          "p10": 133.15,
-          "p50": 167.82,
-          "p90": 211.52
+          "p10": 128.69,
+          "p50": 162.2,
+          "p90": 204.43
         },
         {
           "t": 150,
-          "p10": 132.02,
-          "p50": 169.43,
-          "p90": 217.45
+          "p10": 126.89,
+          "p50": 162.85,
+          "p90": 209
         },
         {
           "t": 171,
-          "p10": 131.05,
-          "p50": 171.06,
-          "p90": 223.28
+          "p10": 125.26,
+          "p50": 163.5,
+          "p90": 213.42
         },
         {
           "t": 192,
-          "p10": 130.23,
-          "p50": 172.71,
-          "p90": 229.04
+          "p10": 123.78,
+          "p50": 164.16,
+          "p90": 217.71
         },
         {
           "t": 213,
-          "p10": 129.52,
-          "p50": 174.37,
-          "p90": 234.74
+          "p10": 122.43,
+          "p50": 164.82,
+          "p90": 221.89
         },
         {
           "t": 234,
-          "p10": 128.9,
-          "p50": 176.04,
-          "p90": 240.42
+          "p10": 121.17,
+          "p50": 165.48,
+          "p90": 226
         }
       ],
       "actualPath": [
@@ -2474,8 +4179,8 @@
           "value": 170.92
         },
         {
-          "t": 62,
-          "value": 162.02
+          "t": 63,
+          "value": 162.97
         },
         {
           "t": 83,
@@ -2490,15 +4195,15 @@
           "value": 203.93
         },
         {
-          "t": 145,
-          "value": 186.93
+          "t": 146,
+          "value": 192.68
         },
         {
-          "t": 166,
-          "value": 210.7
+          "t": 167,
+          "value": 211.52
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 210.36
         },
         {
@@ -2506,28 +4211,125 @@
           "value": 188.71
         },
         {
-          "t": 228,
-          "value": 184.23
+          "t": 229,
+          "value": 182.67
         },
         {
-          "t": 248,
-          "value": 183.5
+          "t": 249,
+          "value": 183
         }
       ]
     },
     {
-      "symbol": "WIPRO",
-      "name": "Wipro Limited",
-      "cutoffPrice": 240.87,
-      "predictedP10": 165.22,
-      "predictedP50": 228.36,
-      "predictedP90": 317.24,
-      "actual": 181,
+      "symbol": "TATASTEEL",
+      "name": "Tata Steel Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 133.26,
+      "predictedP10": 99.1,
+      "predictedP50": 140.34,
+      "predictedP90": 198.98,
+      "actual": 208.96,
+      "hit": false,
+      "missMagnitude": 0.0502,
+      "actualReturnPct": 56.81,
+      "sigmaAtCutoff": 27.38,
+      "observedMuAtCutoff": -8.39,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TATASTEEL",
+      "name": "Tata Steel Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 134.7,
+      "predictedP10": 108.28,
+      "predictedP50": 142.65,
+      "predictedP90": 188.12,
+      "actual": 165.7,
       "hit": true,
       "missMagnitude": 0,
-      "actualReturnPct": -24.86,
+      "actualReturnPct": 23.02,
+      "sigmaAtCutoff": 21.64,
+      "observedMuAtCutoff": -27.99,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TATASTEEL",
+      "name": "Tata Steel Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 145.46,
+      "predictedP10": 96.98,
+      "predictedP50": 147.98,
+      "predictedP90": 228.32,
+      "actual": 156.4,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 7.53,
+      "sigmaAtCutoff": 33.89,
+      "observedMuAtCutoff": 39.25,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TATASTEEL",
+      "name": "Tata Steel Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 152.14,
+      "predictedP10": 101.26,
+      "predictedP50": 156.3,
+      "predictedP90": 241.38,
+      "actual": 136.03,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -10.59,
+      "sigmaAtCutoff": 34.06,
+      "observedMuAtCutoff": 43.36,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "TATASTEEL",
+      "name": "Tata Steel Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 122.95,
+      "predictedP10": 80.97,
+      "predictedP50": 126.17,
+      "predictedP90": 194.71,
+      "actual": 130.92,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 6.48,
+      "sigmaAtCutoff": 34.33,
+      "observedMuAtCutoff": 41,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "WIPRO",
+      "name": "Wipro Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
+      "cutoffPrice": 240.87,
+      "predictedP10": 183.6,
+      "predictedP50": 252.4,
+      "predictedP90": 350.92,
+      "actual": 180.79,
+      "hit": false,
+      "missMagnitude": 0.0153,
+      "actualReturnPct": -24.94,
       "sigmaAtCutoff": 25.73,
-      "muAtCutoff": -2.27,
+      "observedMuAtCutoff": -2.27,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -2538,69 +4340,69 @@
         },
         {
           "t": 21,
-          "p10": 217.98,
-          "p50": 239.75,
-          "p90": 263.69
+          "p10": 219.86,
+          "p50": 241.81,
+          "p90": 265.96
         },
         {
           "t": 42,
-          "p10": 208.58,
-          "p50": 238.64,
-          "p90": 273.03
+          "p10": 212.18,
+          "p50": 242.76,
+          "p90": 277.74
         },
         {
           "t": 63,
-          "p10": 201.43,
-          "p50": 237.53,
-          "p90": 280.11
+          "p10": 206.67,
+          "p50": 243.71,
+          "p90": 287.39
         },
         {
           "t": 84,
-          "p10": 195.44,
-          "p50": 236.43,
-          "p90": 286.01
+          "p10": 202.25,
+          "p50": 244.66,
+          "p90": 295.97
         },
         {
           "t": 108,
-          "p10": 189.51,
-          "p50": 235.17,
-          "p90": 291.84
+          "p10": 198.04,
+          "p50": 245.76,
+          "p90": 304.97
         },
         {
           "t": 129,
-          "p10": 184.89,
-          "p50": 234.08,
-          "p90": 296.37
+          "p10": 194.87,
+          "p50": 246.72,
+          "p90": 312.37
         },
         {
           "t": 150,
-          "p10": 180.66,
-          "p50": 233,
-          "p90": 300.49
+          "p10": 192.05,
+          "p50": 247.69,
+          "p90": 319.44
         },
         {
           "t": 171,
-          "p10": 176.75,
-          "p50": 231.91,
-          "p90": 304.3
+          "p10": 189.51,
+          "p50": 248.66,
+          "p90": 326.27
         },
         {
           "t": 192,
-          "p10": 173.1,
-          "p50": 230.84,
-          "p90": 307.83
+          "p10": 187.2,
+          "p50": 249.63,
+          "p90": 332.89
         },
         {
           "t": 213,
-          "p10": 169.68,
-          "p50": 229.77,
-          "p90": 311.13
+          "p10": 185.07,
+          "p50": 250.61,
+          "p90": 339.36
         },
         {
           "t": 234,
-          "p10": 166.44,
-          "p50": 228.7,
-          "p90": 314.24
+          "p10": 183.1,
+          "p50": 251.59,
+          "p90": 345.7
         }
       ],
       "actualPath": [
@@ -2613,8 +4415,8 @@
           "value": 234.19
         },
         {
-          "t": 62,
-          "value": 238.32
+          "t": 63,
+          "value": 236.75
         },
         {
           "t": 83,
@@ -2629,15 +4431,15 @@
           "value": 203.57
         },
         {
-          "t": 145,
-          "value": 186.61
+          "t": 146,
+          "value": 186.92
         },
         {
-          "t": 166,
-          "value": 199.3
+          "t": 167,
+          "value": 198.41
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 199.3
         },
         {
@@ -2645,28 +4447,125 @@
           "value": 173.02
         },
         {
-          "t": 228,
-          "value": 172.85
+          "t": 229,
+          "value": 175.12
         },
         {
-          "t": 248,
-          "value": 181
+          "t": 249,
+          "value": 180.79
         }
       ]
     },
     {
+      "symbol": "WIPRO",
+      "name": "Wipro Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 225.39,
+      "predictedP10": 162.62,
+      "predictedP50": 234.43,
+      "predictedP90": 336.27,
+      "actual": 202.73,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -10.05,
+      "sigmaAtCutoff": 28.35,
+      "observedMuAtCutoff": -11.58,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "WIPRO",
+      "name": "Wipro Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 282.86,
+      "predictedP10": 216.54,
+      "predictedP50": 296.03,
+      "predictedP90": 408.45,
+      "actual": 256.67,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -9.26,
+      "sigmaAtCutoff": 25.02,
+      "observedMuAtCutoff": 49.2,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "WIPRO",
+      "name": "Wipro Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 243.91,
+      "predictedP10": 186.56,
+      "predictedP50": 256.86,
+      "predictedP90": 351.82,
+      "actual": 244.66,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 0.3,
+      "sigmaAtCutoff": 24.66,
+      "observedMuAtCutoff": 18.6,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "WIPRO",
+      "name": "Wipro Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 209.81,
+      "predictedP10": 160.98,
+      "predictedP50": 220.1,
+      "predictedP90": 299.97,
+      "actual": 227.33,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 8.35,
+      "sigmaAtCutoff": 24.37,
+      "observedMuAtCutoff": 14.35,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "WIPRO",
+      "name": "Wipro Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 200.69,
+      "predictedP10": 155.29,
+      "predictedP50": 211.55,
+      "predictedP90": 286,
+      "actual": 278.32,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 38.68,
+      "sigmaAtCutoff": 24.04,
+      "observedMuAtCutoff": 14.63,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
       "symbol": "BAJFINANCE",
       "name": "Bajaj Finance Limited",
+      "cutoff": "2025-08-22",
+      "monthsBack": 12,
       "cutoffPrice": 890.13,
-      "predictedP10": 842.93,
-      "predictedP50": 1166.09,
-      "predictedP90": 1612.92,
+      "predictedP10": 672.44,
+      "predictedP50": 932.37,
+      "predictedP90": 1294.41,
       "actual": 1095,
       "hit": true,
       "missMagnitude": 0,
       "actualReturnPct": 23.02,
       "sigmaAtCutoff": 25.61,
-      "muAtCutoff": 30.29,
+      "observedMuAtCutoff": 30.29,
       "daysUsed": 250,
       "predictedPath": [
         {
@@ -2677,69 +4576,69 @@
         },
         {
           "t": 21,
-          "p10": 828.11,
-          "p50": 910.39,
-          "p90": 1000.85
+          "p10": 812.87,
+          "p50": 893.64,
+          "p90": 982.43
         },
         {
           "t": 42,
-          "p10": 814.37,
-          "p50": 931.11,
-          "p90": 1064.6
+          "p10": 784.67,
+          "p50": 897.16,
+          "p90": 1025.78
         },
         {
           "t": 63,
-          "p10": 808.2,
-          "p50": 952.31,
-          "p90": 1122.11
+          "p10": 764.4,
+          "p50": 900.7,
+          "p90": 1061.3
         },
         {
           "t": 84,
-          "p10": 805.88,
-          "p50": 973.99,
-          "p90": 1177.16
+          "p10": 748.18,
+          "p50": 904.25,
+          "p90": 1092.88
         },
         {
           "t": 108,
-          "p10": 806.17,
-          "p50": 999.37,
-          "p90": 1238.87
+          "p10": 732.73,
+          "p50": 908.32,
+          "p90": 1126.01
         },
         {
           "t": 129,
-          "p10": 808.23,
-          "p50": 1022.12,
-          "p90": 1292.61
+          "p10": 721.08,
+          "p50": 911.91,
+          "p90": 1153.23
         },
         {
           "t": 150,
-          "p10": 811.56,
-          "p50": 1045.38,
-          "p90": 1346.58
+          "p10": 710.73,
+          "p50": 915.5,
+          "p90": 1179.27
         },
         {
           "t": 171,
-          "p10": 815.93,
-          "p50": 1069.18,
-          "p90": 1401.04
+          "p10": 701.4,
+          "p50": 919.11,
+          "p90": 1204.39
         },
         {
           "t": 192,
-          "p10": 821.16,
-          "p50": 1093.52,
-          "p90": 1456.22
+          "p10": 692.91,
+          "p50": 922.73,
+          "p90": 1228.79
         },
         {
           "t": 213,
-          "p10": 827.13,
-          "p50": 1118.41,
-          "p90": 1512.26
+          "p10": 685.11,
+          "p50": 926.37,
+          "p90": 1252.6
         },
         {
           "t": 234,
-          "p10": 833.77,
-          "p50": 1143.87,
-          "p90": 1569.32
+          "p10": 677.89,
+          "p50": 930.02,
+          "p90": 1275.93
         }
       ],
       "actualPath": [
@@ -2752,8 +4651,8 @@
           "value": 1083.09
         },
         {
-          "t": 62,
-          "value": 987.93
+          "t": 63,
+          "value": 980.17
         },
         {
           "t": 83,
@@ -2768,15 +4667,15 @@
           "value": 1024.7
         },
         {
-          "t": 145,
-          "value": 843.81
+          "t": 146,
+          "value": 877.36
         },
         {
-          "t": 166,
-          "value": 918.01
+          "t": 167,
+          "value": 924.32
         },
         {
-          "t": 187,
+          "t": 188,
           "value": 925.46
         },
         {
@@ -2784,14 +4683,109 @@
           "value": 974.41
         },
         {
-          "t": 228,
-          "value": 1039.8
+          "t": 229,
+          "value": 1012.8
         },
         {
-          "t": 248,
+          "t": 249,
           "value": 1095
         }
       ]
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "name": "Bajaj Finance Limited",
+      "cutoff": "2025-04-22",
+      "monthsBack": 16,
+      "cutoffPrice": 916.03,
+      "predictedP10": 691.81,
+      "predictedP50": 959.21,
+      "predictedP90": 1328.17,
+      "actual": 916.17,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 0.01,
+      "sigmaAtCutoff": 25.74,
+      "observedMuAtCutoff": 46.72,
+      "daysUsed": 164,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "name": "Bajaj Finance Limited",
+      "cutoff": "2024-12-22",
+      "monthsBack": 20,
+      "cutoffPrice": 676.47,
+      "predictedP10": 519.85,
+      "predictedP50": 711.49,
+      "predictedP90": 969.89,
+      "actual": 993.89,
+      "hit": false,
+      "missMagnitude": 0.0247,
+      "actualReturnPct": 46.92,
+      "sigmaAtCutoff": 24.37,
+      "observedMuAtCutoff": 2.35,
+      "daysUsed": 84,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "name": "Bajaj Finance Limited",
+      "cutoff": "2024-08-22",
+      "monthsBack": 24,
+      "cutoffPrice": 665.31,
+      "predictedP10": 475.39,
+      "predictedP50": 693.49,
+      "predictedP90": 1010.49,
+      "actual": 895.3,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 34.57,
+      "sigmaAtCutoff": 29.18,
+      "observedMuAtCutoff": 14.71,
+      "daysUsed": 988,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "name": "Bajaj Finance Limited",
+      "cutoff": "2024-04-22",
+      "monthsBack": 28,
+      "cutoffPrice": 699.75,
+      "predictedP10": 501.53,
+      "predictedP50": 726.26,
+      "predictedP90": 1063.17,
+      "actual": 898.2,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": 28.36,
+      "sigmaAtCutoff": 29.32,
+      "observedMuAtCutoff": 17.73,
+      "daysUsed": 905,
+      "predictedPath": [],
+      "actualPath": []
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "name": "Bajaj Finance Limited",
+      "cutoff": "2023-12-22",
+      "monthsBack": 32,
+      "cutoffPrice": 724.09,
+      "predictedP10": 510.59,
+      "predictedP50": 748.01,
+      "predictedP90": 1093.89,
+      "actual": 685.07,
+      "hit": true,
+      "missMagnitude": 0,
+      "actualReturnPct": -5.39,
+      "sigmaAtCutoff": 29.83,
+      "observedMuAtCutoff": 19.97,
+      "daysUsed": 827,
+      "predictedPath": [],
+      "actualPath": []
     }
   ]
 }
