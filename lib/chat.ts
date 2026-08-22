@@ -93,6 +93,46 @@ export function markUnreachable(model: string): void {
   COOLDOWN.set(model, Date.now() + UNREACHABLE_COOLDOWN_MS);
 }
 
+/* ── the same knowledge, shared between instances ──
+   The map above lives in one process. On Vercel that means every
+   cold start begins believing all three models are healthy and
+   rediscovers the dead one by paying its timeout — which is why the
+   deployed chat still took eleven seconds to speak after the
+   in-process cooldown was added.
+
+   Mongo already carries a TTL-expiring cache tier, so the finding is
+   written there and read once per request. That read costs about a
+   hundred milliseconds and saves nine seconds, and it fails open: if
+   Mongo is unreachable the chat simply falls back to the in-memory
+   map rather than refusing to answer. */
+const HEALTH_KEY = 'unreachable-models';
+
+export async function loadSharedCooldowns(): Promise<void> {
+  try {
+    const { cacheGet } = await import('./mongo');
+    const hit = await cacheGet<Record<string, number>>('modelhealth', HEALTH_KEY);
+    if (!hit?.data) return;
+    for (const [model, until] of Object.entries(hit.data)) {
+      // Never let a shared entry shorten a local one.
+      if (until > (COOLDOWN.get(model) ?? 0)) COOLDOWN.set(model, until);
+    }
+  } catch {
+    /* No shared knowledge available; the local map still works. */
+  }
+}
+
+export async function saveSharedCooldowns(): Promise<void> {
+  try {
+    const { cacheSet } = await import('./mongo');
+    const now = Date.now();
+    const live: Record<string, number> = {};
+    for (const [model, until] of COOLDOWN) if (until > now) live[model] = until;
+    await cacheSet('modelhealth', HEALTH_KEY, live, 'chat', 600);
+  } catch {
+    /* Best effort — a chat answer must never fail over bookkeeping. */
+  }
+}
+
 export function markExhausted(model: string, retrySeconds: number | null): void {
   // Trust Gemini's own retry hint when it gives one; it is usually
   // seconds for a per-minute cap and much longer for a daily one.

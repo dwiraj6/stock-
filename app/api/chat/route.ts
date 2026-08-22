@@ -23,6 +23,8 @@ import {
   MODEL_TIMEOUT_MS,
   UNREACHABLE_COOLDOWN_MS,
   markUnreachable,
+  loadSharedCooldowns,
+  saveSharedCooldowns,
   FREE_TIER_DAILY_PER_MODEL,
   isQuotaError,
   retryAfterSeconds,
@@ -163,6 +165,11 @@ export async function POST(req: NextRequest) {
     let quotaHits = 0;
     let retryAfter: number | null = null;
 
+    /* What other instances already learned. One indexed read, and it
+       is the difference between answering in two seconds and paying a
+       dead model's timeout on every cold start. */
+    await loadSharedCooldowns();
+
     for (const modelName of MODEL_CHAIN) {
       // Skip a model we already know is out of quota.
       if (isCoolingDown(modelName)) {
@@ -290,6 +297,7 @@ export async function POST(req: NextRequest) {
           const secs = retryAfterSeconds(e);
           retryAfter = secs ?? retryAfter;
           markExhausted(modelName, secs);
+          void saveSharedCooldowns();
           console.warn(`[plumbline] chat model ${modelName}: quota exhausted, trying the next bucket`);
         } else {
           /* Not a quota problem — a timeout, a dead model name, a
@@ -297,6 +305,7 @@ export async function POST(req: NextRequest) {
              paying its timeout again on the very next question. This
              is what turned 26 seconds to first word into under two. */
           markUnreachable(modelName);
+          void saveSharedCooldowns();
           console.warn(
             `[plumbline] chat model ${modelName} failed (${(e as Error).message?.slice(0, 100)}) — skipping it for ${UNREACHABLE_COOLDOWN_MS / 60000} min`
           );

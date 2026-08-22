@@ -111,6 +111,11 @@ export const TTL = {
   stocks: 900,
   news: 900,
   simulations: 86_400,
+  /* Which chat models are currently unreachable. Shared rather than
+     per-process on purpose: the in-memory version was invisible to
+     every other serverless instance, so each cold start rediscovered
+     the dead model by paying its timeout again. */
+  modelhealth: 300,
 } as const;
 
 export type CacheName = keyof typeof TTL;
