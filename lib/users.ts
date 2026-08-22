@@ -83,9 +83,27 @@ async function ensureAuthIndexes(): Promise<void> {
     const db = await getDb();
     await Promise.all([
       db.collection(USERS).createIndex({ email: 1 }, { unique: true, name: 'uniq_email' }),
+      /* PARTIAL, not sparse — and the difference is the whole bug.
+
+         `sparse` only skips documents where the field is ABSENT.
+         Every password account is written with `googleSub: null`,
+         which is present-and-null, so a sparse unique index treats
+         them all as the same key: the first such account succeeds
+         and the second dies with E11000 on `{ googleSub: null }`.
+         It surfaced as "the account could not be created" with a
+         perfectly healthy database sitting behind it.
+
+         A partial index over string values only indexes accounts
+         that actually have a Google identity, which is what the
+         constraint was always meant to say: one account per Google
+         subject, and no opinion about accounts without one. */
       db.collection(USERS).createIndex(
         { googleSub: 1 },
-        { unique: true, sparse: true, name: 'uniq_google' }
+        {
+          unique: true,
+          name: 'uniq_google_v2',
+          partialFilterExpression: { googleSub: { $type: 'string' } },
+        }
       ),
       db.collection(SESSIONS).createIndex(
         { expiresAt: 1 },
@@ -102,6 +120,14 @@ async function ensureAuthIndexes(): Promise<void> {
         { expireAfterSeconds: 0, name: 'ttl_throttle' }
       ),
     ]);
+    /* The old sparse index, if this deployment predates the fix
+       above. Dropping it is safe and idempotent: the partial index
+       created alongside enforces the same rule correctly, and a
+       missing index is simply nothing to drop. */
+    await db
+      .collection(USERS)
+      .dropIndex('uniq_google')
+      .catch(() => undefined);
   } catch {
     indexed = false; // let a later request try again
   }
@@ -140,8 +166,12 @@ export async function createUser(input: {
     const doc: User = { ...input, createdAt: new Date(), adopted: [] };
     const res = await (await users()).insertOne(doc);
     return { ...doc, _id: res.insertedId };
-  } catch {
-    // Almost always the unique-email index firing on a race.
+  } catch (e) {
+    /* Usually the unique-email index firing on a race, which is
+       benign and handled by the caller. Anything else is a real
+       fault and must not vanish — a swallowed error here looks
+       identical to "the database is down" from the outside. */
+    console.error('[plumbline] createUser failed —', e instanceof Error ? e.message : e);
     return null;
   }
 }

@@ -49,7 +49,12 @@ export async function getMe() {
    read here rather than in each caller so no flow forgets it. */
 const withAnon = (body) => ({ ...body, anonId: whoAmI() || undefined });
 
-export const signUp = (email, password, name) => post('/api/auth/signup', { email, password, name });
+/* anonId rides along because signup can complete immediately when
+   the server is configured to skip email verification — in that case
+   this call IS the sign-in, and the browser's anonymous history
+   should be adopted the same as any other. */
+export const signUp = (email, password, name) =>
+  post('/api/auth/signup', withAnon({ email, password, name }));
 export const verifyCode = (email, code) => post('/api/auth/verify', withAnon({ email, code }));
 export const resendCode = (email) => post('/api/auth/resend', { email });
 export const logIn = (email, password) => post('/api/auth/login', withAnon({ email, password }));

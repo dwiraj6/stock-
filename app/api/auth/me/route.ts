@@ -29,7 +29,12 @@ export async function GET() {
       methods: {
         google: firebaseConfigured() || googleConfigured(),
         firebase: firebaseConfigured(),
-        email: mailConfigured(),
+        /* True when an email account can be CREATED, by either route:
+           a real mail server, or an explicit decision to skip
+           verification. The login page only needs to know whether the
+           form will work. */
+        email: mailConfigured() || (process.env.ALLOW_UNVERIFIED_SIGNUP ?? '').trim() === '1',
+        emailVerification: mailConfigured(),
       },
     });
   });

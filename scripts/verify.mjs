@@ -13,6 +13,8 @@ const APP = `${B}/app`;
    quick succession, which it answers with SystemOverloadedError often
    enough to make the suite flaky for a reason that has nothing to do
    with the code under test. */
+const { ObjectId: ObjectIdCtor } = await import('mongodb');
+
 let _mongo = null;
 async function mongo() {
   if (_mongo) return _mongo;
@@ -982,6 +984,58 @@ await (async () => {
     errs.length ? `sign-in page errors: ${errs.join(' | ')}` : 'no page errors on the Firebase path'
   );
   await browser.close();
+}
+
+
+/* ══ 17. TWO PASSWORD ACCOUNTS CAN COEXIST ══
+   A regression test for a bug that would have hit the second person
+   ever to sign up, and no earlier.
+
+   The unique index on googleSub was declared `sparse`, which only
+   skips documents where the field is ABSENT. Every password account
+   is written with `googleSub: null` — present and null — so a sparse
+   unique index treated them all as the same key. The first such
+   account was created fine; the second died with E11000 and surfaced
+   as "the account could not be created" with a perfectly healthy
+   database behind it. A partial index over string values fixes it.
+
+   Two accounts, created back to back, is the whole test. */
+{
+  const mk = (email) =>
+    fetch(B + '/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: 'correct-horse-battery' }),
+    }).then((r) => r.json());
+
+  const stamp = Date.now().toString(36);
+  const a = await mk(`idx-a-${stamp}@plumbline.test`);
+  const b = await mk(`idx-b-${stamp}@plumbline.test`);
+
+  /* Skipped rather than failed when the server requires a verified
+     email: this exercises the immediate-signup path, and a server
+     with SMTP configured correctly answers "a code is on its way"
+     instead. Both are right; only one is testable here. */
+  if (a?.signedIn || b?.signedIn) {
+    ok(a?.ok === true, 'the first password account is created');
+    ok(
+      b?.ok === true,
+      `a SECOND password account is created too — googleSub:null must not collide (${b?.message ?? 'ok'})`
+    );
+
+    if (a?.user?.id || b?.user?.id) {
+      try {
+        const { db } = await mongo();
+        await db.collection('users').deleteMany({
+          _id: { $in: [a?.user?.id, b?.user?.id].filter(Boolean).map((id) => new ObjectIdCtor(id)) },
+        });
+      } catch {
+        /* fixture cleanup only */
+      }
+    }
+  } else {
+    skipped.push('two-password-accounts — this server verifies email, so signup does not complete inline');
+  }
 }
 
 console.log('\n──────── PASS ────────');

@@ -74,7 +74,12 @@ export default function AuthScreen({
       : null
   );
   const [notice, setNotice] = useState(null);
-  const [methods, setMethods] = useState({ google: true, firebase: false, email: true });
+  const [methods, setMethods] = useState({
+    google: true,
+    firebase: false,
+    email: true,
+    emailVerification: true,
+  });
   /* Autofocus is right on a desktop and wrong on a phone, where it
      throws the keyboard up over the page before the user has read a
      word of it. Resolved after mount so the server-rendered markup
@@ -115,8 +120,13 @@ export default function AuthScreen({
     setBusy(true); setError(null);
     const res = await signUp(email, password, name);
     setBusy(false);
-    // go() clears any previous message, so the notice is set after it.
-    handle(res, () => {
+    /* Two shapes come back. With a mail server the server parks a
+       pending signup and we move to the code step; without one (and
+       with verification deliberately switched off) the account
+       already exists and we are already signed in. */
+    handle(res, (r) => {
+      if (r.signedIn) return done();
+      // go() clears any message, so the notice is set after it.
       go('verify');
       setNotice(`A 6-digit code is on its way to ${email}.`);
     });
@@ -198,7 +208,9 @@ export default function AuthScreen({
     () =>
       ({
         signin: 'To record a measurement and keep your track record.',
-        signup: 'It takes one email address and nothing else.',
+        signup: methods.emailVerification
+          ? 'It takes one email address and nothing else.'
+          : 'One email address and a password. No code to wait for.',
         verify: `Enter the 6-digit code sent to ${email}. It expires in 10 minutes.`,
         forgot: 'We will send a 6-digit code to your address.',
         reset: 'Enter the code, then choose a new password.',
@@ -361,7 +373,7 @@ export default function AuthScreen({
                 autoComplete="new-password"
                 hint={`at least ${MIN_PASSWORD} characters`}
               />
-              <Submit busy={busy} label="Send me a code" />
+              <Submit busy={busy} label={methods.emailVerification ? 'Send me a code' : 'Create account'} />
               <p className="au-alt">
                 Already have an account?{' '}
                 <button type="button" className="au-link" onClick={() => go('signin')}>

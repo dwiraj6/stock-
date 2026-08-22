@@ -25,15 +25,45 @@ import {
   generateOtp,
   OTP_TTL_MS,
 } from '@/lib/auth';
-import { findUserByEmail, putPending, rateLimit } from '@/lib/users';
+import { findUserByEmail, putPending, createUser, rateLimit } from '@/lib/users';
 import { mailConfigured, sendVerificationCode, sendAlreadyRegistered } from '@/lib/mailer';
+import { establishSession } from '@/lib/signin';
+import { publicUser } from '@/lib/current-user';
 
 export const dynamic = 'force-dynamic';
+
+/* ── SIGNING UP WITHOUT PROVING THE MAILBOX ──
+   Off unless ALLOW_UNVERIFIED_SIGNUP is explicitly set to "1". It is
+   a switch rather than a fallback, because "no mail server
+   configured" and "we intend to skip verification" are different
+   situations and inferring one from the other is how a demo setting
+   ends up live in production by accident.
+
+   WHAT IT COSTS, stated plainly rather than buried:
+
+     · anyone can register an address they do not own, so an email
+       here proves nothing about who the person is
+     · password reset stops working — it has no way to reach anybody,
+       so a forgotten password means a new account
+     · a typo in the address is unrecoverable for the same reason
+
+   WHAT IT DOES NOT COST: passwords are still scrypt-hashed, sessions
+   are still random and revocable, the rate limits still apply, and
+   the track record is still sealed before the outcome exists. The
+   only thing given up is the link between an account and a real
+   mailbox.
+
+   For an educational tool that holds no money and stores nothing but
+   stock probability estimates, that is a defensible trade for a
+   demo. It would not be for anything holding money. */
+const allowUnverified = () => (process.env.ALLOW_UNVERIFIED_SIGNUP ?? '').trim() === '1';
 
 const Body = z.object({
   email: z.string().max(254),
   password: z.string().max(200),
   name: z.string().max(80).optional(),
+  /** Only used on the unverified path, which signs in immediately. */
+  anonId: z.string().max(64).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -52,11 +82,11 @@ export async function POST(req: NextRequest) {
     const pProblem = passwordProblem(body.password);
     if (pProblem) return fail('BAD_REQUEST', pProblem, 'Pick a longer password.');
 
-    if (!mailConfigured()) {
+    if (!mailConfigured() && !allowUnverified()) {
       return fail(
         'AUTH_NOT_CONFIGURED',
         'This server cannot send email, so it cannot verify an address.',
-        'Set SMTP_HOST, SMTP_USER and SMTP_PASS in .env.local — or sign in with Google instead.'
+        'Set SMTP_HOST, SMTP_USER and SMTP_PASS — or set ALLOW_UNVERIFIED_SIGNUP=1 to skip verification — or sign in with Google.'
       );
     }
 
@@ -76,6 +106,41 @@ export async function POST(req: NextRequest) {
     }
 
     const existing = await findUserByEmail(email);
+
+    /* ── the unverified path ──
+       The account is created here and now, and the caller is signed
+       straight in. Note what it does NOT do: report that the address
+       was already taken. Without a mailbox to carry that news the
+       endpoint would become an oracle for which emails are
+       registered, so a taken address returns the same shape as a
+       fresh one and the person is told to sign in instead. */
+    if (!mailConfigured() && allowUnverified()) {
+      if (existing) {
+        return fail(
+          'AUTH_FAILED',
+          'That address cannot be used to create a new account.',
+          'If it is yours, sign in with your password instead.'
+        );
+      }
+      const user = await createUser({
+        email,
+        name: body.name?.trim() || null,
+        passwordHash: await hashPassword(body.password),
+        googleSub: null,
+        // Never verified, and recorded as such rather than pretended.
+        emailVerified: null,
+      });
+      if (!user) {
+        return fail(
+          'UPSTREAM_DEGRADED',
+          'The account could not be created.',
+          'The account store could not be reached. Try again in a moment.'
+        );
+      }
+      const { adopted } = await establishSession(user, body.anonId);
+      return ok({ signedIn: true, user: publicUser(user), adopted });
+    }
+
     if (existing) {
       // Same shape, same timing story, different mailbox contents.
       void sendAlreadyRegistered(email);
