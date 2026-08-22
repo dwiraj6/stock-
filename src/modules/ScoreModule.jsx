@@ -24,8 +24,15 @@ export default function ScoreModule({ quote, model, conviction, animate = true }
   const [highlight, setHighlight] = useState(null);
   useEffect(() => subscribeHighlight(setHighlight), []);
 
-  const gap = Math.abs(model.gap ?? conviction - model.score);
-  const reasons = model.discounting ?? [];
+  /* SIGNED, not absolute. The old guard used Math.abs while the
+     server only ever built the list for a POSITIVE gap, so an
+     under-confident rating — 54 against a model's 73 — rendered a
+     panel promising "the three things the numbers see" and then
+     listed nothing at all. The two conditions have to be the same
+     condition. */
+  const signedGap = model.gap ?? conviction - model.score;
+  const discountingReasons = model.discounting ?? [];
+  const supportingReasons = model.supporting ?? [];
   const settled = model.components.length * BAR_STAGGER + BAR_DUR;
 
   return (
@@ -72,13 +79,36 @@ export default function ScoreModule({ quote, model, conviction, animate = true }
           </p>
         </div>
 
-        {/* ── right: what you're discounting ── */}
+        {/* ── right: where you and the numbers disagree ──
+            Two directions, and the panel only appears when there is
+            something in it to read. */}
         <div style={{ minWidth: 0 }}>
-          {gap > 15 && (
-            <Discounting
-              conviction={conviction}
-              score={model.score}
-              reasons={reasons}
+          {signedGap > 15 && discountingReasons.length > 0 && (
+            <Gap
+              eyebrow="What you’re discounting"
+              lead={
+                <>
+                  You rated this <span className="font-data">{conviction}</span>. The model says{' '}
+                  <span className="font-data">{model.score}</span>. What the numbers see that
+                  your rating doesn’t:
+                </>
+              }
+              reasons={discountingReasons}
+              animate={animate}
+              delay={settled}
+            />
+          )}
+          {signedGap < -15 && supportingReasons.length > 0 && (
+            <Gap
+              eyebrow="What you’re discounting in your own favour"
+              lead={
+                <>
+                  You rated this <span className="font-data">{conviction}</span>. The model says{' '}
+                  <span className="font-data">{model.score}</span> — you are being harder on this
+                  stock than the numbers are. What they see that your rating doesn’t:
+                </>
+              }
+              reasons={supportingReasons}
               animate={animate}
               delay={settled}
             />
@@ -129,7 +159,7 @@ function ComponentRow({ c, index, animate, highlighted }) {
   );
 }
 
-function Discounting({ conviction, score, reasons, animate, delay }) {
+function Gap({ eyebrow, lead, reasons, animate, delay }) {
   return (
     <div
       style={{
@@ -145,12 +175,12 @@ function Discounting({ conviction, score, reasons, animate, delay }) {
       }}
     >
       <div style={{ padding: '24px 24px 16px' }}>
-        <p className="eyebrow" style={{ marginBottom: 14 }}>What you’re discounting</p>
-        <p className="font-body" style={{ fontSize: '1rem', lineHeight: 1.6 }}>
-          You rated this <span className="font-data">{conviction}</span>. The model says{' '}
-          <span className="font-data">{score}</span>. The three things the numbers see that
-          your rating doesn’t:
-        </p>
+        <p className="eyebrow" style={{ marginBottom: 14 }}>{eyebrow}</p>
+        {/* Note what this NO LONGER says: "the three things". The
+            list is capped at three but can be shorter, and promising
+            a count the list cannot always meet is how a panel ends
+            up advertising findings it does not have. */}
+        <p className="font-body" style={{ fontSize: '1rem', lineHeight: 1.6 }}>{lead}</p>
       </div>
 
       {/* no bullets, no icons — the rules are the structure */}

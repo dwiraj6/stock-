@@ -155,6 +155,7 @@ export function adaptScore(score) {
       missing: c.missing,
     })),
     discounting: score.discounting ?? [],
+    supporting: score.supporting ?? [],
     verdict: score.verdict,
     suggestion: score.suggestion,
     sector: score.sector,

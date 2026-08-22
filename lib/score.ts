@@ -465,12 +465,45 @@ export function discounting(
       .sort((a, b) => a.score - b.score);
     for (const c of worst) {
       if (out.length >= 3) break;
-      const line = `${c.name} scores ${c.score.toFixed(1)} of 10 — ${c.reason.charAt(0).toLowerCase()}${c.reason.slice(1)}`;
+      const line = `${c.name} scores ${c.score.toFixed(1)} of 10 — ${joinLower(c.reason)}`;
       if (!out.includes(line)) out.push(line);
     }
   }
 
   return out.slice(0, 3);
+}
+
+/* ── the other direction ──────────────────────────────────────────
+   `discounting` answers "you are more confident than the model —
+   here is what you are ignoring". The mirror case has no answer at
+   all today: someone who rates a stock 54 against a model's 73 sees
+   a panel that promises three findings and lists none, because the
+   list is only built in one direction.
+
+   That is a real gap in the product, not just a rendering fault.
+   Being HARDER on a stock than the evidence warrants is the same
+   calibration error as being softer on it, and it is the more common
+   one among careful people. So the strengths get named the same way
+   the weaknesses do, from the same components and the same real
+   numbers. */
+/* Lowercase a sentence's first letter WITHOUT mangling an acronym.
+   Blindly lowering the first character turns "P/E 20.6 against..."
+   into "p/E" and "D/E 0.03" into "d/E". An acronym is recognised by
+   its second character also being upper case or a slash. */
+function joinLower(s: string): string {
+  if (!s) return s;
+  const a = s[0];
+  const b = s[1] ?? '';
+  if (a !== a.toLowerCase() && (b === b.toUpperCase() || b === '/')) return s;
+  return a.toLowerCase() + s.slice(1);
+}
+
+export function supporting(result: ScoreResult): string[] {
+  return [...result.components]
+    .filter((c) => c.key !== 'dataQuality' && Number.isFinite(c.score) && c.score >= 6)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map((c) => `${c.name} scores ${c.score.toFixed(1)} of 10 — ${joinLower(c.reason)}`);
 }
 
 /* ── verdict (Part 6.4) ───────────────────────────────────────── */

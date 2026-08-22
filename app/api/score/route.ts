@@ -9,7 +9,7 @@ import { requireUser } from '@/lib/require-auth';
 import { resolveSymbol } from '@/lib/symbols';
 import { fetchFundamentals, fetchHistory } from '@/lib/market-data';
 import { estimateParams, simulate } from '@/lib/simulate';
-import { scoreStock, discounting, verdictFor } from '@/lib/score';
+import { scoreStock, discounting, supporting, verdictFor } from '@/lib/score';
 import { recordSession } from '@/lib/mongo';
 
 export const dynamic = 'force-dynamic';
@@ -151,6 +151,12 @@ export async function POST(req: NextRequest) {
         // Only surfaced when the user is materially more confident
         // than the model (Part 6.3).
         discounting: gap > 15 ? discounting(result, fund.data, hist.data) : [],
+        /* The mirror: what the numbers see when the user is being
+           HARDER on the stock than the evidence warrants. The client
+           guarded on the absolute gap while this was only built for
+           the positive one, so an under-confident rating rendered a
+           panel promising three findings and listing none. */
+        supporting: gap < -15 ? supporting(result) : [],
         verdict,
         suggestion,
         sector: result.sector,

@@ -303,8 +303,51 @@ export function TickerChip({ quote }) {
       >
         {pctSigned(quote.dayChange)}
       </span>
+
+      {/* WHETHER THIS PRICE IS LIVE, said in the place the price is.
+
+          The API has always known — it returns isLive:false and
+          "Last close: Fri 21 Aug, 15:30 IST" on a weekend — but the
+          chip showed a bare number, so a Saturday close looked
+          exactly like a live quote. A price that is a day and a half
+          old must never present itself as current on a page about
+          someone's money.
+
+          A live price gets a filled dot; a close gets the date. */}
+      {quote.isLive ? (
+        <span
+          className="flex items-center"
+          style={{ gap: 5, color: 'var(--color-verdigris)' }}
+          title={quote.asOfLabel}
+        >
+          <span
+            aria-hidden="true"
+            style={{
+              width: 5,
+              height: 5,
+              borderRadius: '50%',
+              background: 'var(--color-verdigris)',
+              display: 'block',
+            }}
+          />
+          Live
+        </span>
+      ) : (
+        <span style={{ color: 'var(--color-graphite)' }} title={quote.asOfLabel}>
+          {shortAsOf(quote.asOfLabel)}
+        </span>
+      )}
     </div>
   );
+}
+
+/* "Last close: Fri 21 Aug, 15:30 IST" -> "Fri 21 Aug close".
+   The chip has room for the fact, not the sentence; the full label
+   stays on the title attribute and on the footer. */
+function shortAsOf(label) {
+  if (typeof label !== 'string' || !label) return 'Not live';
+  const m = label.match(/Last close:\s*([^,]+)/i);
+  return m ? `${m[1].trim()} close` : label;
 }
 
 export function Footer({ market }) {
