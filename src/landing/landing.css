@@ -1,0 +1,427 @@
+/* LANDING PAGE
+   ────────────────────────────────────────────────────────────────
+   Every animated property here is `transform` or `opacity`, and
+   nothing else. Those two are the only properties a browser can
+   animate on the compositor without touching layout or paint, which
+   is what "buttery" actually means — not more effects, fewer
+   main-thread ones.
+
+   No gradient, no blur, no shadow, no glow, no blob, no hover-lift.
+   The page is built from the same 1px rules, ink marks and mono
+   numerals as the product it is describing. */
+
+.lp {
+  position: relative;
+  overflow-x: hidden;
+  /* One column definition, shared by the content and the spine, so
+     the line hangs exactly at the text's left edge at every width.
+     Centring the spine on the viewport instead put it through the
+     middle of the headline, which read as an accident rather than
+     as a plumb line. */
+  --col: 760px;
+  --gutter: 24px;
+  --spine-x: max(var(--gutter), calc(50% - (var(--col) / 2)));
+}
+
+/* ── the spine ──
+   One hairline down the entire page with the bob riding it. It is
+   the product's own object used as the page's structure. */
+.lp-spine {
+  position: fixed;
+  left: var(--spine-x);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  pointer-events: none;
+  z-index: 1;
+  transform: translateX(-0.5px);
+}
+.lp-spine-line {
+  position: absolute;
+  inset: 0;
+  background: var(--color-rule);
+  opacity: 0.55;
+}
+.lp-spine-bob {
+  position: absolute;
+  left: 50%;
+  /* translate3d keeps the bob on its own compositor layer, so
+     scrolling never repaints it. */
+  transform: translate3d(-50%, -26px, 0);
+  will-change: top;
+}
+
+@media (max-width: 900px) {
+  .lp-spine { display: none; }
+  .lp { --col: 100%; }
+  .lp-inner { padding: 0 20px; }
+}
+
+/* ── shell ──────────────────────────────────────────────────── */
+
+.lp-inner {
+  max-width: var(--col);
+  margin: 0 auto;
+  /* The left padding is the distance from the spine to the text. The
+     spine sits at the column edge, so the copy starts just inside it
+     and the line reads as a margin rule the whole page hangs from. */
+  padding: 0 var(--gutter) 0 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.lp-sec {
+  padding: 112px 0;
+  position: relative;
+}
+.lp-sec-wide .lp-inner { max-width: 940px; }
+
+.lp-hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 96px 0 64px;
+  position: relative;
+}
+
+.lp-h1 {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 125;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
+  font-size: clamp(2rem, 6.2vw, 4.25rem);
+  margin: 40px 0 0;
+}
+.lp-h1 .lp-line { display: block; }
+.lp-h1 .lp-line:last-child { color: var(--color-graphite); }
+
+.lp-h2 {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 125;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-size: clamp(1.5rem, 3.4vw, 2.25rem);
+  margin: 18px 0 0;
+  max-width: 22ch;
+}
+.lp-big { font-size: clamp(2rem, 5vw, 3.25rem); max-width: 16ch; }
+
+.lp-sub {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  color: var(--color-graphite);
+  max-width: 60ch;
+  margin: 28px 0 0;
+}
+
+.lp-body {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  max-width: 62ch;
+  margin: 32px 0 0;
+}
+
+/* ── entry + reveal ──
+   One shared class. `opacity` and `translate3d` only. */
+.lp-line {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  animation: lp-in 620ms cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms) forwards;
+}
+.lp-fade {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition:
+    opacity 640ms cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms),
+    transform 640ms cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms);
+}
+.lp-fade.in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes lp-in {
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* ── the hero bob ──
+   The same damped pendulum as the app: three diminishing swings,
+   settling perfectly vertical, then it never moves again. */
+/* The hero bob hangs on the spine itself — its line does not end,
+   it continues down the page as the spine, and the small bob picks
+   it up as you scroll. That continuity is the whole idea. */
+.lp-bob-wrap {
+  height: 190px;
+  margin-left: -57px;   /* 40px padding + 17px to the line's centre */
+}
+@media (max-width: 900px) {
+  .lp-bob-wrap { margin-left: -17px; }
+}
+.lp-bob {
+  transform-origin: 17px 0;
+  animation: lp-swing 1500ms cubic-bezier(0.33, 0, 0.25, 1) 420ms both;
+}
+.lp-bob-line {
+  stroke-dasharray: 164;
+  stroke-dashoffset: 164;
+  animation: lp-draw 460ms cubic-bezier(0.65, 0, 0.35, 1) 60ms forwards;
+}
+.lp-bob-weight {
+  opacity: 0;
+  animation: lp-appear 220ms linear 420ms forwards;
+}
+@keyframes lp-draw { to { stroke-dashoffset: 0; } }
+@keyframes lp-appear { to { opacity: 1; } }
+@keyframes lp-swing {
+  0%   { transform: rotate(-12deg); }
+  18%  { transform: rotate(7.6deg); }
+  36%  { transform: rotate(-4.4deg); }
+  54%  { transform: rotate(2.4deg); }
+  72%  { transform: rotate(-1.1deg); }
+  86%  { transform: rotate(0.4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* ── calls to action ────────────────────────────────────────── */
+
+.lp-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+.lp-cta {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 125;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 1rem;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: 16px 32px;
+  border-radius: 3px;
+  text-decoration: none;
+  display: inline-block;
+  transition: background var(--dur-instant) var(--ease-out),
+              transform var(--dur-instant) var(--ease-out);
+}
+.lp-cta:hover { background: #000; }
+.lp-cta:active { transform: translate3d(0, 1px, 0); }
+
+.lp-cta-quiet {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-rule);
+}
+.lp-cta-quiet:hover { text-decoration-color: var(--color-ink); }
+
+.lp-scroll-hint {
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+  margin: 64px 0 0;
+}
+
+/* ── the rail demo ──────────────────────────────────────────── */
+
+/* The rail hangs its "you" label above the track and its "the data"
+   label below it, so the box needs clearance on both sides that the
+   1px element itself does not declare. */
+.lp-rail-demo { margin: 72px 0 8px; }
+.lp-rail {
+  position: relative;
+  height: 1px;
+  margin: 64px 0 88px;
+}
+.lp-rail-track {
+  position: absolute;
+  inset: 0;
+  background: var(--color-rule);
+}
+.lp-tick { position: absolute; top: 0; }
+.lp-tick i {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 6px;
+  background: var(--color-rule);
+  transform: translateX(-0.5px);
+}
+.lp-tick b {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-graphite);
+}
+
+.lp-marker {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  /* No transition on `left`: the value is tweened in JS once per
+     frame already, so a CSS transition on top would chase it and
+     lag a moving target. */
+  transform: translateX(-50%);
+}
+.lp-marker b { font-size: 0.75rem; font-weight: 400; color: var(--color-graphite); white-space: nowrap; }
+.lp-marker-you { top: -34px; }
+.lp-marker-data {
+  top: 26px;
+  opacity: 0;
+  transform: translate3d(-50%, 8px, 0);
+  /* Lands a beat after the slider settles, so the gap reads as an
+     answer to the number above it rather than a second thing that
+     happened to appear at the same time. */
+  transition: opacity 420ms var(--ease-out) 140ms, transform 420ms var(--ease-out) 140ms;
+}
+.lp-marker-data.in { opacity: 1; transform: translate3d(-50%, 0, 0); }
+
+.lp-dim {
+  position: absolute;
+  top: -16px;
+  height: 9px;
+  opacity: 0;
+  transition: opacity 380ms var(--ease-out) 380ms;
+}
+.lp-dim.in { opacity: 1; }
+.lp-dim i {
+  position: absolute;
+  left: 0; right: 0;
+  top: 4px;
+  height: 1px;
+  background: var(--color-ink);
+}
+.lp-dim::before,
+.lp-dim::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 9px;
+  background: var(--color-ink);
+}
+.lp-dim::before { left: 0; }
+.lp-dim::after { right: 0; }
+
+/* ── the fan ────────────────────────────────────────────────── */
+
+/* Full-bleed: the fan is the one thing on this page allowed to leave
+   the column, because its whole point is that it is wider than any
+   single answer. */
+.lp-fan {
+  margin: 64px 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: clamp(300px, 52vh, 560px);
+}
+.lp-fan-svg { display: block; width: 100%; height: 100%; }
+
+/* ── evidence cards ─────────────────────────────────────────── */
+
+.lp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1px;
+  margin: 56px 0 0;
+  background: var(--color-rule);
+  border: 1px solid var(--color-rule);
+}
+.lp-card {
+  background: var(--color-paper);
+  padding: 28px 24px 32px;
+}
+.lp-pass { border-left: 2px solid var(--color-verdigris); }
+.lp-fail { border-left: 2px solid var(--color-madder); }
+
+.lp-stat {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 2.75rem;
+  line-height: 1;
+  margin: 14px 0 0;
+}
+.lp-stat-sm { font-size: 1rem; color: var(--color-graphite); }
+.lp-card-body {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-graphite);
+  margin: 14px 0 0;
+}
+
+/* ── the receipt ────────────────────────────────────────────── */
+
+.lp-receipt {
+  margin: 56px 0 0;
+  max-width: 460px;
+  background: var(--color-card);
+  border: 1px solid var(--color-rule);
+  padding: 28px 26px;
+}
+.lp-receipt-rule { height: 1px; background: var(--color-rule); margin: 14px 0; }
+.lp-receipt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 7px 0;
+  font-size: 0.9375rem;
+  color: var(--color-graphite);
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+  transition:
+    opacity 420ms var(--ease-out) calc(var(--i) * 110ms),
+    transform 420ms var(--ease-out) calc(var(--i) * 110ms);
+}
+.lp-receipt.in .lp-receipt-row { opacity: 1; transform: translate3d(0, 0, 0); }
+.lp-receipt-row .font-data { color: var(--color-ink); }
+.lp-receipt-seal {
+  justify-content: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.lp-receipt-seal .font-data { color: var(--color-graphite); }
+
+/* ── close ──────────────────────────────────────────────────── */
+
+.lp-close { padding-bottom: 160px; }
+.lp-legal {
+  margin-top: 64px;
+  font-size: 0.75rem;
+  color: var(--color-graphite);
+}
+
+/* ── reduced motion ──
+   Everything renders in its final state. No exceptions. */
+@media (prefers-reduced-motion: reduce) {
+  .lp-line,
+  .lp-fade,
+  .lp-receipt-row {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  .lp-bob,
+  .lp-bob-line,
+  .lp-bob-weight {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+    opacity: 1 !important;
+  }
+  .lp-marker-data,
+  .lp-dim { opacity: 1 !important; transform: translateX(-50%) !important; }
+  .lp-dim { transform: none !important; }
+}

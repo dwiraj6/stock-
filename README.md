@@ -14,6 +14,58 @@ npm run prewarm                # cache the demo tickers
 npm run dev                    # http://localhost:3000
 ```
 
+Two surfaces:
+
+| Route | What it is |
+|---|---|
+| `/` | The landing page — the argument, before you have used anything |
+| `/app` | The instrument itself |
+
+---
+
+## The landing page
+
+Inside the product, stillness is correct: it is an instrument, and an
+instrument that fidgets while you read it is broken. A landing page
+has the opposite job, because nobody has used the thing yet and the
+only way to show what it does is to do it.
+
+So the page moves, but every moving thing is drawn from the product's
+own vocabulary — the plumb line runs the full height as a 1px spine
+with the bob riding it on scroll; the fan opens as you reach it; a
+dimension line measures the gap; numerals count up. No gradient, no
+blob, no glow, no card lifting on hover. Every animation is `transform`
+or `opacity` only, so the compositor does the work and the main thread
+stays free. Measured at **0 of 246 frames below 30fps, worst frame
+16.7ms**, and `verify` asserts that no rule transitions a layout
+property.
+
+Two things about it are worth stating plainly:
+
+**Every statistic on it is read from the committed exhibits at build
+time** — `data/calibration.json`, `data/probability-calibration.json`,
+`data/factor-test.json`, `data/sector-medians.json`. Nothing is typed
+into the markup. A landing page that quotes its own backtest from
+memory will still be quoting it long after the backtest has moved on,
+and `verify` fails if the page and the exhibits disagree. That
+includes the unflattering number: the page states the −3.4% direction
+skill in the same size type as the 87% band hit rate.
+
+**The rail demo runs on its own clock.** It was scroll-driven first,
+which turned out to be exactly wrong — a reader who stopped to look at
+it froze it half-drawn, and gating the payoff on section progress put
+the gap just below the trigger at the one scroll position where the
+rail sat centred and readable. Now the sweep starts when the rail
+enters the viewport and finishes regardless of what the reader does
+next. Stopping to read it is rewarded rather than punished, and it
+plays identically at any scroll speed.
+
+The one deviation from the app's motion rule ("nothing animates on
+scroll except the methodology page's one-time reveals") is deliberate
+and stated in the source: a landing page where scrolling drives a
+demonstration is not the ambient fidgeting that rule exists to
+prevent.
+
 ---
 
 ## What is real
@@ -97,7 +149,7 @@ it just no longer drives the simulation.
 ## Verification
 
 ```bash
-npm run verify          # 67 end-to-end checks, incl. airplane mode
+npm run verify          # 83 end-to-end checks, incl. airplane mode
 npm run check:sigma     # sigma vs an independent implementation
 npm run check:hours     # every market state + the UTC-server trap
 npm run check:symbols   # resolution, ranking, the SODEXO case

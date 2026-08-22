@@ -3,6 +3,10 @@
 import { chromium } from 'playwright';
 
 const B = 'http://localhost:3007';
+/* The app now lives at /app — `/` is the landing page. API routes are
+   still mounted at the root, so B stays the API base and only the UI
+   walkthrough moves. */
+const APP = `${B}/app`;
 const pass = [];
 const fail = [];
 const ok = (c, m) => (c ? pass : fail).push(m);
@@ -272,7 +276,7 @@ const get = async (path, init) => {
     return route.abort();
   });
 
-  await p.goto(B, { waitUntil: 'domcontentloaded' });
+  await p.goto(APP, { waitUntil: 'domcontentloaded' });
   await p.waitForTimeout(2500);
   await p.getByRole('combobox').fill('RELIANCE');
   await p.waitForTimeout(900);
@@ -297,6 +301,110 @@ const get = async (path, init) => {
     ok(/80% band/i.test(txt), 'calibration rendered (static file)');
     await p.screenshot({ path: '.drive/13-airplane.png', fullPage: false });
   }
+  await browser.close();
+}
+
+
+/* ══ 14. THE LANDING PAGE ══
+   It is the front door now, so it gets checked like everything else.
+   Three things matter here and nothing else does:
+
+     · every statistic on it is READ FROM THE COMMITTED EXHIBITS, not
+       typed into the markup. A landing page that quotes a backtest
+       from memory will still be quoting it after the backtest has
+       moved on.
+     · the rail demo COMPLETES for a reader who stops to look. It was
+       scroll-driven once, which froze it half-drawn at the very
+       position where it was most readable.
+     · the motion is compositor-only, and the page does not bleed
+       sideways on a phone.
+*/
+{
+  const fs = await import('node:fs');
+  const cal = JSON.parse(fs.readFileSync('data/calibration.json', 'utf8'));
+  const dir = JSON.parse(fs.readFileSync('data/probability-calibration.json', 'utf8'));
+
+  const browser = await chromium.launch({ channel: 'chrome' });
+  const p = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+  const errs = [];
+  p.on('pageerror', (e) => errs.push(e.message.slice(0, 140)));
+  await p.goto(B, { waitUntil: 'domcontentloaded' });
+  await p.waitForTimeout(2200);
+
+  ok((await p.locator('.lp-spine').count()) === 1, 'the plumb line runs the length of the page');
+  ok(/stock will do/i.test(await p.locator('h1').innerText()), 'hero states the premise');
+
+  await p.locator('.lp-cards').first().scrollIntoViewIfNeeded();
+  await p.waitForTimeout(1600);
+  const cardText = (await p.locator('.lp-cards').innerText()).replace(/\s+/g, ' ');
+  const bandPct = Math.round(cal.hitRate * 100);
+  ok(cardText.includes(String(bandPct)), `band hit rate quoted from the exhibit (${bandPct}%)`);
+  ok(cardText.includes(String(cal.universe)), `forecast count quoted from the exhibit (${cal.universe})`);
+  ok(
+    cardText.includes(String(Math.abs(+(dir.skillScore * 100).toFixed(1)))),
+    `direction skill quoted from the exhibit (${(dir.skillScore * 100).toFixed(1)}%)`
+  );
+  ok(/no skill|cannot tell|refuses/i.test(cardText), 'the landing page admits the failure rather than hiding it');
+
+  // the rail demo runs on its own clock once it is in view
+  await p.evaluate(() => window.scrollTo(0, 0));
+  await p.waitForTimeout(500);
+  await p.locator('.lp-rail-demo').first().scrollIntoViewIfNeeded();
+  await p.waitForTimeout(2600);
+  const railLabel = await p.locator('.lp-marker-you b').innerText();
+  ok(/you 72/.test(railLabel), `the slider finishes its sweep for a reader who stops (${railLabel})`);
+  ok(
+    (await p.locator('.lp-marker-data').first().evaluate((e) => getComputedStyle(e).opacity)) === '1',
+    'the data marker arrives — the gap is the whole point of the section'
+  );
+  ok(
+    (await p.locator('.lp-dim').first().evaluate((e) => e.style.width)) === '10%',
+    'the dimension line spans exactly the gap it describes'
+  );
+
+  // motion is compositor-only
+  const animated = await p.evaluate(() =>
+    [...document.styleSheets]
+      .flatMap((sh) => { try { return [...sh.cssRules]; } catch { return []; } })
+      .flatMap((r) => (r.style ? [r.style.transition, r.style.transitionProperty] : []))
+      .join(' ')
+  );
+  ok(
+    !/\b(width|height|top|left|margin|padding)\b/.test(animated),
+    'nothing transitions a layout property — transform and opacity only'
+  );
+
+  await p.screenshot({ path: '.drive/14-landing.png' });
+  ok(errs.length === 0, errs.length ? `landing page errors: ${errs.join(' | ')}` : 'the landing page raises no errors');
+
+  // a phone must not scroll sideways
+  const m = await (await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  })).newPage();
+  await m.goto(B, { waitUntil: 'domcontentloaded' });
+  await m.waitForTimeout(2000);
+  const bleed = await m.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+  );
+  ok(bleed <= 1, `no horizontal bleed at 390px (${bleed}px)`);
+
+  // reduced motion gets the finished state, not a frozen half-state
+  const r = await (await browser.newContext({
+    viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce',
+  })).newPage();
+  await r.goto(B, { waitUntil: 'domcontentloaded' });
+  await r.waitForTimeout(1500);
+  await r.locator('.lp-rail-demo').first().scrollIntoViewIfNeeded();
+  await r.waitForTimeout(1000);
+  ok(
+    /you 72/.test(await r.locator('.lp-marker-you b').innerText()),
+    'reduced motion gets the finished rail immediately, not a stalled one'
+  );
+  ok(
+    (await r.locator('.lp-fan-svg path').count()) > 200,
+    'reduced motion still gets the whole fan, just not the drawing of it'
+  );
+
   await browser.close();
 }
 
