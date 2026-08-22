@@ -79,7 +79,14 @@ const ok = (c, m) => (c ? pass : fail).push(m);
    follows needs to be signed in. One session is established up front
    and attached to every request by default; a section that wants to
    test the SIGNED-OUT behaviour passes `{ anon: true }` and gets a
-   bare request instead. */
+   bare request instead.
+
+   FORGETTING `anon: true` IS THE TRAP. A check that means "this
+   should be refused when nobody is signed in" silently starts
+   testing the signed-in path instead, and then fails for a reason
+   that has nothing to do with the code. Three of them did exactly
+   that when this default was introduced. If a check's name contains
+   "without", "signed out", or "cannot", it wants `anon: true`. */
 let SESSION_COOKIE = '';
 
 const get = async (path, init = {}) => {
@@ -439,7 +446,7 @@ await (async () => {
   /* The decision belongs to the ACCOUNT, not to whatever id the
      caller names — the same request without the cookie must not
      return it. */
-  const noCookie = await get('/api/decisions');
+  const noCookie = await get('/api/decisions', { anon: true });
   ok(noCookie.body?.code === 'AUTH_REQUIRED', 'the same request without the cookie returns nothing');
 
   /* Signing out kills the session server-side, not just the cookie. */
@@ -773,7 +780,7 @@ await (async () => {
   };
 
   /* — the hole, closed — */
-  const readOther = await get('/api/decisions?who=aaaaaaaaaaaaaaaaaaaa');
+  const readOther = await get('/api/decisions?who=aaaaaaaaaaaaaaaaaaaa', { anon: true });
   ok(
     readOther.body?.code === 'AUTH_REQUIRED',
     'a client-supplied `who` can no longer read a track record'
@@ -788,7 +795,7 @@ await (async () => {
   );
 
   /* — the session probe — */
-  const me = await get('/api/auth/me');
+  const me = await get('/api/auth/me', { anon: true });
   ok(me.body?.ok === true && me.body?.user === null, '/api/auth/me reports signed out');
   ok(
     typeof me.body?.methods?.google === 'boolean' && typeof me.body?.methods?.email === 'boolean',
