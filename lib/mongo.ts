@@ -33,8 +33,28 @@ function connect(): Promise<MongoClient> {
   return client.connect();
 }
 
+/* Memoised, but ONLY on success.
+
+   The bug this fixes was quiet and nasty. Caching the promise itself
+   means a REJECTED promise is cached too, so one failed connection
+   poisons the whole instance: every later call replays the same old
+   rejection, and on a warm serverless container that can outlive the
+   original cause by hours. It showed up exactly that way — the Atlas
+   IP list was fixed, the database was reachable again, and the
+   deployment carried on reporting "the account store could not be
+   reached" because it was still handing back a rejection recorded
+   before the fix.
+
+   So a failure clears the slot and the next request genuinely
+   retries. The success path is unchanged: one client, one pool, for
+   the life of the instance. */
 export function getClient(): Promise<MongoClient> {
-  if (!global.__plumblineMongo) global.__plumblineMongo = connect();
+  if (!global.__plumblineMongo) {
+    global.__plumblineMongo = connect().catch((err) => {
+      global.__plumblineMongo = undefined;
+      throw err;
+    });
+  }
   return global.__plumblineMongo;
 }
 
