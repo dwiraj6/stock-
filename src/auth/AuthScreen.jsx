@@ -33,6 +33,7 @@ import {
   forgotPassword,
   resetPassword,
   googleStartUrl,
+  signInWithGooglePopup,
   GOOGLE_ERRORS,
 } from '../lib/auth-client.js';
 import { MIN_PASSWORD } from './constants.js';
@@ -59,7 +60,7 @@ export default function AuthScreen({ stats, next = '/app', initialError = null, 
     initialError ? GOOGLE_ERRORS[initialError] ?? 'That sign-in did not complete.' : null
   );
   const [notice, setNotice] = useState(null);
-  const [methods, setMethods] = useState({ google: true, email: true });
+  const [methods, setMethods] = useState({ google: true, firebase: false, email: true });
   /* Autofocus is right on a desktop and wrong on a phone, where it
      throws the keyboard up over the page before the user has read a
      word of it. Resolved after mount so the server-rendered markup
@@ -144,6 +145,20 @@ export default function AuthScreen({ stats, next = '/app', initialError = null, 
     const res = await resetPassword(email, code, password);
     setBusy(false);
     handle(res, done);
+  };
+
+  /* Firebase does the popup and hands back an ID token; the server
+     verifies it and issues this app's own session. A cancelled popup
+     is not an error — the user changed their mind, and a red banner
+     for that is noise. */
+  const googlePopup = async () => {
+    if (busy) return;
+    setBusy(true); setError(null);
+    const res = await signInWithGooglePopup();
+    setBusy(false);
+    if (res?.ok) return done();
+    if (res?.cancelled) return;
+    setError([res?.message, res?.action].filter(Boolean).join(' '));
   };
 
   const resend = async () => {
@@ -245,10 +260,22 @@ export default function AuthScreen({ stats, next = '/app', initialError = null, 
           {/* ── Google ── */}
           {methods.google && (step === 'signin' || step === 'signup') && (
             <>
-              <a className="au-google" href={googleStartUrl(next)}>
-                <GoogleMark />
-                Continue with Google
-              </a>
+              {/* Two routes to the same place. Firebase opens a popup
+                  and is preferred because it provisions Google's
+                  consent screen automatically; the direct OAuth
+                  redirect in lib/google.ts is the fallback for a
+                  server configured that way instead. */}
+              {methods.firebase ? (
+                <button type="button" className="au-google" onClick={googlePopup} disabled={busy}>
+                  <GoogleMark />
+                  Continue with Google
+                </button>
+              ) : (
+                <a className="au-google" href={googleStartUrl(next)}>
+                  <GoogleMark />
+                  Continue with Google
+                </a>
+              )}
               <div className="au-or" aria-hidden="true">
                 <span>or</span>
               </div>

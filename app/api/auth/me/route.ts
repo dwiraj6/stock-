@@ -7,6 +7,7 @@
 import { ok, guard } from '@/lib/api';
 import { currentUser, publicUser } from '@/lib/current-user';
 import { googleConfigured } from '@/lib/google';
+import { firebaseConfigured } from '@/lib/firebase-verify';
 import { mailConfigured } from '@/lib/mailer';
 
 export const dynamic = 'force-dynamic';
@@ -20,7 +21,16 @@ export async function GET() {
        than presenting a control that cannot work. */
     return ok({
       user: user ? publicUser(user) : null,
-      methods: { google: googleConfigured(), email: mailConfigured() },
+      /* `google` is true if EITHER path can serve it: Firebase (which
+         provisions Google's consent screen for you) or the direct
+         OAuth implementation in lib/google.ts. The client prefers
+         Firebase when both are available, because it is the one that
+         works without hand-configuring the consent screen. */
+      methods: {
+        google: firebaseConfigured() || googleConfigured(),
+        firebase: firebaseConfigured(),
+        email: mailConfigured(),
+      },
     });
   });
 }

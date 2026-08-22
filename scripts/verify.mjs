@@ -912,6 +912,78 @@ await (async () => {
   await browser.close();
 }
 
+
+/* ══ 16. GOOGLE VIA FIREBASE ══
+   Firebase is here for one reason, worth recording so nobody rips it
+   out wondering: the app's own OAuth implementation was correct, but
+   nothing in code can configure Google's CONSENT SCREEN, which is a
+   form in the Cloud console. Enabling Google in Firebase provisions
+   that screen automatically. So Firebase is the doorman, not the
+   building — it opens the popup, and the session that follows is
+   this app's own cookie.
+
+   The first check is the one that matters. Without the audience
+   check in lib/firebase-verify.ts an ID token minted for ANY other
+   Firebase project would be accepted here, which is a complete
+   break — so a token this server did not verify must never become a
+   session. */
+{
+  const postFb = async (b) => {
+    const r = await fetch(B + '/api/auth/firebase', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(b),
+    });
+    return r.json().catch(() => null);
+  };
+
+  const forged = await postFb({ idToken: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.'.padEnd(120, 'x') });
+  ok(
+    forged?.code === 'AUTH_FAILED',
+    'a forged ID token is refused — nothing unverified becomes a session'
+  );
+  ok((await postFb({}))?.code === 'BAD_REQUEST', 'a malformed sign-in body is refused');
+
+  const meRes = await get('/api/auth/me', { anon: true });
+  const viaFirebase = meRes.body?.methods?.firebase === true;
+
+  const browser = await chromium.launch({ channel: 'chrome' });
+  const p = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+  const errs = [];
+  p.on('pageerror', (e) => errs.push(e.message.slice(0, 140)));
+  await p.goto(B + '/login', { waitUntil: 'domcontentloaded' });
+  await p.waitForTimeout(2000);
+
+  if (viaFirebase) {
+    ok(
+      (await p.getByRole('button', { name: /Continue with Google/i }).count()) === 1,
+      'with Firebase configured the Google control is a popup button'
+    );
+    ok(
+      (await p.locator('a.au-google').count()) === 0,
+      'and the direct-OAuth redirect is not rendered alongside it'
+    );
+  } else {
+    ok(
+      (await p.locator('a.au-google').count()) <= 1,
+      'without Firebase the page falls back to the direct OAuth redirect'
+    );
+  }
+
+  await p.goto(B + '/login?mode=signup', { waitUntil: 'domcontentloaded' });
+  await p.waitForTimeout(1400);
+  ok(
+    /Create an account/i.test(await p.locator('body').innerText()),
+    'mode=signup opens on the create-account form, so a Sign up link lands on the right one'
+  );
+
+  ok(
+    errs.length === 0,
+    errs.length ? `sign-in page errors: ${errs.join(' | ')}` : 'no page errors on the Firebase path'
+  );
+  await browser.close();
+}
+
 console.log('\n──────── PASS ────────');
 pass.forEach((m) => console.log('  ✓ ' + m));
 if (fail.length) {

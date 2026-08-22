@@ -292,3 +292,9 @@
   .au-google:active,
   .au-submit:active { transform: none; }
 }
+
+/* The Google control is an <a> on the redirect path and a <button>
+   on the Firebase one. Both must look identical, so the button is
+   stripped of its user-agent styling rather than styled separately. */
+button.au-google { width: 100%; font: inherit; }
+button.au-google:disabled { opacity: 0.55; cursor: not-allowed; }

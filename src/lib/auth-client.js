@@ -58,6 +58,18 @@ export const resetPassword = (email, code, password) =>
   post('/api/auth/reset', withAnon({ email, code, password }));
 export const logOut = () => post('/api/auth/logout');
 
+/* ── Google, via Firebase ──
+   Firebase opens the popup and returns an ID token; the server
+   verifies it and issues THIS app's session. Firebase's own session
+   is discarded — see src/lib/firebase-client.js for why two session
+   systems side by side is a bug waiting to happen. */
+export async function signInWithGooglePopup() {
+  const { signInWithGoogle } = await import('./firebase-client.js');
+  const popup = await signInWithGoogle();
+  if (!popup.ok) return { ok: false, cancelled: popup.cancelled, message: popup.message, action: popup.action };
+  return post('/api/auth/firebase', withAnon({ idToken: popup.idToken }));
+}
+
 /** Used after the Google redirect, which cannot carry localStorage. */
 export const adoptAnonymous = () => {
   const anonId = whoAmI();
