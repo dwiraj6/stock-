@@ -14,7 +14,14 @@ function Inner({ stats }: { stats: any }) {
      else entirely. */
   const raw = params.get('next') ?? '/app';
   const next = raw.startsWith('/') && !raw.startsWith('//') ? raw : '/app';
-  return <AuthScreen stats={stats} next={next} initialError={params.get('error')} />;
+  return (
+    <AuthScreen
+      stats={stats}
+      next={next}
+      initialError={params.get('error')}
+      initialStep={params.get('mode') === 'signup' ? 'signup' : 'signin'}
+    />
+  );
 }
 
 export default function LoginClient({ stats }: { stats: any }) {

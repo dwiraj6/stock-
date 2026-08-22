@@ -263,9 +263,14 @@ function LandingHeader() {
           Continue as {me.name || me.email}
         </a>
       ) : (
-        <a className="lp-header-link" href="/login?next=%2Fapp">
-          Sign in
-        </a>
+        <>
+          <a className="lp-header-link" href="/login?next=%2Fapp">
+            Log in
+          </a>
+          <a className="lp-header-cta" href="/login?mode=signup&next=%2Fapp">
+            Sign up
+          </a>
+        </>
       )}
     </div>
   );

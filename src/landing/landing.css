@@ -453,3 +453,19 @@
   color: var(--color-ink);
   border-bottom-color: var(--color-ink);
 }
+
+.lp-header { display: flex; align-items: center; gap: 20px; }
+.lp-header-cta {
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 15px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-radius: 3px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--dur-instant) var(--ease-out);
+}
+.lp-header-cta:hover { background: #000; }

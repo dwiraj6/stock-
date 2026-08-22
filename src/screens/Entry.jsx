@@ -19,7 +19,7 @@ import { TickerInput, AmountInput, ConvictionSlider, Button } from '../component
 import { searchSymbols as apiSearch } from '../lib/client.js';
 import { useReducedMotion } from '../lib/hooks.js';
 
-export default function Entry({ onRun, initial }) {
+export default function Entry({ onRun, initial, me }) {
   const reduced = useReducedMotion();
   const animate = !reduced;
 
@@ -165,6 +165,24 @@ export default function Entry({ onRun, initial }) {
               Run the simulation
             </Button>
           </div>
+
+          {/* Said before the click, not after it. Being bounced to a
+              sign-in page by a button that gave no warning is the
+              part people resent; a line of small print costs nothing
+              and removes the surprise entirely. */}
+          {me === false && valid && (
+            <p
+              className="font-body"
+              style={{
+                marginTop: 14,
+                textAlign: 'center',
+                fontSize: '0.8125rem',
+                color: 'var(--color-graphite)',
+              }}
+            >
+              You will be asked to sign in first — your stock, amount and conviction are kept.
+            </p>
+          )}
 
           {checkedToday.length > 0 && (
           <div style={{ marginTop: 48, ...anim(1150, 200, 0) }}>

@@ -103,19 +103,40 @@ export function Masthead({ quote, onMethodology, onAsk, onHome, onRecord, me, on
               "Sign in" for a moment to someone who is already signed
               in reads as having been logged out. */}
           {me === false && (
-            <a
-              href="/login?next=%2Fapp"
-              className="font-body"
-              style={{
-                fontSize: '0.9375rem',
-                color: 'var(--color-ink)',
-                textDecoration: 'underline',
-                textUnderlineOffset: 3,
-                textDecorationColor: 'var(--color-rule)',
-              }}
-            >
-              Sign in
-            </a>
+            <>
+              <a
+                href="/login?next=%2Fapp"
+                className="font-body"
+                style={{
+                  fontSize: '0.9375rem',
+                  color: 'var(--color-ink)',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: 3,
+                  textDecorationColor: 'var(--color-rule)',
+                }}
+              >
+                Log in
+              </a>
+              {/* Two doors, not one. A visitor who has never been here
+                  and one who is coming back want different forms, and
+                  making the newcomer notice a "create one" link buried
+                  under a password field is a needless step. */}
+              <a
+                href="/login?mode=signup&next=%2Fapp"
+                className="font-data"
+                style={{
+                  fontSize: '0.8125rem',
+                  padding: '7px 14px',
+                  background: 'var(--color-ink)',
+                  color: 'var(--color-paper)',
+                  borderRadius: 3,
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Sign up
+              </a>
+            </>
           )}
           {me && !small && (
             <span

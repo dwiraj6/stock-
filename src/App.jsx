@@ -61,7 +61,18 @@ export default function App() {
        carefully chosen conviction to a login redirect would be its
        own small betrayal — you come back to the same three values
        and it runs by itself. */
-    if (me === false) {
+    /* `me` is null until the session probe answers. Checking only for
+       `false` here let a fast click through in that window — the UI
+       gate simply had not loaded its answer yet. So an unresolved
+       session is resolved on the spot rather than assumed. */
+    let signedIn = me;
+    if (signedIn === null) {
+      const res = await getMe();
+      signedIn = res?.user ?? false;
+      setMe(signedIn);
+    }
+
+    if (!signedIn) {
       try {
         sessionStorage.setItem(PARKED, JSON.stringify({ symbol, amount, conviction }));
       } catch {
@@ -366,7 +377,7 @@ export default function App() {
         />
       )}
 
-      {!failed && phase === 'entry' && <Entry onRun={start} />}
+      {!failed && phase === 'entry' && <Entry onRun={start} me={me} />}
 
       {!failed && phase === 'computing' && pending && (
         <Computing

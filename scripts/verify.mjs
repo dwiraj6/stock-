@@ -72,10 +72,81 @@ async function withMongo(label, fn) {
 }
 const ok = (c, m) => (c ? pass : fail).push(m);
 
-const get = async (path, init) => {
-  const r = await fetch(B + path, init);
+/* ── the suite's own session ──
+   /api/simulate and /api/score are gated now, so most of what
+   follows needs to be signed in. One session is established up front
+   and attached to every request by default; a section that wants to
+   test the SIGNED-OUT behaviour passes `{ anon: true }` and gets a
+   bare request instead. */
+let SESSION_COOKIE = '';
+
+const get = async (path, init = {}) => {
+  const { anon, ...rest } = init;
+  const headers = { ...(rest.headers ?? {}) };
+  if (!anon && SESSION_COOKIE && !headers.cookie) headers.cookie = SESSION_COOKIE;
+  const r = await fetch(B + path, { ...rest, headers });
   return { status: r.status, body: await r.json().catch(() => null) };
 };
+
+/* ══ 0. A SESSION FOR THE SUITE ══
+   The measurement routes are gated, so the walkthrough needs an
+   account. Seeded straight into Mongo — that is fixture setup — but
+   authenticated through the REAL login endpoint, because signing in
+   through a side door would test nothing. */
+let SUITE_USER = null;
+try {
+  const { db } = await mongo();
+  const { randomBytes } = await import('node:crypto');
+  const email = `suite-${randomBytes(6).toString('hex')}@plumbline.test`;
+  const password = 'correct-horse-battery';
+  const { insertedId } = await db.collection('users').insertOne({
+    email, name: 'Suite', passwordHash: await seedHash(password),
+    googleSub: null, emailVerified: new Date(), createdAt: new Date(), adopted: [],
+  });
+  const res = await fetch(B + '/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  SESSION_COOKIE = (res.headers.getSetCookie?.() ?? [])
+    .map((c) => c.split(';')[0])
+    .filter((c) => c.startsWith('plumbline_session='))
+    .join('; ');
+  SUITE_USER = insertedId;
+  ok(Boolean(SESSION_COOKIE), 'the suite signs in through the real login endpoint');
+} catch (e) {
+  skipped.push(`suite session — could not reach MongoDB (${String(e?.message ?? e).slice(0, 60)})`);
+}
+
+/* ══ 0b. THE MEASUREMENT IS GATED SERVER-SIDE ══
+   The UI redirects to /login before it will run an analysis. That
+   gate is worth nothing on its own — the routes are public URLs and
+   curl does not run React — so the check that matters is this one. */
+{
+  const sim = await get('/api/simulate', {
+    anon: true,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ symbol: 'RELIANCE', amount: 50000 }),
+  });
+  ok(sim.body?.code === 'AUTH_REQUIRED', 'the simulation refuses to run without a session');
+
+  const score = await get('/api/score', {
+    anon: true,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ symbol: 'RELIANCE', conviction: 72, amount: 50000 }),
+  });
+  ok(score.body?.code === 'AUTH_REQUIRED', 'the score refuses to run without a session');
+
+  /* Search and quotes stay open on purpose: the entry screen has to
+     work before you sign in, so you can pick a stock and commit your
+     number and only THEN be asked who you are. */
+  const search = await get('/api/search?q=RELI', { anon: true });
+  ok(search.body?.ok === true, 'search still works signed out — the entry screen must');
+  const quote = await get('/api/quote/RELIANCE', { anon: true });
+  ok(quote.body?.ok !== false, 'quotes still work signed out');
+}
 
 /* ══ 1. WEEKEND / MARKET-CLOSED PATH ══ */
 {
@@ -119,7 +190,11 @@ const get = async (path, init) => {
 }
 
 /* ══ 4. EVERY ERROR PATH ══ */
-{
+await (async () => {
+  /* Needs the suite session: this section exercises the gated
+     measurement routes. Without one it would report a wall of
+     AUTH_REQUIRED failures that say nothing about the code. */
+  if (!SESSION_COOKIE) throw new Error("4. EVERY ERROR PATH — no session");
   const bad = await get('/api/simulate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -136,7 +211,9 @@ const get = async (path, init) => {
 
   const junk = await get('/api/search?q=%21%40%23');
   ok(junk.status === 200 && junk.body.ok === true, 'junk search query does not throw');
-}
+})().catch((e) => {
+  skipped.push(String(e?.message ?? e).slice(0, 90));
+});
 
 /* ══ 5. PROVENANCE ON EVERY PAYLOAD ══ */
 {
@@ -157,7 +234,11 @@ const get = async (path, init) => {
 }
 
 /* ══ 6. NULLS ARE NULL, NEVER SUBSTITUTED ══ */
-{
+await (async () => {
+  /* Needs the suite session: this section exercises the gated
+     measurement routes. Without one it would report a wall of
+     AUTH_REQUIRED failures that say nothing about the code. */
+  if (!SESSION_COOKIE) throw new Error("6. NULLS ARE NULL, NEVER SUBSTITUTED — no session");
   const { body } = await get('/api/stock/RELIANCE');
   const f = body.fundamentals;
   ok(f.returnOnEquity === null, 'Reliance ROE is null (Yahoo does not report it) — not zero, not estimated');
@@ -174,10 +255,16 @@ const get = async (path, init) => {
   const fin = score.body.components.find((c) => c.key === 'financial');
   ok(fin.score > 0, `missing metric renormalises rather than scoring zero (financial=${fin.score})`);
   ok(fin.missing.includes('debt/equity'), `the missing metric is named: ${JSON.stringify(fin.missing)}`);
-}
+})().catch((e) => {
+  skipped.push(String(e?.message ?? e).slice(0, 90));
+});
 
 /* ══ 7. SIMULATION INTEGRITY ══ */
-{
+await (async () => {
+  /* Needs the suite session: this section exercises the gated
+     measurement routes. Without one it would report a wall of
+     AUTH_REQUIRED failures that say nothing about the code. */
+  if (!SESSION_COOKIE) throw new Error("7. SIMULATION INTEGRITY — no session");
   const { body } = await get('/api/simulate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -199,7 +286,9 @@ const get = async (path, init) => {
 
   const size = JSON.stringify(body).length;
   ok(size < 260_000, `payload ${(size / 1024).toFixed(0)}KB`);
-}
+})().catch((e) => {
+  skipped.push(String(e?.message ?? e).slice(0, 90));
+});
 
 /* ══ 8. CALIBRATION IS REAL AND OWNS ITS MISSES ══ */
 {
@@ -225,7 +314,11 @@ const get = async (path, init) => {
 }
 
 /* ══ 10. THE HEADLINE IS A PROBABILITY, AND IT IS VALIDATED ══ */
-{
+await (async () => {
+  /* Needs the suite session: this section exercises the gated
+     measurement routes. Without one it would report a wall of
+     AUTH_REQUIRED failures that say nothing about the code. */
+  if (!SESSION_COOKIE) throw new Error("10. THE HEADLINE IS A PROBABILITY, AND IT IS VALIDATED — no session");
   const { body } = await get('/api/score', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -247,7 +340,9 @@ const get = async (path, init) => {
      'drift is flat, not the per-stock estimate that measured -51% skill');
   ok(typeof sim.body.params.observedMu === 'number',
      `the stock's own drift is still reported for display (${(sim.body.params.observedMu * 100).toFixed(1)}%)`);
-}
+})().catch((e) => {
+  skipped.push(String(e?.message ?? e).slice(0, 90));
+});
 
 /* ══ 11. BOTH CALIBRATION EXHIBITS, INCLUDING THE FAILURE ══ */
 {
@@ -712,23 +807,41 @@ await (async () => {
   const unknown = await post('/api/auth/login', {
     email: 'definitely-nobody@example.com', password: 'whatever12345',
   });
-  ok(unknown.body?.code === 'AUTH_FAILED', 'login fails for an unknown account');
-  ok(
-    !/no such|not found|does not exist|no account/i.test(unknown.body?.message ?? ''),
-    'the failure message does not reveal whether the account exists'
-  );
+
+  /* With the account store unreachable, login says so rather than
+     claiming the password is wrong — which is correct, and also
+     means the no-oracle properties below cannot be observed. So this
+     reports SKIPPED instead of red: an unrunnable check is not a
+     failing one, and pretending otherwise trains people to ignore
+     the suite. */
+  const storeDown = unknown.body?.code === 'UPSTREAM_DEGRADED';
+  if (storeDown) {
+    skipped.push('login oracle checks — the account store was unreachable');
+    ok(
+      /password is fine/i.test(unknown.body?.action ?? ''),
+      'with the account store down, login says so instead of blaming the password'
+    );
+  } else {
+    ok(unknown.body?.code === 'AUTH_FAILED', 'login fails for an unknown account');
+    ok(
+      !/no such|not found|does not exist|no account/i.test(unknown.body?.message ?? ''),
+      'the failure message does not reveal whether the account exists'
+    );
+  }
 
   const timeOne = async (email) => {
     const t0 = performance.now();
     await post('/api/auth/login', { email, password: 'x'.repeat(20) });
     return performance.now() - t0;
   };
-  const avgUnknown =
-    ((await timeOne('nobody-a@example.com')) + (await timeOne('nobody-b@example.com'))) / 2;
-  ok(
-    avgUnknown > 20,
-    `an unknown account still burns scrypt time (${Math.round(avgUnknown)}ms) — no timing oracle`
-  );
+  if (!storeDown) {
+    const avgUnknown =
+      ((await timeOne('nobody-a@example.com')) + (await timeOne('nobody-b@example.com'))) / 2;
+    ok(
+      avgUnknown > 20,
+      `an unknown account still burns scrypt time (${Math.round(avgUnknown)}ms) — no timing oracle`
+    );
+  }
 
   /* — the OAuth redirect — */
   const start = await fetch(`${B}/api/auth/google/start?next=%2Fapp`, { redirect: 'manual' });

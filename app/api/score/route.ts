@@ -5,6 +5,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { ok, fail, guard, logTier } from '@/lib/api';
+import { requireUser } from '@/lib/require-auth';
 import { resolveSymbol } from '@/lib/symbols';
 import { fetchFundamentals, fetchHistory } from '@/lib/market-data';
 import { estimateParams, simulate } from '@/lib/simulate';
@@ -22,6 +23,12 @@ const Body = z.object({
 
 export async function POST(req: NextRequest) {
   return guard('score', async () => {
+    /* The measurement itself is gated. The UI redirects to /login
+       before it gets here, but a gate that lives only in the client
+       is decoration — this is the one that holds against curl. */
+    const gate = await requireUser();
+    if ('response' in gate) return gate.response;
+
     let parsed;
     try {
       parsed = Body.parse(await req.json());

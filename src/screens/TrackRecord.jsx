@@ -114,22 +114,36 @@ export default function TrackRecord({ onBack }) {
             bureaucracy — a decision recorded here settles twelve months from now, and browser
             storage does not reliably last that long.
           </p>
-          <a
-            href="/login?next=%2Fapp%23record"
-            className="font-data"
-            style={{
-              display: 'inline-block',
-              marginTop: 24,
-              padding: '13px 22px',
-              background: 'var(--color-ink)',
-              color: 'var(--color-paper)',
-              fontSize: '0.875rem',
-              borderRadius: 3,
-              textDecoration: 'none',
-            }}
-          >
-            Sign in
-          </a>
+          <div className="flex items-center" style={{ gap: 20, marginTop: 24 }}>
+            <a
+              href="/login?mode=signup&next=%2Fapp%23record"
+              className="font-data"
+              style={{
+                display: 'inline-block',
+                padding: '13px 22px',
+                background: 'var(--color-ink)',
+                color: 'var(--color-paper)',
+                fontSize: '0.875rem',
+                borderRadius: 3,
+                textDecoration: 'none',
+              }}
+            >
+              Sign up
+            </a>
+            <a
+              href="/login?next=%2Fapp%23record"
+              className="font-body"
+              style={{
+                fontSize: '0.9375rem',
+                color: 'var(--color-ink)',
+                textDecoration: 'underline',
+                textUnderlineOffset: 3,
+                textDecorationColor: 'var(--color-rule)',
+              }}
+            >
+              Log in
+            </a>
+          </div>
         </div>
       )}
 
