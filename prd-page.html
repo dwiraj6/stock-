@@ -1,0 +1,1087 @@
+<title>stockಶಿಷ್ಯ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,600;112,700;125,800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Kannada:wght@500;700&display=swap">
+
+<style>
+/* ─── tokens: the product's own palette, light ─────────────────── */
+:root {
+  --paper:        #F2E5DE;
+  --paper-deep:   #E8D7CE;
+  --card:         #FBF6F3;
+  --ink:          #16181F;
+  --graphite:     #5A5E69;
+  --rule:         #D9C6BC;
+  --rule-soft:    #E5D5CB;
+  --madder:       #9B2C2C;
+  --verdigris:    #2F6F62;
+  --focus:        #2B4C9B;
+
+  --display: 'Archivo', 'Helvetica Neue', sans-serif;
+  --body:    'Newsreader', Georgia, serif;
+  --data:    'IBM Plex Mono', ui-monospace, monospace;
+  --knd:     'Noto Sans Kannada', 'Nirmala UI', 'Tunga', sans-serif;
+
+  --col: 780px;
+  --gut: clamp(20px, 5vw, 56px);
+}
+
+/* dark: guarded so an explicit light choice beats a dark OS */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:      #14151A;
+    --paper-deep: #1C1E25;
+    --card:       #1A1C22;
+    --ink:        #EFE6E0;
+    --graphite:   #9A9490;
+    --rule:       #33353D;
+    --rule-soft:  #26282F;
+    --madder:     #E08B84;
+    --verdigris:  #7FC7B0;
+    --focus:      #8FA8E8;
+  }
+}
+/* and again, so the toggle wins in the other direction */
+:root[data-theme="dark"] {
+  --paper:      #14151A;
+  --paper-deep: #1C1E25;
+  --card:       #1A1C22;
+  --ink:        #EFE6E0;
+  --graphite:   #9A9490;
+  --rule:       #33353D;
+  --rule-soft:  #26282F;
+  --madder:     #E08B84;
+  --verdigris:  #7FC7B0;
+  --focus:      #8FA8E8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16.5px;
+  line-height: 1.68;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.knd { font-family: var(--knd); font-weight: 700; font-size: 0.94em; }
+
+/* ─── the spine ──────────────────────────────────────────────────
+   A 1px rule down the content column, with a marker at every
+   section. It is the plumb line the product is named for, and it
+   encodes where the sections actually start. */
+.wrap {
+  max-width: calc(var(--col) + var(--gut) * 2);
+  margin: 0 auto;
+  padding: 0 var(--gut) 96px;
+  position: relative;
+}
+.wrap::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--gut) - 22px);
+  top: 0; bottom: 96px;
+  width: 1px;
+  background: var(--rule-soft);
+}
+@media (max-width: 720px) { .wrap::before { display: none; } }
+
+/* ─── masthead ───────────────────────────────────────────────── */
+header.top { padding: clamp(48px, 9vh, 96px) 0 0; }
+
+.wordmark {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 125;
+  font-weight: 800;
+  font-size: 1.0625rem;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.bob { display: inline-block; vertical-align: -3px; margin-right: 9px; }
+
+h1 {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 112;
+  font-weight: 700;
+  font-size: clamp(2rem, 5.4vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  margin: 30px 0 0;
+}
+.standfirst {
+  font-size: 1.1875rem;
+  line-height: 1.6;
+  color: var(--graphite);
+  max-width: 60ch;
+  margin: 20px 0 0;
+}
+.standfirst em { color: var(--ink); font-style: italic; }
+
+.meta {
+  font-family: var(--data);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--graphite);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.meta b { font-weight: 600; color: var(--ink); }
+.meta a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+.meta a:hover { border-bottom-color: var(--ink); }
+
+/* ─── contents ───────────────────────────────────────────────── */
+nav.toc {
+  margin: 44px 0 0;
+  padding: 26px 28px;
+  background: var(--paper-deep);
+  border-radius: 3px;
+}
+nav.toc p {
+  font-family: var(--data);
+  font-size: 0.6875rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  margin: 0 0 16px;
+}
+nav.toc ol {
+  margin: 0; padding: 0; list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 7px 26px;
+}
+nav.toc a {
+  font-size: 0.9375rem;
+  color: var(--ink);
+  text-decoration: none;
+  display: flex;
+  gap: 10px;
+}
+nav.toc a:hover { color: var(--madder); }
+nav.toc .n {
+  font-family: var(--data);
+  font-size: 0.75rem;
+  color: var(--graphite);
+  min-width: 1.6em;
+}
+
+/* ─── sections ───────────────────────────────────────────────── */
+section { margin-top: 68px; scroll-margin-top: 24px; }
+
+h2 {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 112;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.018em;
+  line-height: 1.2;
+  margin: 0;
+  text-wrap: balance;
+  position: relative;
+}
+/* the marker on the spine */
+h2::before {
+  content: '';
+  position: absolute;
+  left: -22px;
+  top: 0.62em;
+  width: 9px; height: 1px;
+  background: var(--ink);
+}
+@media (max-width: 720px) { h2::before { display: none; } }
+
+.sec-n {
+  font-family: var(--data);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  display: block;
+  margin-bottom: 9px;
+}
+
+h3 {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 112;
+  font-weight: 600;
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  margin: 40px 0 0;
+}
+
+p { margin: 15px 0 0; max-width: 66ch; }
+p.lede { font-size: 1.0625rem; }
+
+strong { font-weight: 600; }
+em.k { font-style: italic; color: var(--graphite); }
+
+ul, ol.plain { margin: 15px 0 0; padding-left: 1.15em; max-width: 66ch; }
+li { margin-top: 7px; }
+li::marker { color: var(--graphite); }
+
+a.inline { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+a.inline:hover { border-bottom-color: var(--madder); color: var(--madder); }
+
+code {
+  font-family: var(--data);
+  font-size: 0.875em;
+  background: var(--paper-deep);
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+/* ─── tables ─────────────────────────────────────────────────── */
+.tw { overflow-x: auto; margin-top: 22px; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--body);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+th {
+  font-family: var(--data);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  text-align: left;
+  padding: 0 16px 10px 0;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+td {
+  padding: 11px 16px 11px 0;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+td.id, td.num {
+  font-family: var(--data);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--graphite);
+}
+td.id { font-weight: 500; color: var(--ink); }
+.hit  { color: var(--verdigris); font-weight: 600; }
+.miss { color: var(--madder); font-weight: 600; }
+.lock { font-family: var(--data); font-size: 0.75rem; color: var(--madder); }
+
+/* ─── callouts ───────────────────────────────────────────────── */
+.note {
+  margin-top: 22px;
+  padding: 18px 22px;
+  background: var(--card);
+  border-left: 2px solid var(--rule);
+  border-radius: 0 3px 3px 0;
+  max-width: 66ch;
+}
+.note.thesis { border-left-color: var(--ink); }
+.note.warn   { border-left-color: var(--madder); }
+.note p:first-child { margin-top: 0; }
+.note .tag {
+  font-family: var(--data);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ─── the measured numbers ───────────────────────────────────── */
+.figs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 24px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+}
+.fig dt {
+  font-family: var(--data);
+  font-size: 1.875rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.fig dd {
+  margin: 9px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--graphite);
+}
+
+/* ─── file tree ──────────────────────────────────────────────── */
+pre.tree {
+  font-family: var(--data);
+  font-size: 0.75rem;
+  line-height: 1.72;
+  background: var(--card);
+  border: 1px solid var(--rule-soft);
+  border-radius: 3px;
+  padding: 24px 22px;
+  margin-top: 22px;
+  overflow-x: auto;
+  tab-size: 2;
+}
+pre.tree b { font-weight: 600; color: var(--ink); }
+pre.tree i { font-style: normal; color: var(--graphite); }
+pre.tree u { text-decoration: none; color: var(--madder); font-weight: 500; }
+
+pre.cmd {
+  font-family: var(--data);
+  font-size: 0.8125rem;
+  line-height: 1.85;
+  background: var(--paper-deep);
+  border-radius: 3px;
+  padding: 20px 22px;
+  margin-top: 22px;
+  overflow-x: auto;
+}
+pre.cmd i { font-style: normal; color: var(--graphite); }
+
+footer {
+  margin-top: 84px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--data);
+  font-size: 0.75rem;
+  color: var(--graphite);
+  line-height: 1.7;
+}
+
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <div class="wordmark">
+    <svg class="bob" width="13" height="19" viewBox="0 0 48 72" aria-hidden="true">
+      <path d="M24 0 V13" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <path d="M24 11 C14.5 15.5 9.5 23 9.5 32 C9.5 43 15.5 53.5 24 64 C32.5 53.5 38.5 43 38.5 32 C38.5 23 33.5 15.5 24 11 Z" fill="currentColor"/>
+      <ellipse cx="17.6" cy="33" rx="4.4" ry="4.8" fill="var(--paper)"/>
+      <ellipse cx="30.4" cy="33" rx="4.4" ry="4.8" fill="var(--paper)"/>
+      <circle cx="17.6" cy="33" r="2.15" fill="currentColor"/>
+      <circle cx="30.4" cy="33" r="2.15" fill="currentColor"/>
+    </svg>stock<span class="knd">ಶಿಷ್ಯ</span>
+  </div>
+
+  <h1>Product Requirements</h1>
+
+  <p class="standfirst">
+    An instrument that measures the distance between how confident you <em>feel</em> about a
+    stock and how confident the <em>data</em> is — then writes both numbers down, before the
+    outcome exists, so that a year later it can be checked who was right.
+  </p>
+
+  <div class="meta">
+    <span><b>v1.0</b></span>
+    <span>Shipped, in production</span>
+    <span>22 Aug 2026</span>
+    <span><a href="https://stock-six-sand.vercel.app">Live</a></span>
+    <span><a href="https://github.com/dwiraj6/stock-">Source</a></span>
+    <span><b>147</b> checks passing</span>
+  </div>
+
+  <nav class="toc">
+    <p>Contents</p>
+    <ol>
+      <li><a href="#s1"><span class="n">1</span><span>The problem</span></a></li>
+      <li><a href="#s2"><span class="n">2</span><span>Principles</span></a></li>
+      <li><a href="#s3"><span class="n">3</span><span>Users</span></a></li>
+      <li><a href="#s4"><span class="n">4</span><span>Scope</span></a></li>
+      <li><a href="#s5"><span class="n">5</span><span>Functional requirements</span></a></li>
+      <li><a href="#s6"><span class="n">6</span><span>Non-functional</span></a></li>
+      <li><a href="#s7"><span class="n">7</span><span>Architecture</span></a></li>
+      <li><a href="#s8"><span class="n">8</span><span>Design system</span></a></li>
+      <li><a href="#s9"><span class="n">9</span><span>Quality gates</span></a></li>
+      <li><a href="#s10"><span class="n">10</span><span>Known limitations</span></a></li>
+      <li><a href="#s11"><span class="n">11</span><span>Open items</span></a></li>
+      <li><a href="#s12"><span class="n">12</span><span>Compliance</span></a></li>
+      <li><a href="#sa"><span class="n">A</span><span>Directory</span></a></li>
+      <li><a href="#sb"><span class="n">B</span><span>Commands</span></a></li>
+    </ol>
+  </nav>
+</header>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s1">
+  <span class="sec-n">Section 01</span>
+  <h2>The problem is calibration, not information</h2>
+
+  <p class="lede">
+    An Indian retail investor deciding whether to put ₹50,000 into a stock has access to an
+    enormous amount of information and almost no calibration.
+  </p>
+
+  <p>
+    Every tool in the category outputs <strong>confidence</strong> — a BUY rating, a target
+    price, a 9/10 score, a “strong fundamentals” badge. Almost none output
+    <strong>uncertainty</strong>, and none are ever scored against what happened next. The
+    investor has no way to tell a well-founded belief from a confident-feeling one, and no
+    feedback loop that would let them learn the difference.
+  </p>
+
+  <h3>Why this is hard to fix honestly</h3>
+  <p>
+    The obvious product is a better rating engine. That fails, and this project has the
+    measurements to prove it. Six independent attempts to forecast direction, each scored
+    on point-in-time data the model never saw:
+  </p>
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr><th>Attempt</th><th>Brier</th><th>Skill vs base rate</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GBM with estimated drift</td><td class="num">0.3524</td><td class="num miss">−51.0%</td></tr>
+        <tr><td>Drift shrunk to 50%</td><td class="num">0.3040</td><td class="num miss">−30.3%</td></tr>
+        <tr><td>Drift shrunk to 25%</td><td class="num">0.2801</td><td class="num miss">−20.1%</td></tr>
+        <tr><td>Zero drift</td><td class="num">0.2658</td><td class="num miss">−13.9%</td></tr>
+        <tr><td><strong>Flat +8%/yr — shipped</strong></td><td class="num">0.2412</td><td class="num miss">−3.4%</td></tr>
+        <tr><td>5 price factors, held-out</td><td class="num">—</td><td class="num miss">−7.0%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note thesis">
+    <span class="tag">The finding the product is built on</span>
+    <p>
+      <strong>None beat the base rate.</strong> That is not a limitation to apologise for —
+      it dictates the entire design. A tool that cannot predict direction must be built
+      around what it <em>can</em> measure: the width of the range, and the gap between that
+      and what you believed.
+    </p>
+  </div>
+
+  <dl class="figs">
+    <div class="fig"><dt class="hit">87%</dt><dd>of 120 point-in-time forecasts landed inside the 80% band</dd></div>
+    <div class="fig"><dt class="miss">−3.4%</dt><dd>skill on direction across 240 forecasts — worse than guessing</dd></div>
+    <div class="fig"><dt>2,291</dt><dd>NSE EQ-series symbols covered</dd></div>
+    <div class="fig"><dt>10,000</dt><dd>Monte Carlo paths per measurement, seeded and reproducible</dd></div>
+  </dl>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s2">
+  <span class="sec-n">Section 02</span>
+  <h2>Principles</h2>
+  <p>These are load-bearing. Every decision in this document traces to one of them.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>#</th><th>Principle</th><th>What it rules out</th></tr></thead>
+      <tbody>
+        <tr><td class="id">1</td><td>Publish the misses in the same size type as the hits</td><td>Burying −3.4% in a footnote</td></tr>
+        <tr><td class="id">2</td><td>Never produce an unfalsifiable output</td><td>“You are a Moderate Investor”; a 1–10 rating nobody can score</td></tr>
+        <tr><td class="id">3</td><td>A decision is written before the outcome exists, and never revised</td><td>Rewriting history at signup — see <a class="inline" href="#s7">§7.4</a></td></tr>
+        <tr><td class="id">4</td><td>Degrade honestly, never silently</td><td>Blank screens, endless spinners, imputed data</td></tr>
+        <tr><td class="id">5</td><td>One moment of motion, then stillness</td><td>Ambient animation beside a chart of someone’s money</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s3">
+  <span class="sec-n">Section 03</span>
+  <h2>Users</h2>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Segment</th><th>Need</th><th>What they do here</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Primary</strong><br><em class="k">Retail investor, 22–40, ₹10k–₹5L invested</em></td><td>“Am I right about this stock, or does it just feel that way?”</td><td>States conviction, sees the gap, records the decision</td></tr>
+        <tr><td><strong>Secondary</strong><br><em class="k">First-time investor</em></td><td>“How much can I actually lose?”</td><td>Reads the band and the loss odds; often never records</td></tr>
+        <tr><td><strong>Tertiary</strong><br><em class="k">Evaluator, reviewer, judge</em></td><td>“Is this real, or a demo?”</td><td>Reads the methodology and the calibration exhibits</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <strong>Explicit non-users:</strong> anyone seeking trade recommendations, anyone
+    executing trades, institutions, and anyone under 18.
+  </p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s4">
+  <span class="sec-n">Section 04</span>
+  <h2>Scope</h2>
+
+  <h3>In scope — shipped</h3>
+  <ul>
+    <li>Measurement of a single long equity position, NSE-listed</li>
+    <li>Three horizons: 2 months, 6 months, 12 months — lumpsum and 12-month SIP</li>
+    <li>Conviction capture and gap analysis</li>
+    <li>Grounded conversational assistant (<span class="knd">ಶಿಷ್ಯ</span>)</li>
+    <li>Personal track record with Brier scoring</li>
+    <li>Risk profiling as constraint-checking</li>
+    <li>Accounts — Google and email/password</li>
+    <li>Published, reproducible validation exhibits</li>
+  </ul>
+
+  <h3>Out of scope</h3>
+  <p>
+    Buy/sell/hold recommendations are <strong>permanently</strong> out, not “later”. Also
+    out: portfolio construction, options and F&amp;O, order execution, broker integration,
+    mutual funds, bonds, crypto, tax, KYC, and real-time tick data — the product uses
+    delayed and close data by design.
+  </p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s5">
+  <span class="sec-n">Section 05</span>
+  <h2>Functional requirements</h2>
+
+  <h3>5.1 · Entry — stock selection and conviction</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td class="id">E-1</td><td>Search across 2,291 NSE EQ symbols by ticker or company name, fuzzy-matched</td></tr>
+        <tr><td class="id">E-2</td><td>An unlisted query returns typed <code>SYMBOL_NOT_FOUND</code> with exactly 3 ranked suggestions and a stated next action</td></tr>
+        <tr><td class="id">E-3</td><td>Amount ₹100–₹10,00,00,000, formatted in the Indian numbering system</td></tr>
+        <tr><td class="id">E-4</td><td>Conviction captured 0–100, phrased as <em class="k">odds of ending a year from now with more money than you put in</em></td></tr>
+        <tr><td class="id">E-5</td><td>The entry screen is fully usable <strong>signed out</strong> — search, amount and conviction all work before any account exists</td></tr>
+        <tr><td class="id">E-6</td><td>The gate is stated before the click, not after it</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.2 · Simulation</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td class="id">S-1</td><td>Geometric Brownian Motion, 10,000 paths, 252 trading days/year</td></tr>
+        <tr><td class="id">S-2</td><td>Seeded <code>mulberry32</code> PRNG keyed on symbol + IST date — identical output for identical input on the same day</td></tr>
+        <tr><td class="id">S-3</td><td>Volatility from <strong>adjusted close</strong> only; raw OHLC used exclusively for candle rendering</td></tr>
+        <tr><td class="id">S-4</td><td>Returns winsorised at the 1st/99th percentile before estimation</td></tr>
+        <tr><td class="id">S-5</td><td>Drift is a flat <strong>+8%/yr</strong>, not estimated per stock — justified by the table in §1 and documented in source</td></tr>
+        <tr><td class="id">S-6</td><td>Odds are <strong>counted</strong>, not derived from percentiles: profit, lose10, lose20, gain20, beatFd</td></tr>
+        <tr><td class="id">S-7</td><td>Minimum 250 trading days; below that the payload carries an explicit warning</td></tr>
+        <tr><td class="id">S-8</td><td>Requires an authenticated session <span class="lock">🔒</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.3 · Score and gap</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td class="id">G-1</td><td>Score composed of valuation, volatility, financial health, momentum, data quality</td></tr>
+        <tr><td class="id">G-2</td><td>An unreported metric renders as <em class="k">“not available”</em> — never zero, never imputed, never silently dropped</td></tr>
+        <tr><td class="id">G-3</td><td>The headline is the odds gap in percentage points: stated conviction minus simulated probability</td></tr>
+        <tr><td class="id">G-4</td><td>Sector medians built from 499 NIFTY 500 constituents</td></tr>
+        <tr><td class="id">G-5</td><td>Band width as a share of stake is surfaced — it is the one quantity the backtest validates</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.4 · <span class="knd">ಶಿಷ್ಯ</span> — the assistant</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td class="id">C-1</td><td>Answers only from the grounded context of the page in front of the user</td></tr>
+        <tr><td class="id">C-2</td><td><strong>Never derives a number.</strong> Regression: it once invented “₹10,000 every month” for a ₹50,000/12 SIP</td></tr>
+        <tr><td class="id">C-3</td><td>Refuses buy/sell/hold advice, and says why</td></tr>
+        <tr><td class="id">C-4</td><td>Cites metrics inline, rendered as links that highlight the referenced module</td></tr>
+        <tr><td class="id">C-5</td><td>Streams token-by-token; first token under 4s <span class="hit">(1.5–1.8s measured)</span></td></tr>
+        <tr><td class="id">C-6</td><td>Opening questions derived from the stock’s own payload, and guarded — offered only when the number they ask about exists</td></tr>
+        <tr><td class="id">C-7</td><td>5-model chain; a dead model is cooled down 5 min, shared across serverless instances</td></tr>
+        <tr><td class="id">C-8</td><td>Free-tier exhaustion is stated precisely, with what still works</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.5 · Track record</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td class="id">T-1</td><td>Written at the moment of measurement: symbol, price, user odds, model odds, horizon</td></tr>
+        <tr><td class="id">T-2</td><td>Records are <strong>immutable</strong> — never updated after creation</td></tr>
+        <tr><td class="id">T-3</td><td>An unmatured position shows as <em class="k">open</em>, scored neither right nor wrong</td></tr>
+        <tr><td class="id">T-4</td><td>On maturity, scored with Brier — the same statistic the model applies to itself</td></tr>
+        <tr><td class="id">T-5</td><td>The model’s own record is shown alongside, so the screen is meaningful on day one</td></tr>
+        <tr><td class="id">T-6</td><td>Anonymous pre-account history is adoptable <strong>once</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.6 · Risk profiling</h3>
+  <div class="note">
+    <span class="tag">The design call worth defending</span>
+    <p>
+      Almost every risk profiler asks five questions, adds up points, and announces that you
+      are a Moderate Investor. That output is unfalsifiable — it can never be checked against
+      what happens next — which makes it exactly the kind of unearned confidence
+      <strong>Principle 2</strong> exists to forbid.
+    </p>
+    <p>
+      So there is no label. Four questions collect three <em>constraints</em>, and each is
+      checked against the simulation already running.
+    </p>
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td class="id">R-1</td><td>Four questions: purpose, horizon, maximum tolerable loss in ₹, behaviour on a 20% fall</td></tr>
+        <tr><td class="id">R-2</td><td><strong>No label is produced.</strong></td></tr>
+        <tr><td class="id">R-3</td><td>Each answer is checked against the running simulation and reported as a finding</td></tr>
+        <tr><td class="id">R-4</td><td>The behavioural answer is <strong>priced</strong>: “I would sell” + a counted 8% chance of a 20% fall = <em class="k">“in roughly one future in 13 you would be selling at the bottom”</em></td></tr>
+        <tr><td class="id">R-5</td><td>Findings never say buy, sell, hold or suitable — asserted in the suite</td></tr>
+        <tr><td class="id">R-6</td><td>Even the all-clear refuses to imply the stock is a good bet</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.7 · Validation exhibits</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Exhibit</th><th>Design</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Band calibration</td><td class="num">20 stocks × 6 windows = 120</td><td class="num hit">87% inside the 80% band</td></tr>
+        <tr><td>Direction calibration</td><td class="num">240 forecasts</td><td class="num miss">Brier 0.2413 vs 0.2333 → −3.4%</td></tr>
+        <tr><td>Factor test</td><td class="num">5 factors, 300 train / 150 held-out</td><td class="num miss">best −7.0%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    All three are committed JSON, regenerable by a documented script. Every statistic shown
+    in the UI is <strong>read from these files at build time</strong> — the suite fails if a
+    page and its exhibit disagree.
+  </p>
+
+  <h3>5.8 · Accounts</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td class="id">A-1</td><td>Google sign-in via Firebase: popup → ID token → app session</td></tr>
+        <tr><td class="id">A-2</td><td>Email + password, with a 6-digit code when SMTP is configured</td></tr>
+        <tr><td class="id">A-3</td><td>Passwords hashed with scrypt, per-user salt, timing-safe compare</td></tr>
+        <tr><td class="id">A-4</td><td>Sessions are 256-bit random tokens, <strong>stored hashed</strong>, revocable, HttpOnly/Secure/SameSite=Lax</td></tr>
+        <tr><td class="id">A-5</td><td>Signup and login are not an account-existence oracle — identical in message <em>and</em> in timing</td></tr>
+        <tr><td class="id">A-6</td><td>The gate is on <strong>running the analysis</strong>, not on entering the app</td></tr>
+        <tr><td class="id">A-7</td><td>Enforced server-side on <code>/api/simulate</code> and <code>/api/score</code> — the UI gate is not the security boundary</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s6">
+  <span class="sec-n">Section 06</span>
+  <h2>Non-functional requirements</h2>
+  <p>Every row is measured, not asserted. The suite fails if any regresses.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Area</th><th>Requirement</th><th>Measured</th></tr></thead>
+      <tbody>
+        <tr><td>Scroll</td><td>No frame below 30fps</td><td class="num hit">0/246 · worst 16.7ms</td></tr>
+        <tr><td>Layout stability</td><td>CLS under 0.1 everywhere</td><td class="num hit">0.011 · 0.040 · 0.039</td></tr>
+        <tr><td>Chat latency</td><td>First token under 4s</td><td class="num hit">1.5–1.8s</td></tr>
+        <tr><td>Animation</td><td>transform / opacity only</td><td class="num hit">asserted</td></tr>
+        <tr><td>Reduced motion</td><td>Finished state, never a stalled one</td><td class="num hit">asserted</td></tr>
+        <tr><td>Mobile</td><td>Zero horizontal bleed at 390px</td><td class="num hit">0px</td></tr>
+        <tr><td>Resilience</td><td>Full render with every upstream blocked</td><td class="num hit">asserted</td></tr>
+        <tr><td>Accessibility</td><td>One live-region announcement per loading area</td><td class="num hit">asserted</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s7">
+  <span class="sec-n">Section 07</span>
+  <h2>Architecture</h2>
+
+  <p class="lede">
+    Next.js 14.2 App Router · React 18.3 · TypeScript 5.6 · Tailwind v4 · MongoDB Atlas ·
+    Gemini · Firebase Auth · Vercel
+  </p>
+
+  <h3>7.1 · Dependency choices worth defending</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Choice</th><th>Reasoning</th></tr></thead>
+      <tbody>
+        <tr><td>Hand-rolled auth, not Auth.js</td><td>No cryptography is invented — scrypt, CSPRNG, SHA-256, <code>jose</code> for JWKS. What is hand-written is plumbing, which keeps the surface in four readable files. Auth.js v5 is beta and its Credentials provider fits an email-OTP flow badly.</td></tr>
+        <tr><td>No <code>firebase-admin</code></td><td>A Firebase ID token is an ordinary RS256 JWT at a standard JWKS endpoint. <code>jose</code> verifies it in a dozen lines, with no service-account private key to hold or leak.</td></tr>
+        <tr><td>Plain SMTP, not an email SDK</td><td>Free tiers of transactional providers only deliver to your own address until a domain is verified — which fails <em>silently</em> for every other user.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7.2 · Data flow</h3>
+  <pre class="cmd">Yahoo Finance <i>(primary)</i>  ┐
+Twelve Data <i>(fallback)</i>    ├─→ market-data ─→ Mongo cache ─→ route ─→ client
+Google News RSS             ┘            │
+                                         └─ <i>stale-while-revalidate:</i>
+                                            <i>a stale doc is served instantly,</i>
+                                            <i>refreshed in the background</i></pre>
+  <p>
+    Cache keys are namespaced by <code>CACHE_SCHEMA</code> (<code>v4</code>), so a payload
+    shape change retires the whole cache at once instead of serving a mix of old and new.
+  </p>
+
+  <h3>7.3 · Cache TTLs</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Tier</th><th>TTL</th><th>Tier</th><th>TTL</th></tr></thead>
+      <tbody>
+        <tr><td>quotes</td><td class="num">300s</td><td>simulations</td><td class="num">86,400s</td></tr>
+        <tr><td>stocks</td><td class="num">900s</td><td>model health</td><td class="num">300s</td></tr>
+        <tr><td>news</td><td class="num">900s</td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7.4 · Storage design — the immutability constraint</h3>
+  <p>Principle 3 dictates two decisions that look odd without it.</p>
+  <ul>
+    <li><strong>Decision documents are never rewritten.</strong> When an account adopts an
+      anonymous browser history, ownership resolves <em>at read time</em> against a list on
+      the user. Rewriting the owner field on historical rows would make “written before the
+      outcome and never revised” literally false.</li>
+    <li><strong>An anonymous id can be claimed once.</strong> The first account to adopt it
+      owns it; every later claim is refused. A leaked id therefore cannot be used to attach
+      to — or steal — a record that already belongs to someone.</li>
+  </ul>
+
+  <div class="note warn">
+    <span class="tag">Do not “tidy” these</span>
+    <p>
+      Storage keys were <strong>deliberately not renamed</strong> when the product became
+      stock<span class="knd">ಶಿಷ್ಯ</span>. The Mongo database is still <code>plumbline</code>,
+      the session cookie <code>plumbline_session</code>, the anonymous id
+      <code>plumbline.who</code>. Renaming them does not rename anything — it points the app
+      at a new, empty place and orphans every account and every recorded decision. Each
+      carries a source comment saying so.
+    </p>
+  </div>
+
+  <h3>7.5 · Environment</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Variable</th><th>Required</th><th>Effect if absent</th></tr></thead>
+      <tbody>
+        <tr><td class="id">MONGODB_URI</td><td class="num hit">yes</td><td>App will not boot</td></tr>
+        <tr><td class="id">GEMINI_API_KEY</td><td class="num hit">yes</td><td>App will not boot</td></tr>
+        <tr><td class="id">TWELVEDATA_API_KEY</td><td class="num hit">yes</td><td>App will not boot</td></tr>
+        <tr><td class="id">NEXT_PUBLIC_FIREBASE_*</td><td class="num">—</td><td>Google button falls back to direct OAuth, or hides</td></tr>
+        <tr><td class="id">GOOGLE_CLIENT_ID / _SECRET</td><td class="num">—</td><td>Direct OAuth path unavailable</td></tr>
+        <tr><td class="id">SMTP_*</td><td class="num">—</td><td>Email verification unavailable; signup says so</td></tr>
+        <tr><td class="id">ALLOW_UNVERIFIED_SIGNUP</td><td class="num">—</td><td><code>1</code> enables instant signup without SMTP</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    All values are <strong>trimmed and unquoted before validation</strong> — a trailing
+    newline pasted into a hosting dashboard once cost an afternoon of debugging, because the
+    value looked perfectly correct on screen.
+  </p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s8">
+  <span class="sec-n">Section 08</span>
+  <h2>Design system</h2>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Token</th><th>Value</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td class="id">paper / deep / card</td><td class="num">#F2E5DE · #E8D7CE · #FBF6F3</td><td>Grounds</td></tr>
+        <tr><td class="id">ink / graphite</td><td class="num">#16181F · #5A5E69</td><td>Text</td></tr>
+        <tr><td class="id">madder / verdigris</td><td class="num">#9B2C2C · #2F6F62</td><td>Loss / gain — semantic only</td></tr>
+        <tr><td class="id">rule</td><td class="num">#D9C6BC</td><td>Hairlines, never shadows</td></tr>
+        <tr><td class="id">type</td><td class="num">Archivo · Newsreader · IBM Plex Mono</td><td>Display · body · data</td></tr>
+        <tr><td class="id">kannada</td><td class="num">Noto Sans Kannada</td><td>Archivo has no Kannada glyphs — the name would render as tofu</td></tr>
+        <tr><td class="id">radius</td><td class="num">3px</td><td>Everywhere</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>8.1 · The mascot</h3>
+  <p>
+    <span class="knd">ಶಿಷ್ಯ</span> is <strong>the plumb bob with a face</strong> — not a new
+    character. The bob is already the signature object (the instrument that shows what is
+    actually vertical, after the wobble stops) and is already shaped like a small hooded
+    figure. The hanging cord doubles as a śikhā, the tuft a student traditionally wears.
+  </p>
+  <p>
+    Five states, driven by real application state: <em class="k">idle</em> ·
+    <em class="k">thinking</em> while an answer streams · <em class="k">speaking</em> ·
+    <em class="k">pleased</em> for one beat after an answer lands · <em class="k">curious</em>
+    when an observation is waiting. It never loops or idles.
+  </p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s9">
+  <span class="sec-n">Section 09</span>
+  <h2>Quality gates</h2>
+  <p><code>npm run verify</code> — <strong>147 end-to-end checks, all passing.</strong></p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>§</th><th>Covers</th></tr></thead>
+      <tbody>
+        <tr><td class="id">0–0b</td><td>Suite session; the server-side gate on the measurement</td></tr>
+        <tr><td class="id">1–3</td><td>Market-closed path; unlisted symbol; TradingView BSE feed</td></tr>
+        <tr><td class="id">4–7</td><td>Error paths; provenance; null handling; simulation integrity</td></tr>
+        <tr><td class="id">8–11</td><td>Calibration; chat refusals; validated headline; both exhibits</td></tr>
+        <tr><td class="id">12–12b</td><td>Track record; anonymous adoption and claim-once</td></tr>
+        <tr><td class="id">13–14</td><td>Chat cannot derive a number; airplane mode</td></tr>
+        <tr><td class="id">14–16</td><td>Landing page; authentication; Firebase</td></tr>
+        <tr><td class="id">17–19</td><td>Two password accounts coexist; risk profiling; skeleton CLS</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    Supporting scripts verify that the volatility estimate is reproducible against an
+    independently-written implementation to <code>0.000e+0</code>, that every market state
+    including the UTC-server trap resolves correctly, and that symbol ranking survives the
+    SODEXO case.
+  </p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s10">
+  <span class="sec-n">Section 10</span>
+  <h2>Known limitations</h2>
+  <p>Stated because the product’s credibility depends on stating them.</p>
+  <ol class="plain">
+    <li><strong>Direction is not predicted</strong>, and that is a measured finding across six attempts — not a missing feature.</li>
+    <li><strong>Survivorship bias.</strong> The backtest universe is large-cap NSE names that still trade today; delisted names never entered it.</li>
+    <li><strong>Overlapping windows.</strong> Twelve-month forecasts from six windows are not independent, so the confidence interval is optimistic.</li>
+    <li><strong>One market regime.</strong> A crash inside the test window would change every number in §1.</li>
+    <li><strong>Fundamentals are not point-in-time.</strong> Yahoo serves only <em>today’s</em> P/E and book value, so fundamental factors were excluded from the factor test rather than tested with look-ahead bias.</li>
+    <li><strong>GBM assumes lognormal returns.</strong> Real returns have fatter tails, so the band is, if anything, too narrow at the extremes.</li>
+    <li><strong>Free-tier ceilings.</strong> Gemini allows roughly 100 questions/day across the model chain; Atlas throttles connection bursts.</li>
+    <li><strong><code>ALLOW_UNVERIFIED_SIGNUP=1</code> disables password reset</strong>, because nothing can reach a mailbox.</li>
+  </ol>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s11">
+  <span class="sec-n">Section 11</span>
+  <h2>Open items</h2>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Item</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Rotate all three API credentials</strong></td><td>Exposed in plain text during development</td></tr>
+        <tr><td>Publish the Google consent screen</td><td>While in <em>Testing</em>, only listed test users can sign in</td></tr>
+        <tr><td>Add <code>SMTP_*</code> for password reset</td><td>Optional; Google sign-in works without it</td></tr>
+        <tr><td>Enable Gemini billing</td><td>Lifts the ~100/day ceiling; Flash costs cents at demo volume</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="s12">
+  <span class="sec-n">Section 12</span>
+  <h2>Compliance posture</h2>
+  <ul>
+    <li>Educational tool. <strong>Not</strong> SEBI-registered investment advice.</li>
+    <li>Recommends no trades; the word “buy” is asserted absent from assistant output.</li>
+    <li>Holds no money; no broker integration; no order path.</li>
+    <li>Stores an email address and nothing else — no phone, no PAN, no KYC.</li>
+    <li>Every screen carries the disclaimer; the assistant restates it on request.</li>
+  </ul>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="sa">
+  <span class="sec-n">Appendix A</span>
+  <h2>Directory structure</h2>
+
+<pre class="tree"><b>stockಶಿಷ್ಯ/</b>
+│
+├── <b>app/</b>                                  <i>Next.js App Router</i>
+│   ├── layout.tsx                        <i>Root layout, fonts, metadata</i>
+│   ├── page.tsx                          <i>/ — landing (static, reads exhibits)</i>
+│   ├── landing-client.tsx                <i>Landing client boundary</i>
+│   ├── app/page.tsx                      <i>/app — the instrument</i>
+│   ├── login/
+│   │   ├── page.tsx                      <i>/login — server shell</i>
+│   │   └── login-client.tsx              <i>Suspense + search params</i>
+│   │
+│   └── <b>api/</b>
+│       ├── search/route.ts               <i>Symbol search, fuzzy, ranked</i>
+│       ├── quote/[symbol]/route.ts       <i>Live or last-close quote</i>
+│       ├── stock/[symbol]/route.ts       <i>History + fundamentals</i>
+│       ├── news/[symbol]/route.ts        <i>Google News RSS, filtered + audited</i>
+│       ├── simulate/route.ts             <i>Monte Carlo</i>        <u>🔒</u>
+│       ├── score/route.ts                <i>Component score</i>    <u>🔒</u>
+│       ├── chat/route.ts                 <i>ಶಿಷ್ಯ, streaming</i>
+│       ├── decisions/route.ts            <i>Track record</i>       <u>🔒</u>
+│       ├── profile/route.ts              <i>Risk profile</i>       <u>🔒</u>
+│       ├── calibration/route.ts          <i>Published exhibits</i>
+│       ├── recent/route.ts               <i>Recently measured tickers</i>
+│       ├── health/route.ts               <i>Env + Mongo diagnostics</i>
+│       └── auth/
+│           ├── signup · verify · resend  <i>Email + 6-digit code</i>
+│           ├── login · logout · me       <i>Password, session, identity</i>
+│           ├── forgot · reset            <i>Password reset by code</i>
+│           ├── adopt                     <i>Claim anonymous history</i>
+│           ├── firebase                  <i>Firebase ID token → session</i>
+│           └── google/{start,callback}   <i>Direct OAuth + PKCE (fallback)</i>
+│
+├── <b>lib/</b>                                  <i>Server-side</i>
+│   ├── simulate.ts                       <i>GBM, 10k paths, seeded PRNG</i>
+│   ├── sim-payload.ts                    <i>ONE builder, route + prewarm</i>
+│   ├── score.ts                          <i>Component scoring, null-safe</i>
+│   ├── market-data.ts                    <i>Yahoo → Twelve Data → cache</i>
+│   ├── market-hours.ts                   <i>IST sessions, holidays, UTC trap</i>
+│   ├── symbols.ts                        <i>2,291 symbols, TradingView map</i>
+│   ├── news.ts                           <i>RSS, relevance filter, audit</i>
+│   ├── chat.ts                           <i>Model chain, cooldowns, prompt</i>
+│   ├── decisions.ts                      <i>Immutable records, Brier</i>
+│   ├── risk-profile.ts                   <i>Constraint checking (shared)</i>
+│   ├── users.ts                          <i>Accounts, sessions, throttle</i>
+│   ├── auth.ts                           <i>scrypt, tokens, OTP, timing-safe</i>
+│   ├── current-user.ts                   <i>Session cookie → user</i>
+│   ├── require-auth.ts                   <i>Server-side gate</i>
+│   ├── signin.ts                         <i>Session + history adoption</i>
+│   ├── google.ts                         <i>OAuth: state, PKCE, JWKS</i>
+│   ├── firebase-verify.ts                <i>Firebase ID token verification</i>
+│   ├── mailer.ts                         <i>SMTP, templates</i>
+│   ├── mongo.ts                          <i>Pooled client, cache tier, TTLs</i>
+│   ├── exhibits.ts                       <i>Backtest files → page stats</i>
+│   ├── env.ts                            <i>Validation, trimming</i>
+│   ├── api.ts                            <i>Typed response contract</i>
+│   └── types.ts                          <i>Shared types, error codes</i>
+│
+├── <b>src/</b>                                  <i>Client</i>
+│   ├── App.jsx                           <i>Phase machine, session, gate</i>
+│   ├── index.css                         <i>Tokens, base, skeletons, Kannada</i>
+│   │
+│   ├── <b>screens/</b>
+│   │   ├── Entry.jsx                     <i>Search, amount, conviction</i>
+│   │   ├── Computing.jsx                 <i>Sequenced work log</i>
+│   │   ├── Results.jsx                   <i>Module composition</i>
+│   │   ├── Methodology.jsx               <i>How it works, in full</i>
+│   │   ├── TrackRecord.jsx               <i>Your record vs the model’s</i>
+│   │   └── RiskProfile.jsx               <i>Four questions, no label</i>
+│   │
+│   ├── <b>modules/</b>
+│   │   ├── GapModule.jsx                 <i>The headline: felt vs measured</i>
+│   │   ├── FanChart.jsx                  <i>10,000 paths as ink</i>
+│   │   ├── CandleChart.jsx               <i>Own-data OHLC</i>
+│   │   ├── StockModule.jsx               <i>Fundamentals + TradingView</i>
+│   │   ├── ScoreModule.jsx               <i>Component breakdown</i>
+│   │   ├── SipModule.jsx                 <i>Lumpsum vs SIP</i>
+│   │   ├── NewsModule.jsx                <i>Headlines, with audit</i>
+│   │   ├── CalibrationModule.jsx         <i>Does this model work?</i>
+│   │   ├── SituationCheck.jsx            <i>Profile vs simulation</i>
+│   │   └── VerdictModule.jsx             <i>The closing statement</i>
+│   │
+│   ├── <b>components/</b>
+│   │   ├── Shishya.jsx                   <u>★ The mascot, 5 states</u>
+│   │   ├── PlumbCompanion.jsx            <i>Docked mascot + observation</i>
+│   │   ├── ConversationPanel.jsx         <i>Chat, streaming, citations</i>
+│   │   ├── Chrome.jsx                    <i>Masthead, footer, identity</i>
+│   │   ├── Skeleton.jsx                  <i>Loading placeholders</i>
+│   │   ├── Inputs.jsx · Rail.jsx         <i>Amount, conviction rail</i>
+│   │   ├── States.jsx                    <i>Failed, empty, stale-cache</i>
+│   │   └── marks/Marks.jsx               <i>Ticks, arrows, primitives</i>
+│   │
+│   ├── <b>auth/</b>
+│   │   ├── AuthScreen.jsx                <i>5 steps in one screen</i>
+│   │   ├── CodeInput.jsx                 <i>6 boxes, paste, autofill</i>
+│   │   └── auth.css · constants.js
+│   │
+│   ├── <b>landing/</b>
+│   │   ├── Landing.jsx                   <i>Hero → problem → fan → name →</i>
+│   │   │                                 <i>evidence → receipt → close</i>
+│   │   └── landing.css
+│   │
+│   └── <b>lib/</b>
+│       ├── client.js                     <i>API client, typed errors</i>
+│       ├── auth-client.js                <i>Auth calls</i>
+│       ├── firebase-client.js            <i>Popup → ID token (dynamic)</i>
+│       ├── adapt.js                      <i>API shape → view shape</i>
+│       ├── starters.js                   <i>Chat openers, derived + guarded</i>
+│       ├── observe.js                    <i>Mascot observations, weighted</i>
+│       ├── format.js                     <i>₹, lakh/crore, null-safe</i>
+│       └── viz.js · highlight.js · hooks.js
+│
+├── <b>data/</b>                                 <i>Committed exhibits + reference</i>
+│   ├── calibration.json                  <i>120 band forecasts, 87%</i>
+│   ├── probability-calibration.json      <i>240 direction forecasts, −3.4%</i>
+│   ├── factor-test.json                  <i>5 factors, held-out</i>
+│   ├── sector-medians.json               <i>499 NIFTY 500 constituents</i>
+│   ├── nse-symbols.csv                   <i>2,291 EQ symbols</i>
+│   └── nifty500.csv · symbol-aliases.json · tv-overrides.json
+│
+├── <b>scripts/</b>
+│   ├── verify.mjs                        <u>147 end-to-end checks</u>
+│   ├── backtest.ts                       <i>Band calibration</i>
+│   ├── calibrate-probabilities.ts        <i>Direction + Brier</i>
+│   ├── factor-test.ts                    <i>5 factors, train/test split</i>
+│   ├── build-sector-medians.ts           <i>NIFTY 500 medians</i>
+│   ├── prewarm.ts                        <i>Cache the demo tickers</i>
+│   ├── verify-sigma.ts                   <i>σ vs independent implementation</i>
+│   └── test-market-hours.ts · test-symbols.ts
+│
+├── PRD.md · README.md
+├── next.config.js · tsconfig.json · postcss.config.mjs
+├── package.json
+└── .env.example                          <i>Every variable, documented</i></pre>
+
+  <p><u style="color:var(--madder);text-decoration:none">🔒</u> requires an authenticated session, enforced server-side.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section id="sb">
+  <span class="sec-n">Appendix B</span>
+  <h2>Commands</h2>
+
+<pre class="cmd">npm run dev              <i># localhost:3000</i>
+npm run build            <i># production build</i>
+npm run verify           <i># 147 end-to-end checks</i>
+npm run prewarm          <i># cache demo tickers</i>
+
+npm run backtest         <i># regenerate band calibration</i>
+npm run calibrate        <i># regenerate direction calibration</i>
+npm run factors          <i># regenerate the factor test</i>
+
+npm run check:sigma      <i># volatility vs independent implementation</i>
+npm run check:hours      <i># market states + the UTC-server trap</i>
+npm run check:symbols    <i># resolution, ranking, the SODEXO case</i></pre>
+</section>
+
+<footer>
+  stock<span class="knd">ಶಿಷ್ಯ</span> — conviction, measured.<br>
+  Educational tool. Not registered investment advice. It does not recommend trades.
+</footer>
+
+</div>
