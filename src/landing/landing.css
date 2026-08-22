@@ -1,60 +1,52 @@
 /* LANDING PAGE
    ────────────────────────────────────────────────────────────────
-   Rebuilt around three problems, each measured rather than felt.
+   ONE AXIS. The previous build had four different left edges —
+   measured at 1440px: most content began at 380, the wide sections
+   at 290 (which put them LEFT of the spine they were meant to hang
+   from), the name at 364, and the spine itself at 340. The page
+   wandered. Everything now derives from two custom properties, so
+   there is exactly one left edge and the outer gaps are symmetric.
 
-   1. FORTY-ONE PERCENT OF THE PAGE WAS EMPTY. Every section carried
-      112px of padding top and bottom — one value repeated until
-      nothing had more weight than anything else. The fan section was
-      1023px tall to hold 116px of content. 2,253 dead pixels out of
-      5,516.
+   AND IT USES THE WIDTH. The column was 760px on a 1440px screen,
+   leaving the right half of every section empty and making a dense
+   page read as a bare one. The measure is now a two-track grid:
+   prose on the left at a readable width, and the artifact that
+   proves it — the rail, the receipt, the numbers — on the right.
+   Content spans 170→1310 instead of 380→1076.
 
-      The fix is not less space, it is space that means something.
-      Three intervals, each with a job:
-
-        --gap-in     inside one movement of the argument
-        --gap-out    between movements
-        --gap-pivot  the name, and only the name
-
-   2. SECTIONS SHIPPED BLANK. Content sat at opacity 0 until an
-      IntersectionObserver fired, so any renderer that does not
-      scroll — a screenshot tool, a crawler, a background tab — saw
-      nothing at all. A reveal must enhance content that is already
-      there, never gate it. There is now a failsafe in the component
-      and a `scripting: none` fallback here.
-
-   3. THE EVIDENCE CARDS USED SIDE-STRIPES. A 2px coloured
-      border-left on a card is decoration pretending to be meaning.
-      The three findings are now statements with numerals, which is
-      what the rest of the product is made of anyway.
-
-   THE ARGUMENT HAS A PIVOT. Everything before the name persuades;
-   everything after invites. So the name is the largest thing on the
-   page and the only section that gets the full interval.
+   MOTION LIVES IN GSAP, NOT HERE. Which means every element's
+   natural CSS state is its FINAL state: visible, in place. GSAP
+   animates `from` a hidden state toward that. If the library never
+   loads, if scripting is off, if a crawler renders the page, the
+   content is simply there. The previous build held everything at
+   opacity 0 until an observer fired, and shipped blank sections to
+   anything that did not scroll. Animating `from` makes that class of
+   bug structurally impossible.
 
    Every animated property is transform or opacity. */
 
 .lp {
-  /* One column definition, shared by the content and the spine, so
-     the line hangs exactly at the text's left edge at every width. */
-  --col: 760px;
-  --gutter: 24px;
-  --spine-x: max(var(--gutter), calc(50% - (var(--col) / 2)));
+  /* THE TWO VALUES EVERYTHING DERIVES FROM. */
+  --page: min(1180px, 100vw - 48px);
+  --page-x: max(24px, calc((100vw - var(--page)) / 2));
+  /* Distance from the spine to the first letter. */
+  --rail-gap: 40px;
 
-  /* Rhythm. Three values, three jobs — see the header note. */
-  --gap-in: 64px;
-  --gap-out: 96px;
-  --gap-pivot: 128px;
+  /* Rhythm. Three intervals, three jobs. */
+  --gap-in: 72px;
+  --gap-out: 104px;
+  --gap-pivot: 136px;
 
   position: relative;
   overflow-x: clip;
 }
 
 /* ── the spine ───────────────────────────────────────────────────
-   One hairline down the entire page with the bob riding it. The
-   product's own instrument, used as the page's margin rule. */
+   A plumb line down the page with the bob riding it on scroll. It is
+   the page's margin rule: nothing crosses to its left. */
 .lp-spine {
   position: fixed;
-  left: var(--spine-x);
+  left: var(--page-x);
   top: 0;
   bottom: 0;
   width: 1px;
@@ -66,7 +58,7 @@
   position: absolute;
   inset: 0;
   background: var(--color-rule);
-  opacity: 0.55;
+  opacity: 0.5;
 }
 .lp-spine-bob {
   position: absolute;
@@ -78,26 +70,36 @@
   .lp-spine { display: none; }
 }
 
-/* ── shell ───────────────────────────────────────────────────── */
+/* ── the one column ──────────────────────────────────────────── */
 
 .lp-inner {
-  max-width: var(--col);
-  margin: 0 auto;
-  /* The left padding is the distance from the spine to the text: the
-     copy starts just inside the line, so it reads as a margin rule
-     the whole page hangs from. */
-  padding: 0 var(--gutter) 0 40px;
+  width: calc(var(--page) - var(--rail-gap));
+  margin-left: calc(var(--page-x) + var(--rail-gap));
   position: relative;
   z-index: 2;
 }
 
 .lp-sec { padding: var(--gap-out) 0; position: relative; }
-/* Consecutive beats of one argument sit closer together than the
-   movements they belong to. The old uniform padding had no way to
-   say this. */
+/* Later beats of the same movement sit tight against the one that
+   opened it. */
 .lp-sec-tight { padding: var(--gap-in) 0; }
 .lp-sec-pivot { padding: var(--gap-pivot) 0; }
-.lp-sec-wide .lp-inner { max-width: 940px; }
+
+/* ── the measure ─────────────────────────────────────────────────
+   Prose left, evidence right. The right track is what stops the page
+   reading as empty, and it is never decoration: it always holds the
+   thing the sentence beside it is talking about. */
+.lp-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+  gap: 24px 64px;
+  align-items: start;
+}
+.lp-split-wide { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); }
+@media (max-width: 900px) {
+  .lp-split,
+  .lp-split-wide { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+}
 
 /* ── hero ────────────────────────────────────────────────────── */
 
@@ -105,44 +107,59 @@
   min-height: 100svh;
   display: flex;
   align-items: center;
-  padding: 96px 0 var(--gap-out);
+  padding: 104px 0 var(--gap-out);
   position: relative;
 }
+.lp-bob-wrap { height: 172px; margin-left: calc(var(--rail-gap) * -1 - 17px); }
 
-.lp-bob-wrap {
-  height: 172px;
-  margin-left: -57px; /* 40px padding + 17px to the line's centre */
+.lp-eyebrow {
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+  margin: 0;
 }
 
 .lp-h1 {
   font-family: var(--font-display);
   font-variation-settings: 'wdth' 125;
   font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.04;
-  font-size: clamp(2rem, 5.6vw, 3.75rem);
-  margin: 30px 0 0;
+  letter-spacing: -0.028em;
+  line-height: 1.02;
+  font-size: clamp(2.25rem, 6.4vw, 4.5rem);
+  margin: 26px 0 0;
   text-wrap: balance;
 }
 .lp-h1 .lp-line { display: block; }
 .lp-h1 .lp-line:last-child { color: var(--color-graphite); }
 
 .lp-sub {
-  font-size: 1.0625rem;
-  line-height: 1.7;
+  font-size: 1.125rem;
+  line-height: 1.65;
   color: var(--color-graphite);
-  max-width: 58ch;
-  margin: 24px 0 0;
+  max-width: 54ch;
+  margin: 26px 0 0;
   text-wrap: pretty;
 }
 
 .lp-scroll-hint {
   font-family: var(--font-data);
   font-size: 0.6875rem;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-graphite);
-  margin: 44px 0 0;
+  margin: 48px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lp-scroll-hint i {
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--color-rule);
+  transform-origin: left center;
 }
 
 /* ── headings and prose ──────────────────────────────────────── */
@@ -151,23 +168,24 @@
   font-family: var(--font-display);
   font-variation-settings: 'wdth' 125;
   font-weight: 700;
-  letter-spacing: -0.022em;
-  line-height: 1.12;
-  font-size: clamp(1.5rem, 3.4vw, 2.25rem);
+  letter-spacing: -0.024em;
+  line-height: 1.1;
+  font-size: clamp(1.625rem, 3.6vw, 2.5rem);
   margin: 0;
-  max-width: 22ch;
+  max-width: 20ch;
   text-wrap: balance;
 }
-.lp-big { font-size: clamp(1.75rem, 4.4vw, 2.75rem); max-width: 17ch; }
+.lp-big { font-size: clamp(1.875rem, 4.8vw, 3rem); max-width: 15ch; }
 
 .lp-body {
   font-size: 1.0625rem;
   line-height: 1.7;
-  max-width: 64ch;
-  margin: 24px 0 0;
+  max-width: 58ch;
+  margin: 22px 0 0;
   text-wrap: pretty;
 }
 .lp-body em { font-style: italic; }
+.lp-lead { font-size: 1.125rem; color: var(--color-graphite); }
 
 /* ── calls to action ─────────────────────────────────────────── */
 
@@ -175,7 +193,7 @@
   display: flex;
   align-items: center;
   gap: 28px;
-  margin-top: 36px;
+  margin-top: 40px;
   flex-wrap: wrap;
 }
 .lp-cta {
@@ -186,7 +204,7 @@
   font-size: 0.9375rem;
   background: var(--color-ink);
   color: var(--color-paper);
-  padding: 15px 30px;
+  padding: 16px 32px;
   border-radius: 3px;
   text-decoration: none;
   display: inline-block;
@@ -208,19 +226,15 @@
 
 /* ── the rail: felt against measured ─────────────────────────── */
 
-.lp-rail-demo { margin: 52px 0 0; }
+.lp-rail-demo { margin: 0; }
 .lp-rail {
   position: relative;
   height: 1px;
-  /* The rail hangs one label above the track and one below, so this
-     1px element needs clearance it cannot declare itself. */
-  margin: 52px 0 72px;
+  /* One label hangs above the track and one below, so this 1px
+     element needs clearance it cannot declare itself. */
+  margin: 56px 0 76px;
 }
-.lp-rail-track {
-  position: absolute;
-  inset: 0;
-  background: var(--color-rule);
-}
+.lp-rail-track { position: absolute; inset: 0; background: var(--color-rule); }
 .lp-tick { position: absolute; top: 0; }
 .lp-tick i {
   position: absolute;
@@ -246,8 +260,8 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  /* No transition on `left`: the value is tweened in JS once per
-     frame already, so a CSS transition would chase a moving target. */
+  /* No transition on `left`: GSAP writes it every frame, and a CSS
+     transition on top would chase a moving target. */
   transform: translateX(-50%);
 }
 .lp-marker b {
@@ -257,26 +271,9 @@
   white-space: nowrap;
 }
 .lp-marker-you { top: -34px; }
-.lp-marker-data {
-  top: 26px;
-  opacity: 0;
-  transform: translate3d(-50%, 8px, 0);
-  /* Lands a beat after the slider settles, so the gap reads as an
-     answer to the number above it rather than a second thing that
-     appeared at the same moment. */
-  transition: opacity 420ms var(--ease-out) 140ms,
-    transform 420ms var(--ease-out) 140ms;
-}
-.lp-marker-data.in { opacity: 1; transform: translate3d(-50%, 0, 0); }
+.lp-marker-data { top: 26px; }
 
-.lp-dim {
-  position: absolute;
-  top: -16px;
-  height: 9px;
-  opacity: 0;
-  transition: opacity 380ms var(--ease-out) 380ms;
-}
-.lp-dim.in { opacity: 1; }
+.lp-dim { position: absolute; top: -16px; height: 9px; }
 .lp-dim i {
   position: absolute;
   left: 0;
@@ -299,62 +296,54 @@
 
 /* ── the fan ─────────────────────────────────────────────────────
    Full-bleed, because its whole point is being wider than any single
-   answer. Height cut from 560px and the margins halved: this section
-   was 1023px tall to hold two sentences. */
+   answer — the one element allowed to cross the spine. */
 .lp-fan {
   width: 100vw;
-  margin: 40px 0 40px calc(50% - 50vw);
-  height: clamp(220px, 34vh, 380px);
+  margin: 48px 0 48px calc(var(--page-x) * -1 - var(--rail-gap));
+  height: clamp(240px, 40vh, 440px);
 }
 .lp-fan-svg { display: block; width: 100%; height: 100%; }
 
 /* ── evidence ────────────────────────────────────────────────────
-   Not cards. Three findings set as numerals and statements, divided
-   by hairlines — the same materials as the rest of the product. The
-   old version boxed them and marked pass and fail with a 2px
-   coloured border-left, which is decoration wearing the costume of
-   meaning. The colour now lives on the numeral, where it is the
-   finding rather than a stripe beside it. */
-.lp-cards {
+   Three findings as numerals and statements, on hairlines. The
+   colour is on the number, where it IS the finding — not a stripe
+   beside it. */
+.lp-cards { display: grid; gap: 0; margin: 0; }
+.lp-card {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 36px 40px;
-  margin: 44px 0 0;
+  grid-template-columns: minmax(150px, 0.42fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: baseline;
+  padding: 26px 0;
+  border-top: 1px solid var(--color-rule);
 }
-.lp-card { display: block; }
+.lp-card:last-child { border-bottom: 1px solid var(--color-rule); }
 .lp-stat {
   font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
-  font-size: 2.25rem;
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   margin: 0;
-  display: block;
 }
 .lp-pass .lp-stat { color: var(--color-verdigris); }
 .lp-fail .lp-stat { color: var(--color-madder); }
-/* "5 more" is one phrase, so this stays INLINE. Styling it as a
-   block label put a rule between the numeral and the word it
-   belongs to, and left "more" orphaned above the sentence it
-   opens. */
-.lp-stat-sm {
-  font-size: 1.375rem;
-  letter-spacing: -0.01em;
-  color: var(--color-graphite);
-}
+.lp-stat-sm { font-size: 0.5em; letter-spacing: 0; color: var(--color-graphite); }
 .lp-card-body {
   font-size: 0.9375rem;
   line-height: 1.6;
   color: var(--color-graphite);
-  margin: 10px 0 0;
+  margin: 0;
   text-wrap: pretty;
+}
+@media (max-width: 620px) {
+  .lp-card { grid-template-columns: minmax(0, 1fr); gap: 12px; }
 }
 
 /* ── the receipt ─────────────────────────────────────────────── */
 
 .lp-receipt {
-  margin: 40px 0 0;
-  max-width: 460px;
+  margin: 0;
   background: var(--color-card);
   border: 1px solid var(--color-rule);
   border-radius: 3px;
@@ -365,15 +354,10 @@
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  padding: 7px 0;
+  padding: 8px 0;
   font-size: 0.9375rem;
   color: var(--color-graphite);
-  opacity: 0;
-  transform: translate3d(0, 8px, 0);
-  transition: opacity 420ms var(--ease-out) calc(var(--i) * 90ms),
-    transform 420ms var(--ease-out) calc(var(--i) * 90ms);
 }
-.lp-receipt.in .lp-receipt-row { opacity: 1; transform: translate3d(0, 0, 0); }
 .lp-receipt-row .font-data { color: var(--color-ink); }
 .lp-receipt-seal {
   justify-content: center;
@@ -384,54 +368,40 @@
 .lp-receipt-seal .font-data { color: var(--color-graphite); }
 
 /* ── THE NAME — the pivot ────────────────────────────────────────
-   The largest thing on the page, and the only section that gets the
-   full interval. Everything above it argues; everything below
-   invites. It is centred because it is the one moment the page stops
-   hanging off the spine and simply states what it is. */
-.lp-name { text-align: center; }
-.lp-name .lp-inner { padding-left: var(--gutter); }
-
+   The largest thing on the page, on the SAME left axis as everything
+   else. Centring it was the fourth of the four stray left edges; the
+   emphasis comes from its size, which is stronger anyway. */
 .lp-name-mark {
   font-family: var(--font-display);
   font-variation-settings: 'wdth' 125;
   font-weight: 800;
-  /* Held at the display ceiling: the centre of the page, not a
-     shout. */
-  font-size: clamp(2.75rem, 11vw, 6rem);
-  letter-spacing: -0.03em;
-  line-height: 0.96;
-  margin: 0;
+  font-size: clamp(2.75rem, 11.5vw, 6rem);
+  letter-spacing: -0.035em;
+  line-height: 0.94;
+  margin: 24px 0 0;
   display: block;
 }
 /* Kannada carries a taller x-height than Archivo at the same point
-   size, and ಶಿಷ್ಯ ends in a conjunct that descends. At 6rem the two
-   halves of the name stopped reading as one word. */
-.lp-name-mark .knd {
-  font-size: 0.86em;
-  letter-spacing: -0.01em;
-}
+   size, and ಶಿಷ್ಯ ends in a descending conjunct. Without this the
+   two halves of the name stop reading as one word. */
+.lp-name-mark .knd { font-size: 0.86em; letter-spacing: -0.01em; }
+
 .lp-name-gloss {
   font-family: var(--font-body);
-  font-size: clamp(1.0625rem, 2.2vw, 1.375rem);
+  font-size: clamp(1.125rem, 2.3vw, 1.5rem);
   line-height: 1.45;
   color: var(--color-graphite);
-  margin: 22px 0 0;
+  margin: 24px 0 0;
+  max-width: 34ch;
 }
 .lp-name-gloss em { font-style: italic; color: var(--color-ink); }
-.lp-name-body {
-  font-size: 1.0625rem;
-  line-height: 1.7;
-  max-width: 54ch;
-  margin: 26px auto 0;
-  text-wrap: pretty;
-}
-.lp-name-bob { display: flex; justify-content: center; }
+.lp-name-bob { margin-bottom: 4px; }
 
 /* ── close ───────────────────────────────────────────────────── */
 
-.lp-close { padding-bottom: 120px; }
+.lp-close { padding-bottom: 128px; }
 .lp-legal {
-  margin-top: 52px;
+  margin-top: 56px;
   padding-top: 18px;
   border-top: 1px solid var(--color-rule);
   font-size: 0.75rem;
@@ -447,17 +417,24 @@
   top: 0;
   left: 0;
   z-index: 30;
-  padding: 20px clamp(20px, 4vw, 40px);
+  padding: 22px clamp(20px, 4vw, 40px);
   font-family: var(--font-display);
   font-variation-settings: 'wdth' 125;
   font-weight: 800;
-  font-size: 1.0625rem;
-  letter-spacing: -0.02em;
+  /* The name carries the top-left corner, so it is set at a size
+     that can actually hold it. At 1.0625rem the corner read as
+     empty and the page looked like it started at the headline. */
+  font-size: clamp(1.25rem, 2vw, 1.625rem);
+  letter-spacing: -0.028em;
   color: var(--color-ink);
   text-decoration: none;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
-
+.lp-wordmark .knd { font-size: 0.88em; letter-spacing: -0.01em; }
+.lp-wordmark svg { flex-shrink: 0; }
 .lp-header {
   position: fixed;
   top: 0;
@@ -480,10 +457,7 @@
   transition: color var(--dur-instant) var(--ease-out),
     border-color var(--dur-instant) var(--ease-out);
 }
-.lp-header-link:hover {
-  color: var(--color-ink);
-  border-bottom-color: var(--color-ink);
-}
+.lp-header-link:hover { color: var(--color-ink); border-bottom-color: var(--color-ink); }
 .lp-header-cta {
   font-family: var(--font-data);
   font-size: 0.75rem;
@@ -499,58 +473,19 @@
 }
 .lp-header-cta:hover { background: #000; }
 
-/* ── entry and reveal ────────────────────────────────────────────
-   These ENHANCE content; they do not gate it. The component carries
-   a failsafe that reveals everything within 1.2s regardless, and a
-   browser with no scripting is served the finished state outright.
-   The old build had neither and shipped blank sections to every
-   renderer that did not scroll. */
-.lp-line {
-  opacity: 0;
-  transform: translate3d(0, 14px, 0);
-  animation: lp-in 620ms cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms) forwards;
-}
-.lp-fade {
-  opacity: 0;
-  transform: translate3d(0, 14px, 0);
-  transition: opacity 560ms cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms),
-    transform 560ms cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms);
-}
-.lp-fade.in { opacity: 1; transform: translate3d(0, 0, 0); }
-@keyframes lp-in {
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
-}
-
-@media (scripting: none) {
-  .lp-fade,
-  .lp-marker-data,
-  .lp-dim,
-  .lp-receipt-row {
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
-  .lp-marker-data { transform: translateX(-50%) !important; }
-}
-
 /* ── the hero bob ────────────────────────────────────────────────
-   The same damped pendulum as the app: three diminishing swings,
-   settling perfectly vertical, then it never moves again. Its line
-   does not end — it continues down the page as the spine, and the
-   small bob picks it up as you scroll. */
-.lp-bob {
-  transform-origin: 17px 0;
-  animation: lp-swing 1500ms cubic-bezier(0.33, 0, 0.25, 1) 420ms both;
-}
+   The one animation still authored in CSS, because it runs once on
+   load and has nothing to scrub against. The same damped pendulum as
+   the app: three diminishing swings, settling perfectly vertical,
+   then it never moves again. Its line does not end — it continues
+   down the page as the spine. */
+.lp-bob { transform-origin: 17px 0; animation: lp-swing 1500ms cubic-bezier(0.33, 0, 0.25, 1) 420ms both; }
 .lp-bob-line {
   stroke-dasharray: 164;
   stroke-dashoffset: 164;
   animation: lp-draw 460ms cubic-bezier(0.65, 0, 0.35, 1) 60ms forwards;
 }
-.lp-bob-weight {
-  opacity: 0;
-  animation: lp-appear 220ms linear 420ms forwards;
-}
+.lp-bob-weight { opacity: 0; animation: lp-appear 220ms linear 420ms forwards; }
 @keyframes lp-draw { to { stroke-dashoffset: 0; } }
 @keyframes lp-appear { to { opacity: 1; } }
 @keyframes lp-swing {
@@ -565,33 +500,28 @@
 
 /* ── narrow ──────────────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .lp { --col: 100%; --gap-in: 52px; --gap-out: 72px; --gap-pivot: 88px; }
-  .lp-inner { padding: 0 20px; }
-  /* The bob's svg is 190px tall in a shorter box on purpose — the
-     line continues past the frame and becomes the spine. Keep the
-     SAME overlap as desktop; at 140px it overhung by 50px and landed
-     on the first line of the headline. */
-  .lp-bob-wrap { margin-left: -17px; height: 172px; }
-  .lp-hero { min-height: auto; padding-top: 104px; }
+  .lp {
+    --page: calc(100vw - 40px);
+    --rail-gap: 0px;
+    --gap-in: 56px;
+    --gap-out: 76px;
+    --gap-pivot: 92px;
+  }
+  .lp-bob-wrap { margin-left: -17px; }
+  .lp-hero { min-height: auto; padding-top: 112px; }
 }
 @media (max-width: 620px) {
-  /* The wordmark and the sign-in pair collide at this width. The
-     mark wins, because it says what the site is. */
+  /* The wordmark and the sign-in link collide at this width. The mark
+     wins, because it says what the site is. */
   .lp-header-link { display: none; }
   .lp-cta-row { gap: 20px; }
 }
 
 /* ── reduced motion ──────────────────────────────────────────────
-   Everything renders in its final state. No exceptions. */
+   GSAP is never started at all (see Landing.jsx), so every element
+   simply renders in its natural CSS state — which is its final one.
+   Only the CSS-authored hero bob needs disarming here. */
 @media (prefers-reduced-motion: reduce) {
-  .lp-line,
-  .lp-fade,
-  .lp-receipt-row {
-    opacity: 1 !important;
-    transform: none !important;
-    animation: none !important;
-    transition: none !important;
-  }
   .lp-bob,
   .lp-bob-line,
   .lp-bob-weight {
@@ -599,9 +529,5 @@
     stroke-dashoffset: 0 !important;
     opacity: 1 !important;
   }
-  .lp-marker-data,
-  .lp-dim { opacity: 1 !important; transition: none !important; }
-  .lp-marker-data { transform: translateX(-50%) !important; }
-  .lp-dim { transform: none !important; }
   .lp-cta:active { transform: none; }
 }

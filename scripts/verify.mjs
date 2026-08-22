@@ -693,10 +693,17 @@ await (async () => {
   );
   ok(/no skill|cannot tell|refuses/i.test(cardText), 'the landing page admits the failure rather than hiding it');
 
-  // the rail demo runs on its own clock once it is in view
+  /* The rail is SCRUBBED now: the reader drags the gap open, so the
+     markers resolve as you scroll THROUGH the section rather than the
+     moment it appears. Scrolling to it and stopping leaves the scrub
+     mid-timeline, which is correct behaviour and was the old
+     assertion's blind spot — so this scrolls past it and then checks
+     the finished state. */
   await p.evaluate(() => window.scrollTo(0, 0));
   await p.waitForTimeout(500);
-  await p.locator('.lp-rail-demo').first().scrollIntoViewIfNeeded();
+  const railBox = await p.locator('.lp-rail-demo').first().boundingBox();
+  await p.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }),
+    (railBox?.y ?? 0) + 400);
   await p.waitForTimeout(2600);
   const railLabel = await p.locator('.lp-marker-you b').innerText();
   ok(/you 72/.test(railLabel), `the slider finishes its sweep for a reader who stops (${railLabel})`);
