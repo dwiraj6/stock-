@@ -25,6 +25,7 @@ import {
   markUnreachable,
   loadSharedCooldowns,
   saveSharedCooldowns,
+  supportsThinkingConfig,
   FREE_TIER_DAILY_PER_MODEL,
   isQuotaError,
   retryAfterSeconds,
@@ -200,11 +201,26 @@ export async function POST(req: NextRequest) {
                Cast: the installed @google/generative-ai types predate
                thinkingConfig. The API accepts it — verified against
                the live endpoint, thoughtsTokenCount drops to 0. */
-            thinkingConfig: { thinkingBudget: 0 },
+            /* Only for models that accept it. The lite models answer
+               a request carrying thinkingConfig with a bare 400, so
+               sending it to everything is what kept them out of the
+               chain entirely. */
+            ...(supportsThinkingConfig(modelName)
+              ? { thinkingConfig: { thinkingBudget: 0 } }
+              : {}),
           } as any,
         });
 
         const chat = model.startChat({ history });
+
+        if (process.env.PLUMBLINE_CHAT_PROFILE === '1') {
+          const sysLen = `${SYSTEM_PROMPT}
+
+${contextBlock(ctx)}`.length;
+          console.log(
+            `[plumbline] chat prompt: system ${sysLen} chars (~${Math.round(sysLen / 4)} tokens), history ${history.length} turns`
+          );
+        }
 
         /* A hard deadline. Without one a queued or stalled request
            hangs indefinitely — measured at 104 seconds against a

@@ -22,19 +22,55 @@ import { medianFor } from './score';
    just a failover — it triples the questions available in a day.
    Verified live against this key:
      gemini-2.5-flash        429 once its 20/day is spent
-     gemini-flash-latest     200  (separate bucket)
-     gemini-flash-lite-latest 200 (separate bucket)
-     gemini-2.5-flash-lite   404  — does not exist; it was in this
-                                   chain and silently wasted a hop */
+     PROBED AGAINST THE LIVE ENDPOINT, and the results mattered:
+
+       gemini-2.5-flash          404  "no longer available to new
+                                       users" — Google retired it,
+                                       and it was FIRST in this
+                                       chain, so every question paid
+                                       a dead model's timeout before
+                                       reaching a live one
+       gemini-3.5-flash          200  ~1.0s
+       gemini-3.1-flash-lite     200  ~1.0s
+       gemini-flash-latest       200  works, but measurably the
+                                      slowest of the live ones
+       gemini-flash-lite-latest  400  with thinkingConfig,
+                                 200  without it — see below
+       gemini-3.5-flash-lite     400  / 200, same story
+
+   Ordered fastest-first, because the chain is a fallback ladder and
+   the first rung is the one almost every question uses.
+
+   THE LITE MODELS REJECT thinkingConfig outright — a 400
+   INVALID_ARGUMENT, not a warning — which is why they had never once
+   answered despite sitting in the chain. Sending it only to the
+   models that accept it brings them back as real fallbacks, and
+   since the free tier is metered PER MODEL, each one restored is
+   another 20 questions a day. Three buckets became five. */
 export const MODEL_CHAIN = [
-  'gemini-2.5-flash',
+  'gemini-3.5-flash',
+  'gemini-3.1-flash-lite',
   'gemini-flash-latest',
   'gemini-flash-lite-latest',
+  'gemini-3.5-flash-lite',
 ];
+
+/* Models that accept `thinkingConfig`. The others answer a request
+   carrying it with a 400 and no explanation of which field was at
+   fault, so the distinction has to be kept here rather than
+   discovered per request. */
+const THINKING_CAPABLE = new Set(['gemini-3.5-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest']);
+
+export function supportsThinkingConfig(model: string): boolean {
+  return THINKING_CAPABLE.has(model);
+}
 
 /** Free-tier ceiling, per model, per day. Small enough that a busy
     demo can exhaust it — so the UI has to say so plainly. */
 export const FREE_TIER_DAILY_PER_MODEL = 20;
+
+/** Total free questions a day, across every bucket in the chain. */
+export const FREE_TIER_DAILY_TOTAL = FREE_TIER_DAILY_PER_MODEL * MODEL_CHAIN.length;
 
 /** Never let a model call hang. A request with no deadline is how a
     reply ends up half-written with nothing following it. */
